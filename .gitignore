@@ -1,0 +1,44 @@
+﻿# Vikalp AI - .gitignore
+# Team: BinaryDNF | SIH 2026 | PS ID: 26097
+
+# Environment & Secrets
+.env
+.env.local
+.env.production
+.env.development
+
+# Python / Backend
+__pycache__/
+*.py[cod]
+.Python
+build/
+dist/
+*.egg-info/
+venv/
+.venv/
+env/
+*.sqlite3
+*.db
+logs/
+*.log
+storage/
+
+# Node / Frontend
+node_modules/
+dist/
+.cache/
+.next/
+out/
+
+# Editor & OS
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+.idea/
+*.swp
+
+# Misc
+*.mp4
+*.mp3
+*.wav
+bun.lockb
