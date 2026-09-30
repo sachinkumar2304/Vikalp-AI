@@ -388,7 +388,7 @@ export const PMAJAYVoiceInterview: React.FC = () => {
                     }`}
                   >
                     <div className="flex items-center justify-between text-[11px] opacity-75 mb-1">
-                      <span>{m.sender === "user" ? "Beneficiary (आवेदक)" : "Vikalp AI"}</span>
+                      <span>{m.sender === "user" ? "Beneficiary (आवेदक)" : "PM-AJAY Vikalp AI"}</span>
                       <div className="flex items-center gap-2">
                         <span>{m.timestamp}</span>
                         {m.sender === "assistant" && (

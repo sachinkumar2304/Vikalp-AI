@@ -9,5 +9,3 @@ from app.api.v1.endpoints import pmajay
 api_router.include_router(pmajay.router, prefix="/pmajay", tags=["pmajay"])
 
 # Auth (used by admin dashboard login)
-from app.api.v1.endpoints import auth
-api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
