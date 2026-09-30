@@ -4,7 +4,7 @@
 
 **Team:** BinaryDNF | **SIH 2026 Problem Statement:** PS ID 26097  
 **Ministry:** Social Justice and Empowerment (MoSJE), Government of India  
-**Live Demo:** [saathi-umber-seven.vercel.app/pmajay](https://saathi-umber-seven.vercel.app/pmajay)
+**Live Demo:** [vikalp-ai-mu.vercel.app/pmajay](https://vikalp-ai-mu.vercel.app/pmajay)
 
 ---
 
