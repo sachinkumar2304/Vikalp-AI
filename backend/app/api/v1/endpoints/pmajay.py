@@ -412,7 +412,7 @@ def ask_vaani_saathi(req: AskQuestionRequest):
         elif lang == "mr":
             answer = "पीएम-अजय कौशल्य मित्र पोर्टलवर आपण १८ सरकारी कोर्सेस, जवळचे केंद्र आणि ₹५०,००० टूलकिट अनुदानाची माहिती मिळवू शकता."
         else:
-            answer = "PM-AJAY Kaushal Mitra connects you with 18 certified NSQF trades, local training centers, and ₹50,000 toolkit grants."
+            answer = "Vikalp AI connects you with 18 certified NSQF trades, local training centers, and ₹50,000 toolkit grants."
 
     return {
         "answer": answer,

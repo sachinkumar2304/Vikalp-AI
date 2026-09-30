@@ -1,5 +1,5 @@
 """
-VaaniPath Security Middleware
+Vikalp AI Security Middleware
 Implements enterprise-grade security features including:
 - Rate limiting
 - Security headers

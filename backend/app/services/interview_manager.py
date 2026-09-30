@@ -27,7 +27,7 @@ INTERVIEW_QUESTIONS = [
     {
         "turn": 1,
         "key": "name_and_location",
-        "prompt_hi": "Namaskar! PM-AJAY Kaushal Mitra me aapka swagat hai. Kripya apna naam aur apna gaon ya zila batayein?",
+        "prompt_hi": "Namaskar! Vikalp AI me aapka swagat hai. Kripya apna naam aur apna gaon ya zila batayein?",
         "prompt_en": "Welcome to PM-AJAY Skill Assistant! Please tell us your name and your village or district?",
     },
     {

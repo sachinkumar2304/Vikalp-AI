@@ -71,7 +71,7 @@ async def signup(user: UserCreate):
                     user_id=created_user_id,
                     points=100,
                     source="signup_bonus",
-                    description="Welcome Bonus: 100 GyanPoints for joining VaaniPath!",
+                    description="Welcome Bonus: 100 GyanPoints for joining Vikalp AI!",
                     reference_id=None
                 )
             except Exception as e:

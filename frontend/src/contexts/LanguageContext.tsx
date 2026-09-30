@@ -84,7 +84,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     ministry_title: "Ministry of Social Justice & Empowerment",
     scheme_tag: "PM-AJAY Skilling Component",
     helpline: "Toll-Free: 1800-11-2026",
-    portal_name: "Vaanipath Kaushal Mitra",
+    portal_name: "Vikalp AI",
     portal_sub: "SC Welfare & NSQF Livelihood Mapping Portal",
     btn_speak_nav: "Speak to Assistant",
     nav_home: "Home",
@@ -95,7 +95,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     nav_admin: "Admin Dashboard",
 
     // Hero Section
-    hero_badge: "PM-AJAY Kaushal Mitra • Direct Livelihood Support",
+    hero_badge: "PM-AJAY Vikalp AI • Direct Livelihood Support",
     hero_h1_1: "Speak In Your Own Language,",
     hero_h1_2: "Get Certified NSQF Skilling & Toolkits",
     hero_desc: "Specialized voice AI service for Scheduled Caste (SC) rural youth, women, and artisans. No typing required — speak naturally to get matched with 100% grant-funded courses, local training centres, and up to ₹50,000 toolkit capital subsidies.",
@@ -133,7 +133,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     plumber_desc: "Panchayat drinking water pipeline and pump maintenance.",
 
     // Welcome Speech Text
-    welcome_speech: "Welcome to PM-AJAY Kaushal Mitra. You can speak naturally by tapping the microphone. For complete guidance of this portal, please click 'Listen to Website Tour' in the bottom right corner.",
+    welcome_speech: "Welcome to PM-AJAY Vikalp AI. You can speak naturally by tapping the microphone. For complete guidance of this portal, please click 'Listen to Website Tour' in the bottom right corner.",
     audio_badge: "Audio Guide",
     audio_stop: "Stop Audio",
     stop_audio: "Stop Audio",

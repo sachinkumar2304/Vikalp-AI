@@ -125,7 +125,7 @@ See full diagram: [`docs/architecture.md`](docs/architecture.md)
 
 ### Backend
 ```bash
-cd SIH-fresh/VaaniPath-Backend
+cd backend
 pip install -r requirements.txt
 cp .env.example .env          # Fill in your credentials
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
@@ -133,7 +133,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ### Frontend
 ```bash
-cd SIH-fresh/VaaniPath-Frontend
+cd frontend
 npm install
 cp .env.example .env.local    # Set VITE_API_BASE_URL=http://localhost:8000/api/v1
 npm run dev
@@ -149,7 +149,7 @@ Open: `http://localhost:8080/pmajay`
 
 ```
 ├── SIH-fresh/
-│   ├── VaaniPath-Backend/        # FastAPI backend — PM-AJAY interview engine
+│   ├── backend/        # FastAPI backend — PM-AJAY interview engine
 │   │   ├── app/
 │   │   │   ├── api/v1/endpoints/pmajay.py   # Core API
 │   │   │   ├── services/scoring_engine.py   # Deterministic scoring
@@ -157,7 +157,7 @@ Open: `http://localhost:8080/pmajay`
 │   │   │   ├── data/nsqf_catalog.py         # 18 NSQF packs
 │   │   │   └── schemas/pmajay.py            # Profile schema
 │   │   └── render.yaml                      # Render deployment config
-│   └── VaaniPath-Frontend/       # React frontend — 7-screen PM-AJAY UI
+│   └── frontend/       # React frontend — 7-screen PM-AJAY UI
 │       ├── src/pages/pmajay/     # All 7 active screens
 │       ├── src/components/pmajay/
 │       ├── src/services/pmajayService.ts

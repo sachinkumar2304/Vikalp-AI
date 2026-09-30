@@ -144,7 +144,7 @@ export const pmajayService = {
         current_turn: 1,
         total_turns: 6,
         question_prompt: isHi
-          ? "Namaskar! PM-AJAY Kaushal Mitra me aapka swagat hai. Kripya apna naam aur apna gaon ya zila batayein?"
+          ? "Namaskar! Vikalp AI me aapka swagat hai. Kripya apna naam aur apna gaon ya zila batayein?"
           : "Welcome to PM-AJAY Skill Assistant! Please tell us your name and your village or district?",
         profile: pmajayService.createDefaultProfile(session_id, language),
       };
