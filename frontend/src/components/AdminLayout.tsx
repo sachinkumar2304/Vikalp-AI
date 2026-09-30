@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             {/* Header */}
             <header className="border-b bg-card sticky top-0 z-50">
                 <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                    <h1 className="text-2xl font-bold">वाणीपथ Admin Panel</h1>
+                    <h1 className="text-2xl font-bold">विकल्प AI Admin Panel</h1>
                     <div className="flex items-center gap-4">
                         <span className="text-sm text-muted-foreground">{user?.email}</span>
                         <Button

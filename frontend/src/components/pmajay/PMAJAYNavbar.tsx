@@ -96,7 +96,7 @@ export const PMAJAYNavbar: React.FC = () => {
           {/* Logo + Portal Identity */}
           <Link to="/pmajay" className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 rounded-md">
             <div className="w-10 h-10 rounded-md bg-gradient-to-br from-[#003366] to-[#00245A] flex items-center justify-center border border-blue-800 shrink-0">
-              <span className="text-white text-sm font-black leading-none">वाणी</span>
+              <span className="text-white text-sm font-black leading-none">विकल्प</span>
             </div>
             <div className="leading-tight">
               <div className="font-black text-base sm:text-lg text-[#003366] group-hover:text-[#CC5500] transition-colors">

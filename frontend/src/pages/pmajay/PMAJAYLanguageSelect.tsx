@@ -16,7 +16,7 @@ const LANGUAGES: LanguageOption[] = [
     code: "hi-IN",
     nativeName: "हिन्दी",
     englishName: "Hindi (Standard & Regional Dialects)",
-    voiceSampleText: "नमस्ते! पीएम-अजय कौशल मित्र में आपका स्वागत है।",
+    voiceSampleText: "नमस्ते! पीएम-अजय विकल्प AI में आपका स्वागत है।",
     asrEngine: "Sarvam AI",
   },
   {

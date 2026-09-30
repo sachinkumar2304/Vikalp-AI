@@ -18,7 +18,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     ministry_title: "सामाजिक न्याय और अधिकारिता मंत्रालय",
     scheme_tag: "PM-AJAY कौशल घटक",
     helpline: "टोल-फ्री: 1800-11-2026",
-    portal_name: "वाणीपथ कौशल मित्र",
+    portal_name: "विकल्प AI (Vikalp AI)",
     portal_sub: "अनुसूचित जाति (SC) कल्याण एवं आजीविका मैपिंग पोर्टल",
     btn_speak_nav: "बोलकर बात करें",
     nav_home: "मुख्य पृष्ठ",
@@ -29,7 +29,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     nav_admin: "प्रशासनिक पोर्टल",
 
     // Hero Section
-    hero_badge: "पीएम-अजय कौशल मित्र • प्रत्यक्ष आजीविका सहायता",
+    hero_badge: "पीएम-अजय विकल्प AI • प्रत्यक्ष आजीविका सहायता",
     hero_h1_1: "अपनी बोली में बताएं अपना हुनर,",
     hero_h1_2: "पाएं मुफ्त सरकारी कोर्स व टूलकिट",
     hero_desc: "अनुसूचित जाति (SC) के ग्रामीण भाई-बहनों और कारीगरों के लिए विशेष वॉयस सेवा। कोई फॉर्म नहीं भरना — बस बोलकर बताएं और पाएं 100% फ्री NSQF सर्टिफाइड ट्रेनिंग, पास का सेंटर और ₹50,000 तक की टूलकिट सहायता।",
@@ -67,7 +67,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     plumber_desc: "नल जल पाइपलाइन व मोटर पंप रखरखाव।",
 
     // Welcome Speech Text
-    welcome_speech: "नमस्ते! पीएम-अजय कौशल मित्र में आपका स्वागत है। आप माइक दबाकर अपनी भाषा में बात कर सकते हैं। पूरी वेबसाइट को अच्छे से समझने के लिए नीचे दायें कोने में दिए गए 'वेबसाइट का मार्गदर्शन' पर क्लिक करें।",
+    welcome_speech: "नमस्ते! पीएम-अजय विकल्प AI में आपका स्वागत है। आप माइक दबाकर अपनी भाषा में बात कर सकते हैं। पूरी वेबसाइट को अच्छे से समझने के लिए नीचे दायें कोने में दिए गए 'वेबसाइट का मार्गदर्शन' पर क्लिक करें।",
     audio_badge: "ऑडियो सुनें",
     audio_stop: "आवाज बंद करें",
     stop_audio: "आवाज बंद करें",
@@ -150,7 +150,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     ministry_title: "सामाजिक न्याय आणि सक्षमीकरण मंत्रालय",
     scheme_tag: "PM-AJAY कौशल्य घटक",
     helpline: "टोल-फ्री: 1800-11-2026",
-    portal_name: "वाणीपथ कौशल मित्र",
+    portal_name: "विकल्प AI (Vikalp AI)",
     portal_sub: "अनुसूचित जाती (SC) कल्याण आणि उपजीविका मॅपिंग पोर्टल",
     btn_speak_nav: "आवाजाने बोला",
     nav_home: "मुख्य पृष्ठ",

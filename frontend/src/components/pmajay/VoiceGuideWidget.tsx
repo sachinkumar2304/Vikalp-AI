@@ -49,7 +49,7 @@ export const VoiceGuideWidget: React.FC = () => {
   // Script text by language
   const texts: Record<string, Record<string, string>> = {
     hi: {
-      saathi_name: "वाणी साथी (वॉयस गाइड)",
+      saathi_name: "विकल्प AI (वॉयस गाइड)",
       speaking_status: "बोल रहा है...",
       idle_status: "आपकी सहायता के लिए तैयार",
       start_tour_btn: "वेबसाइट का मार्गदर्शन सुनें (Voice Tour)",
@@ -69,7 +69,7 @@ export const VoiceGuideWidget: React.FC = () => {
       opportunities_cue: "यहाँ आपके नजदीकी प्रशिक्षण केंद्र और रोजगार के अवसर दिखाए गए हैं।",
       admin_cue: "यह प्रशासनिक डैशबोर्ड है जहाँ अधिकारियों द्वारा डेटा मॉनिटर होता है।",
       tour_step1_title: "1. मुख्य द्वार (Hero)",
-      tour_step1_speech: "नमस्ते भाई-बहनों! मैं आपका वाणी साथी हूँ। यह भारत सरकार के सामाजिक न्याय मंत्रालय का पीएम-अजय पोर्टल है। यहाँ आपको कोई कागज़ी फॉर्म नहीं भरना है। बस अपनी बोली में बोलकर आप मुफ्त सरकारी ट्रेनिंग और 50,000 रुपये तक की टूलकिट पा सकते हैं।",
+      tour_step1_speech: "नमस्ते भाई-बहनों! मैं आपका विकल्प AI हूँ। यह भारत सरकार के सामाजिक न्याय मंत्रालय का पीएम-अजय पोर्टल है। यहाँ आपको कोई कागज़ी फॉर्म नहीं भरना है। बस अपनी बोली में बोलकर आप मुफ्त सरकारी ट्रेनिंग और 50,000 रुपये तक की टूलकिट पा सकते हैं।",
       tour_step2_title: "2. आसान 4 चरण",
       tour_step2_speech: "नीचे देखिए — पहला चरण है बोलकर अपनी जानकारी देना। दूसरा चरण है प्रोफाइल मैपिंग। तीसरा चरण है सही कोर्स चुनना और चौथा चरण है नजदीकी कौशल केंद्र से जुड़ना।",
       tour_step3_title: "3. 18 सरकारी कोर्स (NSQF)",
@@ -109,7 +109,7 @@ export const VoiceGuideWidget: React.FC = () => {
       tour_complete: "Tour complete! You can now start by clicking the microphone button."
     },
     mr: {
-      saathi_name: "वाणी साथी (मार्गदर्शक)",
+      saathi_name: "विकल्प AI (मार्गदर्शक)",
       speaking_status: "बोलत आहे...",
       idle_status: "आपल्या मदतीसाठी तयार",
       start_tour_btn: "वेबसाइट मार्गदर्शन ऐका (Voice Tour)",
@@ -129,7 +129,7 @@ export const VoiceGuideWidget: React.FC = () => {
       opportunities_cue: "येथे आपल्या जवळची प्रशिक्षण केंद्रे आणि रोजगाराच्या संधी दाखवल्या आहेत.",
       admin_cue: "हा प्रशासकीय डॅशबोर्ड आहे जिथे अधिकारी माहितीचे निरीक्षण करतात.",
       tour_step1_title: "१. मुख्य पृष्ठ परिचय",
-      tour_step1_speech: "नमस्कार बंधू आणि भगिनींनो! मी तुमचा वाणी साथी आहे. हे भारत सरकारच्या सामाजिक न्याय मंत्रालयाचे पीएम-अजय पोर्टल आहे. येथे कोणताही फॉर्म भरण्याची गरज नाही. फक्त आपल्या भाषेत बोलून मोफत प्रशिक्षण व ५०,००० रुपयांपर्यंत टूलकिट मिळवा.",
+      tour_step1_speech: "नमस्कार बंधू आणि भगिनींनो! मी तुमचा विकल्प AI आहे. हे भारत सरकारच्या सामाजिक न्याय मंत्रालयाचे पीएम-अजय पोर्टल आहे. येथे कोणताही फॉर्म भरण्याची गरज नाही. फक्त आपल्या भाषेत बोलून मोफत प्रशिक्षण व ५०,००० रुपयांपर्यंत टूलकिट मिळवा.",
       tour_step2_title: "२. सोप्या ४ पायऱ्या",
       tour_step2_speech: "खाली पहा — पहिली पायरी आवाजाने माहिती देणे, दुसरी प्रोफाइल मॅपिंग, तिसरी योग्य कोर्स निवड आणि चौथी नजीकच्या केंद्राशी जोडणी.",
       tour_step3_title: "३. १८ सरकारी कोर्सेस",
@@ -372,7 +372,7 @@ export const VoiceGuideWidget: React.FC = () => {
               <div className="flex items-center gap-1 flex-1">
                 <span className="text-[11px] text-blue-300">आवाज़ का स्रोत:</span>
                 <span className="text-xs font-semibold text-emerald-300">
-                  यह साथी आपको उत्तर/मार्गदर्शन दे रहा है
+                  विकल्प AI आपको उत्तर/मार्गदर्शन दे रहा है
                 </span>
               </div>
               <div className="flex items-center gap-0.5 h-4">
@@ -534,7 +534,7 @@ export const VoiceGuideWidget: React.FC = () => {
               {lastAnswer && (
                 <div className="bg-[#001838] border border-blue-400/30 p-2.5 rounded-xl text-xs max-h-28 overflow-y-auto">
                   <div className="flex items-center justify-between text-[#FFC107] font-semibold text-[11px] mb-1">
-                    <span>वाणी साथी का उत्तर:</span>
+                    <span>विकल्प AI का उत्तर:</span>
                     <button
                       type="button"
                       onClick={() => playVoice(lastAnswer)}
