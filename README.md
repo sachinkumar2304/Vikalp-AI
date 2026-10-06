@@ -43,11 +43,16 @@ Existing systems apply no constraint-checking. A beneficiary is matched to a cou
 | Explainable scoring engine (6 named weights) | ✅ Implemented |
 | Hard constraint refusal (mobility, prerequisites) | ✅ Implemented |
 | 18 curated NSQF rural qualification packs | ✅ Implemented |
-| District cluster opportunities (Varanasi / Chandauli) | ✅ Implemented |
-| Ministry admin audit dashboard | ✅ Implemented |
+| 40-Hour RPL (Recognition of Prior Learning) Fast-Track | ✅ Implemented |
+| Toll-Free 1800-11-2026 Feature Phone IVR Simulator (DTMF Audio) | ✅ Implemented |
+| Dynamic "What-If" Scenario Constraint Re-Ranker | ✅ Implemented |
+| Printable PM-AJAY Livelihood Passport & Grant Sanction Dossier (QR) | ✅ Implemented |
+| Multi-Channel SMS & WhatsApp Alert Dispatch Gateway | ✅ Implemented |
+| District cluster opportunities (Varanasi / Chandauli) & Gap Radar | ✅ Implemented |
+| Ministry admin audit dashboard & refusal logs | ✅ Implemented |
+| GIGW 3.0 Government Design System (Ashoka Emblem, Zero Emojis) | ✅ Implemented |
 | AMA voice agent with 10-tier boundary guardrails | ✅ Implemented |
 | Sarvam / Bhashini TTS integration (Prototype) | 🟡 Prototype |
-| SMS / WhatsApp follow-up notification | 🔵 Planned / Future Scope |
 | Aadhaar-linked beneficiary verification | 🔵 Planned / Future Scope |
 
 ---

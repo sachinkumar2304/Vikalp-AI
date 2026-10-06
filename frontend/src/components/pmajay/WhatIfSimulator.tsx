@@ -1,0 +1,228 @@
+import React, { useState } from "react";
+import { SlidersHorizontal, MapPin, Clock, IndianRupee, RotateCcw, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
+
+export interface WhatIfParams {
+  travelRadiusKm: number; // 3, 10, 25, 50
+  dailyHours: number; // 2 to 8
+  minIncome: number; // 10000 to 25000
+  pathwayFilter: "all" | "self" | "wage" | "shg";
+  isRPLEligible: boolean;
+}
+
+interface WhatIfSimulatorProps {
+  initialParams?: Partial<WhatIfParams>;
+  onChange: (params: WhatIfParams) => void;
+  className?: string;
+}
+
+export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
+  initialParams,
+  onChange,
+  className = "",
+}) => {
+  const [params, setParams] = useState<WhatIfParams>({
+    travelRadiusKm: initialParams?.travelRadiusKm ?? 10,
+    dailyHours: initialParams?.dailyHours ?? 6,
+    minIncome: initialParams?.minIncome ?? 12000,
+    pathwayFilter: initialParams?.pathwayFilter ?? "all",
+    isRPLEligible: initialParams?.isRPLEligible ?? true,
+  });
+
+  const handleUpdate = (updates: Partial<WhatIfParams>) => {
+    const next = { ...params, ...updates };
+    setParams(next);
+    onChange(next);
+  };
+
+  const handleReset = () => {
+    const resetVals: WhatIfParams = {
+      travelRadiusKm: 10,
+      dailyHours: 6,
+      minIncome: 12000,
+      pathwayFilter: "all",
+      isRPLEligible: true,
+    };
+    setParams(resetVals);
+    onChange(resetVals);
+  };
+
+  const getMobilityLabel = (km: number) => {
+    if (km <= 3) return "गांव के भीतर ही (Village Only - 0 to 3 km)";
+    if (km <= 10) return "ब्लॉक / तहसील स्तर (Block Level - up to 10 km)";
+    if (km <= 25) return "जिला मुख्यालय तक (District HQ - up to 25 km)";
+    return "राज्य / अंतर्राज्यीय (Interstate - > 25 km)";
+  };
+
+  return (
+    <div
+      className={`bg-white border-2 border-[#133b5c]/20 rounded-xl p-4 sm:p-5 shadow-sm text-slate-900 ${className}`}
+    >
+      {/* Title */}
+      <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200 mb-4">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-[#002147] text-amber-300">
+            <SlidersHorizontal className="w-4 h-4" />
+          </div>
+          <div>
+            <h3 className="font-bold text-sm text-[#002147]">
+              इंटरैक्टिव "What-If" परिस्थिति सिम्युलेटर (Dynamic Constraint Re-Ranker)
+            </h3>
+            <p className="text-[11px] text-slate-500">
+              दूरी, समय व आय की शर्तें बदलें और देखें कि अनुशंसाएं तुरंत कैसे पुनर्गठित होती हैं
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleReset}
+          className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 hover:text-[#002147] bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded transition-colors"
+        >
+          <RotateCcw className="w-3 h-3" />
+          <span>डिफ़ॉल्ट रीसेट</span>
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Slider 1: Mobility Radius */}
+        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
+          <div className="flex justify-between items-center text-xs font-bold text-slate-800 mb-1">
+            <span className="flex items-center gap-1">
+              <MapPin className="w-3.5 h-3.5 text-blue-700" />
+              <span>यात्रा की सीमा (Radius):</span>
+            </span>
+            <span className="font-mono text-[#002147] font-extrabold">{params.travelRadiusKm} km</span>
+          </div>
+
+          <input
+            type="range"
+            min="2"
+            max="35"
+            step="1"
+            value={params.travelRadiusKm}
+            onChange={(e) => handleUpdate({ travelRadiusKm: Number(e.target.value) })}
+            className="w-full accent-[#002147] h-2 bg-slate-200 rounded-lg cursor-pointer my-2"
+          />
+
+          <div className="text-[10.5px] font-medium text-slate-600 leading-tight">
+            {getMobilityLabel(params.travelRadiusKm)}
+          </div>
+        </div>
+
+        {/* Slider 2: Daily Hours Available */}
+        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
+          <div className="flex justify-between items-center text-xs font-bold text-slate-800 mb-1">
+            <span className="flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-amber-700" />
+              <span>दैनिक समय (Hours/Day):</span>
+            </span>
+            <span className="font-mono text-[#002147] font-extrabold">{params.dailyHours} hrs/day</span>
+          </div>
+
+          <input
+            type="range"
+            min="2"
+            max="8"
+            step="1"
+            value={params.dailyHours}
+            onChange={(e) => handleUpdate({ dailyHours: Number(e.target.value) })}
+            className="w-full accent-[#b45309] h-2 bg-slate-200 rounded-lg cursor-pointer my-2"
+          />
+
+          <div className="text-[10.5px] font-medium text-slate-600 leading-tight">
+            {params.dailyHours <= 3
+              ? "अंशकालिक / घरेलू जिम्मेदारी अनुकूल (Part-Time)"
+              : "पूर्णकालिक गहन प्रशिक्षण (Full-Time Certification)"}
+          </div>
+        </div>
+
+        {/* Slider 3: Minimum Monthly Target Income */}
+        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
+          <div className="flex justify-between items-center text-xs font-bold text-slate-800 mb-1">
+            <span className="flex items-center gap-1">
+              <IndianRupee className="w-3.5 h-3.5 text-emerald-700" />
+              <span>न्यूनतम लक्ष्य आय:</span>
+            </span>
+            <span className="font-mono text-emerald-800 font-extrabold">
+              ₹{params.minIncome.toLocaleString("en-IN")}/mo
+            </span>
+          </div>
+
+          <input
+            type="range"
+            min="9000"
+            max="22000"
+            step="1000"
+            value={params.minIncome}
+            onChange={(e) => handleUpdate({ minIncome: Number(e.target.value) })}
+            className="w-full accent-emerald-700 h-2 bg-slate-200 rounded-lg cursor-pointer my-2"
+          />
+
+          <div className="text-[10.5px] font-medium text-slate-600 leading-tight">
+            उच्च आय वाले ट्रेड्स को प्राथमिकता स्कोरिंग मिलेगी
+          </div>
+        </div>
+
+        {/* Toggle 4: RPL Fast-Track vs Fresh Skilling */}
+        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
+          <div className="text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
+            <span>RPL पूर्व अनुभव मूल्यांकन:</span>
+            <span
+              className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                params.isRPLEligible
+                  ? "bg-amber-100 text-amber-900 border border-amber-300"
+                  : "bg-slate-200 text-slate-700"
+              }`}
+            >
+              {params.isRPLEligible ? "४० घंटे फास्ट-ट्रैक" : "३००+ घंटे फ्रेश"}
+            </span>
+          </div>
+
+          <label className="flex items-center gap-2 cursor-pointer mt-1 mb-2">
+            <input
+              type="checkbox"
+              checked={params.isRPLEligible}
+              onChange={(e) => handleUpdate({ isRPLEligible: e.target.checked })}
+              className="w-4 h-4 text-[#002147] rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
+            />
+            <span className="text-[11px] font-semibold text-slate-700">
+              पूर्व अनौपचारिक कार्य अनुभव है (Prior Skills)
+            </span>
+          </label>
+
+          <div className="text-[10px] text-slate-500 leading-tight">
+            RPL सक्रिय करने पर सीधे प्रमाणन व ₹50,000 टूलकिट अनुदान मिलता है।
+          </div>
+        </div>
+      </div>
+
+      {/* Pathway Model Selector Pills */}
+      <div className="mt-4 pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span className="font-bold text-slate-700 text-[11px]">
+          आजीविका मॉडल फिल्टर (Livelihood Pathway Filter):
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            { id: "all", label: "सभी 3 मॉडल (All Pathways)" },
+            { id: "self", label: "स्वरोजगार व टूलकिट (Self-Employment)" },
+            { id: "wage", label: "स्थानीय वेतन रोजगार (Wage Jobs)" },
+            { id: "shg", label: "महिला SHG क्लस्टर (SHG Enterprise)" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => handleUpdate({ pathwayFilter: item.id as any })}
+              className={`px-3 py-1 rounded-md text-[11px] font-semibold transition-all ${
+                params.pathwayFilter === item.id
+                  ? "bg-[#002147] text-white shadow-xs"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};

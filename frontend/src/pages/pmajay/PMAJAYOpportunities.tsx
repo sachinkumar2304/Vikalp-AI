@@ -1,13 +1,30 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { PMAJAYNavbar } from "@/components/pmajay/PMAJAYNavbar";
-import { MapPin, Briefcase, IndianRupee, ShieldCheck, Phone, CheckCircle, ExternalLink } from "lucide-react";
+import {
+  MapPin,
+  Briefcase,
+  IndianRupee,
+  ShieldCheck,
+  Phone,
+  CheckCircle2,
+  ExternalLink,
+  MessageSquare,
+  Award,
+  Clock,
+  ArrowRight,
+  Filter,
+  Check,
+} from "lucide-react";
+import { EmblemOfIndia } from "@/components/pmajay/EmblemOfIndia";
+import { WhatsAppDispatchModal } from "@/components/pmajay/WhatsAppDispatchModal";
+import { LivelihoodPassportModal } from "@/components/pmajay/LivelihoodPassportModal";
 
 interface Opportunity {
   id: string;
   title: string;
   sector: string;
-  type: "wage_employment" | "self_employment" | "wage_and_self";
+  type: "wage_employment" | "self_employment" | "wage_and_self" | "shg";
   employer: string;
   location: string;
   distanceKm: number;
@@ -16,6 +33,7 @@ interface Opportunity {
   schemeAssistance: string;
   contact: string;
   matchedTrade: string;
+  qpCode: string;
 }
 
 const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
@@ -27,11 +45,12 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "Surya Urja Vikas Samiti & Local EPC Contractors",
     location: "Babatpur Block, Varanasi",
     distanceKm: 7.5,
-    earnings: "₹16,000 / month + travel allowance",
+    earnings: "₹16,000 / माह + यात्रा भत्ता",
     openings: 12,
     schemeAssistance: "PM Surya Ghar Muft Bijli Yojana & PM-AJAY Apprenticeship Grant",
     contact: "District Skill Nodal Officer, ITI Karaundi (0542-2578901)",
-    matchedTrade: "Solar PV Installer (ELE/Q1401)",
+    matchedTrade: "Solar PV Installer",
+    qpCode: "ELE/Q1401",
   },
   {
     id: "opp-02",
@@ -41,11 +60,12 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "Self-Employed / PM-AJAY Cluster Support",
     location: "Arajiline Block / Village Cluster",
     distanceKm: 1.2,
-    earnings: "₹12,000 - ₹20,000 / month net income",
-    openings: "Self-employment (No limit)",
+    earnings: "₹12,000 - ₹25,000 / माह शुद्ध आय",
+    openings: "असीमित (स्वरोजगार)",
     schemeAssistance: "PM-AJAY GIA Capital Subsidy up to ₹50,000 for Sewing Machinery",
     contact: "Block Development Officer (BDO), Social Welfare Cell",
-    matchedTrade: "Self Employed Tailor (AMH/Q1947)",
+    matchedTrade: "Self Employed Tailor & Boutique",
+    qpCode: "AMH/Q1947",
   },
   {
     id: "opp-03",
@@ -55,11 +75,12 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "Kashi Gramin Seva Kendra & Local Retail Networks",
     location: "Sewapuri Model Block",
     distanceKm: 5.0,
-    earnings: "₹14,000 - ₹19,000 / month",
+    earnings: "₹14,000 - ₹20,000 / माह",
     openings: 8,
     schemeAssistance: "PM-AJAY Skill Upgradation Toolkit Scheme (Free Toolbag & Multimeter)",
     contact: "Sewapuri Skill Facilitation Cell (0542-2891234)",
-    matchedTrade: "Field Technician Home Appliances (ELE/Q3102)",
+    matchedTrade: "Field Technician Home Appliances",
+    qpCode: "ELE/Q3102",
   },
   {
     id: "opp-04",
@@ -69,25 +90,27 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "Jal Jeevan Mission Village Water & Sanitation Committee (VWSC)",
     location: "Gram Panchayat Level (Direct local posting)",
     distanceKm: 2.0,
-    earnings: "₹9,500 - ₹12,000 / month + emergency service fees",
+    earnings: "₹10,500 - ₹14,000 / माह + आपातकालीन सेवा शुल्क",
     openings: 15,
     schemeAssistance: "Convergence with Jal Jeevan Mission Maintenance Fund",
     contact: "Gram Pradhan / Panchayat Secretary",
-    matchedTrade: "General Plumber (PLU/Q0101)",
+    matchedTrade: "General Plumber",
+    qpCode: "PLU/Q0101",
   },
   {
     id: "opp-05",
     title: "SC Women SHG Spices & Dal Processing Cluster",
     sector: "Food Processing",
-    type: "self_employment",
+    type: "shg",
     employer: "Prerna Samuh / PM-AJAY GIA Producer Cluster",
     location: "Chiraigaon Block",
     distanceKm: 4.5,
-    earnings: "₹11,000 - ₹18,000 / month profit share",
+    earnings: "₹11,000 - ₹18,000 / माह लाभांश",
     openings: 20,
     schemeAssistance: "PM-AJAY Cluster Infrastructure Grant & PMFME Seed Capital",
     contact: "NRLM Block Mission Manager",
-    matchedTrade: "Food Processing Technician (FIC/Q0103)",
+    matchedTrade: "Food Processing Technician",
+    qpCode: "FIC/Q0103",
   },
   {
     id: "opp-06",
@@ -97,146 +120,259 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "CSC e-Governance Services India Ltd",
     location: "Rohaniya Market Hub",
     distanceKm: 4.0,
-    earnings: "Commission based, avg ₹12,000 - ₹18,000 / month",
+    earnings: "कमीशन आधारित, औसत ₹12,000 - ₹18,000 / माह",
     openings: 4,
     schemeAssistance: "PM-AJAY Entrepreneurship Development Program & Hardware Grant",
     contact: "CSC District VLE Manager",
-    matchedTrade: "Domestic Data Entry Operator (SSC/Q2212)",
+    matchedTrade: "Domestic Data Entry Operator",
+    qpCode: "SSC/Q2212",
   },
 ];
 
 export const PMAJAYOpportunities: React.FC = () => {
   const [filterType, setFilterType] = useState<string>("all");
   const [appliedIds, setAppliedIds] = useState<string[]>([]);
+  const [dispatchModalOpen, setDispatchModalOpen] = useState<boolean>(false);
+  const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null);
+  const [passportOpen, setPassportOpen] = useState<boolean>(false);
 
-  const handleApply = (id: string) => {
-    if (!appliedIds.includes(id)) {
-      setAppliedIds([...appliedIds, id]);
+  const handleApply = (opp: Opportunity) => {
+    if (!appliedIds.includes(opp.id)) {
+      setAppliedIds([...appliedIds, opp.id]);
     }
+    setSelectedOpp(opp);
+    setDispatchModalOpen(true);
   };
 
   const filteredOpportunities = SAMPLE_LOCAL_OPPORTUNITIES.filter((opp) => {
     if (filterType === "all") return true;
     if (filterType === "self") return opp.type === "self_employment" || opp.type === "wage_and_self";
     if (filterType === "wage") return opp.type === "wage_employment" || opp.type === "wage_and_self";
+    if (filterType === "shg") return opp.type === "shg";
     return true;
   });
 
   return (
-    <div className="min-h-screen bg-[#F5F8F6] text-[#193226] flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       <PMAJAYNavbar />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
-        {/* Step Indicator */}
-        <div className="flex items-center space-x-2 text-xs font-semibold text-[#3B6552] uppercase tracking-wider mb-2">
-          <span>चरण 5 / Step 5</span>
-          <span>•</span>
-          <span>स्थानीय अवसर एवं अनुदान / Local Livelihood Opportunities</span>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#142A20]">
-              स्थानीय रोजगार एवं स्व-रोजगार अवसर
-            </h1>
-            <p className="text-xs text-[#526D61] mt-1">
-              Sample district opportunities (Varanasi / Chandauli cluster) with PM-AJAY GIA toolkit and subsidy linkage.
-            </p>
+      <main className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+        {/* Step Indicator & Header */}
+        <div className="bg-white border-2 border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs mb-6">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#b45309] uppercase tracking-wider mb-1">
+            <span className="bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300">
+              चरण ५ / ५ • Step 5 of 5
+            </span>
+            <span>•</span>
+            <span>स्थानीय रोजगार, स्व-रोजगार व टूलकिट अनुदान लिंकेज</span>
           </div>
 
-          {/* Filter Pills */}
-          <div className="flex items-center space-x-1.5 bg-white border border-[#CDDDD5] p-1 rounded-lg text-xs">
+          <div className="flex flex-wrap items-center justify-between gap-4 mt-2">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-[#002147]">
+                वाराणसी एवं चंदौली क्लस्टर स्थानीय आजीविका रिक्तियां
+              </h1>
+              <p className="text-xs text-slate-600 mt-0.5">
+                प्रशिक्षणोपरांत PM-AJAY GIA टूलकिट अनुदान एवं स्थानीय विकास पहलों से सीधा समन्वय
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setPassportOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold shadow-xs transition-colors"
+              >
+                <Award className="w-3.5 h-3.5 text-amber-700" />
+                <span>आजीविका पासपोर्ट देखें</span>
+              </button>
+
+              <Link
+                to="/pmajay/admin"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#002147] hover:bg-blue-900 text-white text-xs font-bold shadow-xs transition-colors"
+              >
+                <span>प्रशासनिक डैशबोर्ड</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ════ APPLICATION TRACKING TIMELINE (COMPETITOR UPGRADE: NEXUS/LIVPATH BENCHMARK) ════ */}
+        <div className="bg-white border-2 border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs mb-6">
+          <h3 className="font-bold text-xs sm:text-sm text-[#002147] uppercase tracking-wide mb-3 flex items-center justify-between">
+            <span>आवेदन एवं संस्वीकृति स्थिति ट्रैक (Benefit Dispatch Lifecycle)</span>
+            <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+              Direct Benefit Tracking
+            </span>
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+            <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-lg flex items-start gap-2.5">
+              <div className="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                १
+              </div>
+              <div>
+                <div className="font-bold text-emerald-900">वॉयस असेसमेंट पूर्ण</div>
+                <div className="text-[10.5px] text-emerald-700 mt-0.5">प्रोफाइल स्कोर 93.5% सत्यापित</div>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg flex items-start gap-2.5">
+              <div className="w-6 h-6 rounded-full bg-amber-600 text-white flex items-center justify-center text-xs font-bold shrink-0">
+                २
+              </div>
+              <div>
+                <div className="font-bold text-amber-900">DSWO नोडल सत्यापन</div>
+                <div className="text-[10.5px] text-amber-700 mt-0.5">जाति व निवास प्रमाणीकरण सक्रिय</div>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg flex items-start gap-2.5">
+              <div className="w-6 h-6 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold shrink-0">
+                ३
+              </div>
+              <div>
+                <div className="font-bold text-slate-700">कौशल केंद्र आवंटन</div>
+                <div className="text-[10.5px] text-slate-500 mt-0.5">ITI करौंदी PMKK बैच लिंकेज</div>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 p-3 rounded-lg flex items-start gap-2.5">
+              <div className="w-6 h-6 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold shrink-0">
+                ४
+              </div>
+              <div>
+                <div className="font-bold text-slate-700">₹50,000 टूलकिट अनुदान</div>
+                <div className="text-[10.5px] text-slate-500 mt-0.5">DBT संस्वीकृति पत्रक जारी</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filter Navigation Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-3 bg-white border border-slate-300 p-2.5 rounded-xl mb-6 text-xs">
+          <div className="flex items-center gap-1.5 text-slate-700 font-bold">
+            <Filter className="w-3.5 h-3.5 text-[#002147]" />
+            <span>अवसर श्रेणी:</span>
+          </div>
+
+          <div className="flex flex-wrap gap-1">
             <button
               type="button"
               onClick={() => setFilterType("all")}
-              className={`px-3 py-1 rounded-md transition-colors ${
-                filterType === "all" ? "bg-[#284C3D] text-white font-semibold" : "text-[#476657] hover:bg-[#EEF4F0]"
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${
+                filterType === "all" ? "bg-[#002147] text-white" : "text-slate-600 hover:bg-slate-100"
               }`}
             >
-              All Roles ({SAMPLE_LOCAL_OPPORTUNITIES.length})
+              सभी अवसर ({SAMPLE_LOCAL_OPPORTUNITIES.length})
             </button>
             <button
               type="button"
               onClick={() => setFilterType("self")}
-              className={`px-3 py-1 rounded-md transition-colors ${
-                filterType === "self" ? "bg-[#284C3D] text-white font-semibold" : "text-[#476657] hover:bg-[#EEF4F0]"
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${
+                filterType === "self" ? "bg-[#002147] text-white" : "text-slate-600 hover:bg-slate-100"
               }`}
             >
-              Self-Employment / Grants
+              स्वरोजगार व टूलकिट अनुदान
             </button>
             <button
               type="button"
               onClick={() => setFilterType("wage")}
-              className={`px-3 py-1 rounded-md transition-colors ${
-                filterType === "wage" ? "bg-[#284C3D] text-white font-semibold" : "text-[#476657] hover:bg-[#EEF4F0]"
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${
+                filterType === "wage" ? "bg-[#002147] text-white" : "text-slate-600 hover:bg-slate-100"
               }`}
             >
-              Wage Jobs
+              स्थानीय वेतन रोजगार
+            </button>
+            <button
+              type="button"
+              onClick={() => setFilterType("shg")}
+              className={`px-3 py-1.5 rounded-lg font-bold transition-colors ${
+                filterType === "shg" ? "bg-[#002147] text-white" : "text-slate-600 hover:bg-slate-100"
+              }`}
+            >
+              महिला SHG क्लस्टर
             </button>
           </div>
         </div>
 
-        {/* Opportunities List */}
+        {/* Opportunities Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
           {filteredOpportunities.map((opp) => {
             const isApplied = appliedIds.includes(opp.id);
             return (
               <div
                 key={opp.id}
-                className="bg-white border border-[#D5E2DB] rounded-xl p-5 shadow-sm hover:border-[#A6C4B7] transition-all flex flex-col justify-between"
+                className="bg-white border-2 border-slate-200 hover:border-slate-300 rounded-xl p-5 shadow-xs transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex justify-between items-start mb-2">
                     <div>
-                      <span className="text-[10px] font-mono text-[#436E5A] bg-[#E8F2EC] px-2 py-0.5 rounded uppercase">
-                        {opp.sector}
-                      </span>
-                      <h3 className="font-bold text-base text-[#142A20] mt-1">{opp.title}</h3>
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <span className="text-[10px] font-mono font-bold text-slate-700 bg-slate-100 border border-slate-300 px-2 py-0.5 rounded uppercase">
+                          {opp.sector}
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-[#002147] bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded">
+                          {opp.qpCode}
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-base text-slate-900 leading-snug">{opp.title}</h3>
                     </div>
-                    <span className="text-xs font-semibold text-[#1C4634] bg-[#E1EDE6] px-2 py-0.5 rounded">
-                      {opp.distanceKm} km away
+                    <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded whitespace-nowrap">
+                      {opp.distanceKm} km दूर
                     </span>
                   </div>
 
-                  <div className="text-xs text-[#4F685B] space-y-1.5 mb-4">
-                    <div className="flex items-center space-x-1.5">
-                      <Briefcase className="w-3.5 h-3.5 text-[#376550]" />
+                  <div className="text-xs text-slate-600 space-y-1.5 mb-4 font-medium">
+                    <div className="flex items-center gap-1.5">
+                      <Briefcase className="w-3.5 h-3.5 text-slate-500" />
                       <span>{opp.employer}</span>
                     </div>
-                    <div className="flex items-center space-x-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-[#376550]" />
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-slate-500" />
                       <span>{opp.location}</span>
                     </div>
-                    <div className="flex items-center space-x-1.5 font-bold text-[#143B2A]">
-                      <IndianRupee className="w-3.5 h-3.5 text-[#2C5E47]" />
+                    <div className="flex items-center gap-1.5 font-bold text-emerald-700">
+                      <IndianRupee className="w-3.5 h-3.5" />
                       <span>{opp.earnings}</span>
                     </div>
                   </div>
 
                   {/* Scheme grant assistance badge */}
-                  <div className="bg-[#F3F8F5] border border-[#D0E2D8] p-2.5 rounded-lg text-xs text-[#2A5240] mb-4">
-                    <div className="font-semibold text-[11px] uppercase tracking-wider text-[#1B4432] mb-0.5 flex items-center space-x-1">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      <span>PM-AJAY Financial & Tool Assistance:</span>
+                  <div className="bg-amber-50/70 border border-amber-200 p-2.5 rounded-lg text-xs text-amber-900 mb-4">
+                    <div className="font-bold text-[11px] uppercase tracking-wider text-[#b45309] mb-0.5 flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
+                      <span>PM-AJAY वित्तीय एवं टूलकिट सहायता:</span>
                     </div>
-                    <p>{opp.schemeAssistance}</p>
+                    <p className="leading-snug">{opp.schemeAssistance}</p>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-[#EDF3EF] flex items-center justify-between">
-                  <div className="text-[11px] text-[#5A7769]">
-                    <span>Contact: {opp.contact}</span>
+                <div className="pt-3 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <div className="text-[11px] text-slate-500">
+                    <span>संपर्क: {opp.contact}</span>
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleApply(opp.id)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    onClick={() => handleApply(opp)}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 ${
                       isApplied
-                        ? "bg-[#D8E8DF] text-[#1E4333]"
-                        : "bg-[#274B3C] hover:bg-[#34624F] text-white shadow-sm"
+                        ? "bg-emerald-100 text-emerald-900 border border-emerald-300"
+                        : "bg-[#002147] hover:bg-blue-900 text-white"
                     }`}
                   >
-                    {isApplied ? "Applied / Linked ✓" : "Connect with Nodal Officer"}
+                    {isApplied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-700" />
+                        <span>संलग्न / SMS प्रेषित</span>
+                      </>
+                    ) : (
+                      <>
+                        <MessageSquare className="w-3.5 h-3.5 text-amber-300" />
+                        <span>नोडल अधिकारी से जुड़ें</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -245,19 +381,30 @@ export const PMAJAYOpportunities: React.FC = () => {
         </div>
 
         {/* Footer Navigation */}
-        <div className="bg-[#E7F0EB] border border-[#CCDCD4] rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-[#426052]">
-            <strong>Administrative Round Complete:</strong> Check the Ministry Admin Dashboard to view aggregates, 
-            auditable scoring records, and refusal rates.
+        <div className="bg-slate-100 border-2 border-slate-200 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-xs text-slate-700">
+            <strong>नागरिक प्रक्रिया पूर्ण:</strong> मंत्रालय की प्रशासनिक निगरानी व्यवस्था, ऑडिट लॉग एवं रिफ्यूजल दरों की समीक्षा हेतु एडमिन डैशबोर्ड देखें।
           </div>
           <Link
             to="/pmajay/admin"
-            className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-[#2D5A46] hover:bg-[#396E56] text-white px-6 py-3 rounded-lg font-semibold text-sm shadow-md transition-all"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#002147] hover:bg-blue-900 text-white px-6 py-3 rounded-lg font-bold text-xs shadow-md transition-all"
           >
-            <span>Open Ministry Admin Dashboard</span>
+            <span>मंत्रालय प्रशासनिक डैशबोर्ड खोलें</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
       </main>
+
+      {/* WhatsApp / SMS Dispatch Simulator Modal */}
+      <WhatsAppDispatchModal
+        isOpen={dispatchModalOpen}
+        onClose={() => setDispatchModalOpen(false)}
+        matchedTrade={selectedOpp?.matchedTrade}
+        centreName={selectedOpp?.employer}
+      />
+
+      {/* Livelihood Passport Modal */}
+      <LivelihoodPassportModal isOpen={passportOpen} onClose={() => setPassportOpen(false)} />
     </div>
   );
 };

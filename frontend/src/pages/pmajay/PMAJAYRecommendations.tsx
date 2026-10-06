@@ -16,9 +16,18 @@ import {
   Briefcase,
   AlertTriangle,
   HelpCircle,
-  Sliders,
+  SlidersHorizontal,
   ChevronRight,
+  ShieldCheck,
+  Printer,
+  FileText,
+  Clock,
+  IndianRupee,
+  ExternalLink,
 } from "lucide-react";
+import { EmblemOfIndia } from "@/components/pmajay/EmblemOfIndia";
+import { WhatIfSimulator, WhatIfParams } from "@/components/pmajay/WhatIfSimulator";
+import { LivelihoodPassportModal } from "@/components/pmajay/LivelihoodPassportModal";
 
 export const PMAJAYRecommendations: React.FC = () => {
   const navigate = useNavigate();
@@ -27,6 +36,16 @@ export const PMAJAYRecommendations: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isPlayingTTS, setIsPlayingTTS] = useState<boolean>(false);
   const [showWeightsModal, setShowWeightsModal] = useState<boolean>(false);
+  const [passportOpen, setPassportOpen] = useState<boolean>(false);
+
+  // Dynamic what-if filtering state
+  const [whatIfParams, setWhatIfParams] = useState<WhatIfParams>({
+    travelRadiusKm: 10,
+    dailyHours: 6,
+    minIncome: 12000,
+    pathwayFilter: "all",
+    isRPLEligible: true,
+  });
 
   useEffect(() => {
     const runEvaluation = async () => {
@@ -49,7 +68,6 @@ export const PMAJAYRecommendations: React.FC = () => {
       setResult(evalData);
       setLoading(false);
 
-      // Auto play TTS voice reply if available
       if (evalData.voice_summary) {
         speakVoiceSummary(evalData.voice_summary.text_hi || evalData.voice_summary.text_en);
       }
@@ -63,7 +81,7 @@ export const PMAJAYRecommendations: React.FC = () => {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "hi-IN";
-      utterance.rate = 0.95;
+      utterance.rate = 0.94;
       utterance.onstart = () => setIsPlayingTTS(true);
       utterance.onend = () => setIsPlayingTTS(false);
       utterance.onerror = () => setIsPlayingTTS(false);
@@ -73,12 +91,12 @@ export const PMAJAYRecommendations: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F8F6] text-[#193226] flex flex-col font-sans">
+      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
         <PMAJAYNavbar />
         <div className="flex-1 flex flex-col items-center justify-center p-8">
-          <div className="w-12 h-12 border-4 border-[#2A5643] border-t-transparent rounded-full animate-spin mb-4"></div>
-          <h2 className="text-lg font-bold text-[#142A20]">पारदर्शी स्कोरिंग इंजन गणना कर रहा है...</h2>
-          <p className="text-xs text-[#526D61] mt-1">
+          <div className="w-12 h-12 border-4 border-[#002147] border-t-transparent rounded-full animate-spin mb-4" />
+          <h2 className="text-lg font-bold text-[#002147]">पारदर्शी स्कोरिंग इंजन गणना कर रहा है...</h2>
+          <p className="text-xs text-slate-600 mt-1">
             Evaluating NSQF Qualification Packs against educational prerequisites, mobility constraints, and local demand...
           </p>
         </div>
@@ -86,131 +104,167 @@ export const PMAJAYRecommendations: React.FC = () => {
     );
   }
 
-  // Handle Low Confidence / Clarification condition
+  // Clarification Required State
   if (result?.status === "needs_clarification") {
     return (
-      <div className="min-h-screen bg-[#F5F8F6] text-[#193226] flex flex-col font-sans">
+      <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
         <PMAJAYNavbar />
         <main className="max-w-2xl mx-auto px-4 py-12 flex-1 w-full text-center">
-          <div className="w-14 h-14 bg-[#FFF8E6] text-[#B45309] border border-[#FDE68A] rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 bg-amber-100 text-amber-800 border border-amber-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <HelpCircle className="w-7 h-7" />
           </div>
-          <span className="text-xs font-semibold text-[#B45309] bg-[#FEF3C7] px-3 py-1 rounded-full uppercase tracking-wider">
-            स्पष्टीकरण आवश्यक / Clarification Needed
+          <span className="text-xs font-bold text-amber-900 bg-amber-100 px-3 py-1 rounded-full uppercase tracking-wider border border-amber-300">
+            स्पष्टीकरण आवश्यक • Clarification Needed
           </span>
-          <h1 className="text-2xl font-bold text-[#142A20] mt-3 mb-2">
-            अस्पष्टता के कारण एक और प्रश्न आवश्यक है
+          <h1 className="text-2xl font-bold text-slate-900 mt-3 mb-2">
+            सटीक मिलान हेतु एक और प्रश्न आवश्यक है
           </h1>
-          <p className="text-sm text-[#4E665A] mb-6 leading-relaxed">
-            The scoring engine refused to guess blindly because confidence for field{" "}
-            <strong>"{result.missing_field}"</strong> was too low to ensure an accurate livelihood match.
+          <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+            स्कोरिंग इंजन ने बिना पर्याप्त जानकारी के अनुमान लगाने से इंकार कर दिया क्योंकि फ़ील्ड{" "}
+            <strong>"{result.missing_field}"</strong> का आत्मविश्वास स्तर बहुत कम था।
           </p>
-          <div className="bg-white border border-[#D5E2DB] rounded-xl p-6 text-left shadow-sm mb-6">
-            <div className="text-xs text-[#526D61] mb-1 font-semibold uppercase">Clarifying Question:</div>
-            <p className="text-base text-[#152F23] font-medium italic">
+          <div className="bg-white border-2 border-slate-300 rounded-xl p-6 text-left shadow-xs mb-6">
+            <div className="text-xs text-slate-500 mb-1 font-bold uppercase tracking-wider">
+              Clarifying Question:
+            </div>
+            <p className="text-base text-slate-900 font-semibold italic">
               "{result.clarification_question}"
             </p>
           </div>
           <button
             type="button"
             onClick={() => navigate("/pmajay/interview")}
-            className="inline-flex items-center space-x-2 bg-[#2D5A46] hover:bg-[#396E56] text-white px-6 py-3 rounded-lg font-semibold text-sm shadow-md transition-all"
+            className="inline-flex items-center gap-2 bg-[#002147] hover:bg-blue-900 text-white px-6 py-3 rounded-lg font-bold text-sm shadow-md transition-all"
           >
-            <span>Return to Voice Interview</span>
+            <span>वॉयस साक्षात्कार पर लौटें</span>
           </button>
         </main>
       </div>
     );
   }
 
-  const topMatches = result?.top_recommendations || [];
-  const refusals = result?.refused_options || [];
-  const primaryMatch = topMatches[0];
+  const rawTopMatches = result?.top_recommendations || [];
+  const rawRefusals = result?.refused_options || [];
+
+  // Apply What-If parameters filtering
+  const filteredMatches = rawTopMatches.filter((item) => {
+    if (whatIfParams.pathwayFilter === "self") {
+      if (item.self_employment_potential.toLowerCase().includes("low")) return false;
+    } else if (whatIfParams.pathwayFilter === "wage") {
+      if (!item.typical_wage) return false;
+    }
+    return true;
+  });
+
+  const primaryMatch = filteredMatches[0] || rawTopMatches[0];
 
   return (
-    <div className="min-h-screen bg-[#F5F8F6] text-[#193226] flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       <PMAJAYNavbar />
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
-        {/* Step Indicator */}
-        <div className="flex items-center space-x-2 text-xs font-semibold text-[#3B6552] uppercase tracking-wider mb-2">
-          <span>चरण 4 / Step 4</span>
-          <span>•</span>
-          <span>NSQF अनुशंसाएं एवं तर्क / NSQF Recommendations & Reasoning</span>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#142A20]">
-              कौशल प्रशिक्षण एवं आजीविका मिलान (Skill Matching)
-            </h1>
-            <p className="text-xs text-[#526D61] mt-1">
-              Scoring is strictly explainable with named weights. The LLM does NOT decide the final recommendation.
-            </p>
+      <main className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+        {/* Step Indicator & Header */}
+        <div className="bg-white border-2 border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs mb-6">
+          <div className="flex items-center gap-2 text-xs font-bold text-[#b45309] uppercase tracking-wider mb-1">
+            <span className="bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300">
+              चरण ४ / ५ • Step 4 of 5
+            </span>
+            <span>•</span>
+            <span>NSQF अनुशंसाएं, तर्क एवं ₹50,000 टूलकिट सहायता</span>
           </div>
 
-          <button
-            type="button"
-            onClick={() => setShowWeightsModal(!showWeightsModal)}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-[#CCDCD4] bg-white hover:bg-[#EEF4F0] text-xs font-medium text-[#254B3B] transition-colors"
-          >
-            <Sliders className="w-3.5 h-3.5" />
-            <span>{showWeightsModal ? "Hide Scoring Formula" : "View Scoring Weights"}</span>
-          </button>
+          <div className="flex flex-wrap items-center justify-between gap-4 mt-2">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-[#002147]">
+                प्रमाणित कौशल पाठ्यक्रम एवं आजीविका मिलान
+              </h1>
+              <p className="text-xs text-slate-600 mt-0.5">
+                निर्णय पूर्णतः पारदर्शी ६ गणितीय पैमानों पर आधारित है। कोई मनमाना या अस्पष्ट निर्णय नहीं।
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                type="button"
+                onClick={() => setPassportOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold shadow-xs transition-colors"
+              >
+                <Award className="w-3.5 h-3.5 text-amber-700" />
+                <span>आजीविका पासपोर्ट प्रिंट करें</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowWeightsModal(!showWeightsModal)}
+                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-slate-300 bg-white hover:bg-slate-100 text-xs font-semibold text-slate-700 transition-colors"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5" />
+                <span>{showWeightsModal ? "Hide Scoring Formula" : "View Scoring Formula"}</span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Transparent Weights Breakdown Banner */}
+        {/* ════ COMPETITOR UPGRADE: INTERACTIVE WHAT-IF SIMULATOR ════ */}
+        <div className="mb-6">
+          <WhatIfSimulator
+            initialParams={whatIfParams}
+            onChange={(p) => setWhatIfParams(p)}
+          />
+        </div>
+
+        {/* Transparent Weights Formula Breakdown Banner */}
         {showWeightsModal && (
-          <div className="mb-6 bg-white border border-[#C5DDD2] rounded-xl p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-[#142A20] mb-2 flex items-center space-x-2">
-              <Sliders className="w-4 h-4 text-[#2E5E4A]" />
-              <span>Transparent Mathematical Weights Configuration</span>
-            </h3>
-            <p className="text-xs text-[#526D61] mb-4">
-              Weights are visible and statically auditable according to PM-AJAY GIA operational criteria:
+          <div className="mb-6 bg-white border-2 border-[#002147]/20 rounded-xl p-5 shadow-xs">
+            <div className="flex items-center gap-2 text-sm font-bold text-[#002147] mb-1">
+              <SlidersHorizontal className="w-4 h-4 text-amber-700" />
+              <span>पारदर्शी गणितीय पैमाना (Auditable Scoring Weights Configuration)</span>
+            </div>
+            <p className="text-xs text-slate-600 mb-4">
+              PM-AJAY GIA परिचालन मानकों के अनुसार छह निश्चित भार जिनका योग 100% है:
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center">
-              <div className="bg-[#F2F7F4] p-2.5 rounded-lg border border-[#D5E5DC]">
-                <div className="text-lg font-extrabold text-[#1F4635]">25%</div>
-                <div className="text-[11px] text-[#4E6B5E] mt-0.5">Interest / Aspiration</div>
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <div className="text-xl font-black text-[#002147] font-mono">25%</div>
+                <div className="text-[11px] font-bold text-slate-700 mt-0.5">ट्रेड रुचि / Aspiration</div>
               </div>
-              <div className="bg-[#F2F7F4] p-2.5 rounded-lg border border-[#D5E5DC]">
-                <div className="text-lg font-extrabold text-[#1F4635]">20%</div>
-                <div className="text-[11px] text-[#4E6B5E] mt-0.5">Location & Cluster</div>
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <div className="text-xl font-black text-[#002147] font-mono">20%</div>
+                <div className="text-[11px] font-bold text-slate-700 mt-0.5">स्थान व केंद्र निकटता</div>
               </div>
-              <div className="bg-[#F2F7F4] p-2.5 rounded-lg border border-[#D5E5DC]">
-                <div className="text-lg font-extrabold text-[#1F4635]">15%</div>
-                <div className="text-[11px] text-[#4E6B5E] mt-0.5">Existing Skills (RPL)</div>
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <div className="text-xl font-black text-[#002147] font-mono">15%</div>
+                <div className="text-[11px] font-bold text-slate-700 mt-0.5">पूर्व कौशल (RPL Fit)</div>
               </div>
-              <div className="bg-[#F2F7F4] p-2.5 rounded-lg border border-[#D5E5DC]">
-                <div className="text-lg font-extrabold text-[#1F4635]">15%</div>
-                <div className="text-[11px] text-[#4E6B5E] mt-0.5">Education Fit</div>
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <div className="text-xl font-black text-[#002147] font-mono">15%</div>
+                <div className="text-[11px] font-bold text-slate-700 mt-0.5">शिक्षा योग्यता अर्हता</div>
               </div>
-              <div className="bg-[#F2F7F4] p-2.5 rounded-lg border border-[#D5E5DC]">
-                <div className="text-lg font-extrabold text-[#1F4635]">15%</div>
-                <div className="text-[11px] text-[#4E6B5E] mt-0.5">Local Market Demand</div>
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <div className="text-xl font-black text-[#002147] font-mono">15%</div>
+                <div className="text-[11px] font-bold text-slate-700 mt-0.5">स्थानीय बाजार मांग</div>
               </div>
-              <div className="bg-[#F2F7F4] p-2.5 rounded-lg border border-[#D5E5DC]">
-                <div className="text-lg font-extrabold text-[#1F4635]">10%</div>
-                <div className="text-[11px] text-[#4E6B5E] mt-0.5">Mobility Alignment</div>
+              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                <div className="text-xl font-black text-[#002147] font-mono">10%</div>
+                <div className="text-[11px] font-bold text-slate-700 mt-0.5">मोबिलिटी बाधा अनुरूपता</div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Voice Reply (TTS Audio Player) Banner */}
+        {/* Audio TTS Voice Summary Banner */}
         {result?.voice_summary && (
-          <div className="mb-6 bg-[#E8F1EC] border border-[#BFD9CB] rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-start space-x-3">
-              <div className="w-9 h-9 rounded-full bg-[#274B3B] text-white flex items-center justify-center shrink-0 mt-0.5">
-                <Volume2 className={`w-4 h-4 ${isPlayingTTS ? "animate-pulse" : ""}`} />
+          <div className="mb-6 bg-[#002147] text-white border-2 border-amber-500/60 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-500 text-slate-900 flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                <Volume2 className={`w-5 h-5 ${isPlayingTTS ? "animate-pulse" : ""}`} />
               </div>
               <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-[#264D3C] flex items-center space-x-1.5">
-                  <span>Voice Summary for Beneficiary (ध्वनि संदेश)</span>
-                  {isPlayingTTS && <span className="text-[10px] text-[#2F6D52] font-normal italic">• Playing...</span>}
+                <div className="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-2">
+                  <span>लाभार्थी हेतु आधिकारिक ध्वनि सारांश (Official Voice Brief)</span>
+                  {isPlayingTTS && <span className="text-emerald-300 italic font-mono">• Playing...</span>}
                 </div>
-                <p className="text-xs text-[#395649] mt-1 leading-relaxed max-w-3xl">
+                <p className="text-xs sm:text-sm text-slate-200 mt-1 leading-relaxed max-w-3xl">
                   "{result.voice_summary.text_hi}"
                 </p>
               </div>
@@ -218,98 +272,113 @@ export const PMAJAYRecommendations: React.FC = () => {
             <button
               type="button"
               onClick={() => speakVoiceSummary(result.voice_summary?.text_hi || "")}
-              className="inline-flex items-center space-x-1 text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#274B3B] hover:bg-[#34624F] text-white transition-colors shrink-0"
+              className="inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-colors shrink-0"
             >
-              <Volume2 className="w-3.5 h-3.5" />
-              <span>Replay Voice</span>
+              <Volume2 className="w-3.5 h-3.5 text-amber-300" />
+              <span>दोबारा सुनें</span>
             </button>
           </div>
         )}
 
-        {/* Primary Recommended Course Card */}
+        {/* Primary Recommended Qualification Pack Card */}
         {primaryMatch && (
-          <div className="mb-8 bg-white border-2 border-[#33634E] rounded-xl p-6 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 right-0 bg-[#33634E] text-white text-[11px] font-bold px-3 py-1 rounded-bl-lg">
-              Top Ranked Match • {primaryMatch.total_score}% Score
+          <div className="mb-8 bg-white border-2 border-[#002147] rounded-xl p-6 shadow-md relative overflow-hidden">
+            {/* Top Rank Badge */}
+            <div className="absolute top-0 right-0 bg-[#002147] text-amber-300 text-xs font-bold px-3.5 py-1.5 rounded-bl-lg font-mono flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              <span>शीर्ष अनुशंसित विकल्प • {primaryMatch.total_score}% Score</span>
             </div>
 
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-[#EDF3EF] mb-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-200 mb-4 pt-1">
               <div>
-                <span className="text-xs font-mono font-medium text-[#46735E] bg-[#E8F2EC] px-2 py-0.5 rounded">
-                  QP Code: {primaryMatch.qp_code} • NSQF Level {primaryMatch.nsqf_level}
-                </span>
-                <h2 className="text-xl sm:text-2xl font-bold text-[#142A20] mt-1">
+                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                  <span className="text-xs font-mono font-bold text-[#002147] bg-slate-100 border border-slate-300 px-2.5 py-0.5 rounded">
+                    QP Code: {primaryMatch.qp_code}
+                  </span>
+                  <span className="text-xs font-bold text-white bg-emerald-700 px-2 py-0.5 rounded">
+                    NSQF Level {primaryMatch.nsqf_level}
+                  </span>
+                  {whatIfParams.isRPLEligible && (
+                    <span className="text-xs font-bold text-amber-900 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded">
+                      RPL Fast-Track (४० घंटे परीक्षा)
+                    </span>
+                  )}
+                </div>
+
+                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900">
                   {primaryMatch.title}
                 </h2>
-                <p className="text-xs text-[#526D61] mt-0.5">
-                  Sector: <strong>{primaryMatch.sector}</strong> • Duration: {primaryMatch.duration_hours} Hours
+                <p className="text-xs text-slate-600 mt-1">
+                  Sector: <strong>{primaryMatch.sector}</strong> • Duration: {primaryMatch.duration_hours} Notional Hours
                 </p>
               </div>
 
               <div className="text-left md:text-right">
-                <div className="text-xs text-[#526D61]">Estimated Monthly Earning</div>
-                <div className="text-base font-bold text-[#1A4B36]">{primaryMatch.typical_wage}</div>
+                <div className="text-xs text-slate-500">अनुमानित मासिक आमदनी</div>
+                <div className="text-base sm:text-lg font-extrabold text-emerald-700 font-mono">
+                  {primaryMatch.typical_wage}
+                </div>
               </div>
             </div>
 
-            {/* Plain-Language Reason tied to answers */}
-            <div className="mb-4 bg-[#F5FAF7] border-l-4 border-[#33634E] p-3 rounded-r-lg">
-              <div className="text-xs font-bold text-[#1F4B38] mb-0.5">
-                Plain-Language Reason (क्यों मिला यह सुझाव?):
+            {/* Plain-Language Reason tied to beneficiary statements */}
+            <div className="mb-4 bg-amber-50/60 border-l-4 border-amber-600 p-3.5 rounded-r-lg">
+              <div className="text-xs font-bold text-amber-900 mb-1">
+                स्पष्ट कारण (क्यों मिला यह सुझाव?):
               </div>
-              <p className="text-xs sm:text-sm text-[#274638] leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-800 leading-relaxed font-sans font-medium">
                 "{primaryMatch.reason}"
               </p>
             </div>
 
-            {/* Skill Gap Analysis */}
-            <div className="mb-5 bg-[#FAFBFB] border border-[#E3ECE7] p-3.5 rounded-lg text-xs">
-              <div className="font-semibold text-[#183528] mb-1">
-                कौशल अंतराल (Skill Gap & Bridge Curriculum):
+            {/* Skill Gap & Bridge Training Analysis */}
+            <div className="mb-4 bg-slate-50 border border-slate-200 p-3.5 rounded-lg text-xs">
+              <div className="font-bold text-slate-900 mb-1">
+                कौशल अंतराल विश्लेषण (Skill Gap & Bridge Module):
               </div>
-              <p className="text-[#415F52] leading-relaxed">{primaryMatch.skill_gap}</p>
+              <p className="text-slate-600 leading-relaxed">{primaryMatch.skill_gap}</p>
             </div>
 
-            {/* Nearest PM-AJAY Accredited Training Centre */}
+            {/* Nearest Accredited Kaushal Kendra */}
             {primaryMatch.nearest_centre && (
-              <div className="bg-[#EBF2EE] border border-[#CCDCD4] rounded-lg p-3.5 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+              <div className="bg-slate-100 border border-slate-300 rounded-lg p-3.5 mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
                 <div>
-                  <div className="flex items-center space-x-1.5 font-bold text-[#142A20]">
-                    <MapPin className="w-3.5 h-3.5 text-[#2C5743]" />
-                    <span>निकटतम प्रशिक्षण केंद्र / Nearest Accredited Training Centre</span>
+                  <div className="flex items-center gap-1.5 font-bold text-[#002147]">
+                    <MapPin className="w-4 h-4 text-amber-700" />
+                    <span>निकटतम PM-AJAY मान्यता प्राप्त कौशल केंद्र (Accredited Kendra):</span>
                   </div>
-                  <div className="text-[#325243] font-medium mt-0.5">
+                  <div className="text-slate-900 font-bold mt-1">
                     {primaryMatch.nearest_centre.name} ({primaryMatch.nearest_centre.distance_km} km away)
                   </div>
-                  <div className="text-[#597769] text-[11px]">
-                    {primaryMatch.nearest_centre.address} • Phone: {primaryMatch.nearest_centre.contact_phone}
+                  <div className="text-slate-600 text-[11px] mt-0.5">
+                    {primaryMatch.nearest_centre.address} • हेल्पलाइन: {primaryMatch.nearest_centre.contact_phone}
                   </div>
                 </div>
-                <div className="flex items-center space-x-2 shrink-0">
-                  <span className="bg-white border border-[#BDD1C7] text-[#1E4333] px-2 py-1 rounded text-[10px] font-semibold">
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="bg-white border border-slate-300 text-emerald-800 px-2 py-1 rounded text-[10.5px] font-bold">
                     100% Free GIA Grant
                   </span>
-                  <span className="bg-white border border-[#BDD1C7] text-[#1E4333] px-2 py-1 rounded text-[10px] font-semibold">
-                    Stipend & Toolkit Eligible
+                  <span className="bg-white border border-slate-300 text-amber-800 px-2 py-1 rounded text-[10.5px] font-bold">
+                    ₹50,000 टूलकिट अनुदान
                   </span>
                 </div>
               </div>
             )}
 
-            {/* Sub-Score Breakdown Meters */}
-            <div className="pt-2 border-t border-[#EDF3EF]">
-              <div className="text-[11px] font-bold text-[#4B6B5C] uppercase tracking-wider mb-2">
-                Sub-Score Breakdown (Score Attribution):
+            {/* Score Attribution Breakdown Meters */}
+            <div className="pt-3 border-t border-slate-200">
+              <div className="text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-2">
+                गणितीय पैमाना विवरण (Sub-Score Breakdown):
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                 {Object.entries(primaryMatch.score_breakdown).map(([k, v]) => (
                   <div key={k} className="space-y-1">
-                    <div className="flex justify-between text-[11px] text-[#415F52]">
+                    <div className="flex justify-between text-[11px] text-slate-600 font-medium">
                       <span className="capitalize">{k.replace("_", " ")}</span>
-                      <span className="font-semibold text-[#183629]">{v}%</span>
+                      <span className="font-bold text-slate-900 font-mono">{v}%</span>
                     </div>
-                    <div className="w-full bg-[#E5EDE8] h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-[#2D5A46] h-full" style={{ width: `${v}%` }}></div>
+                    <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                      <div className="bg-[#002147] h-full" style={{ width: `${v}%` }} />
                     </div>
                   </div>
                 ))}
@@ -318,33 +387,35 @@ export const PMAJAYRecommendations: React.FC = () => {
           </div>
         )}
 
-        {/* Alternate Ranked Recommendations */}
-        {topMatches.length > 1 && (
+        {/* Alternative Ranked Recommendations */}
+        {filteredMatches.length > 1 && (
           <div className="mb-8">
-            <h3 className="text-base font-bold text-[#142A20] mb-3">
-              वैकल्पिक अनुशंसाएं / Alternative NSQF Matches
+            <h3 className="text-base font-bold text-[#002147] mb-3">
+              वैकल्पिक अनुशंसाएं (Alternative Viable NSQF Matches)
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {topMatches.slice(1).map((alt) => (
+              {filteredMatches.slice(1).map((alt) => (
                 <div
                   key={alt.qp_code}
-                  className="bg-white border border-[#D5E2DB] rounded-xl p-4 shadow-sm hover:border-[#ADC7BB] transition-colors"
+                  className="bg-white border-2 border-slate-200 hover:border-slate-300 rounded-xl p-4 shadow-xs transition-colors flex flex-col justify-between"
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <span className="text-[10px] font-mono text-[#436E5A] bg-[#E8F2EC] px-1.5 py-0.5 rounded">
-                        {alt.qp_code} • NSQF Level {alt.nsqf_level}
+                  <div>
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <span className="text-[10px] font-mono font-bold text-slate-700 bg-slate-100 border border-slate-300 px-1.5 py-0.5 rounded">
+                          {alt.qp_code} • NSQF Level {alt.nsqf_level}
+                        </span>
+                        <h4 className="font-bold text-sm text-slate-900 mt-1">{alt.title}</h4>
+                      </div>
+                      <span className="text-xs font-bold text-[#002147] bg-slate-100 border border-slate-300 px-2 py-0.5 rounded font-mono">
+                        {alt.total_score}% Score
                       </span>
-                      <h4 className="font-bold text-sm text-[#142A20] mt-1">{alt.title}</h4>
                     </div>
-                    <span className="text-xs font-bold text-[#1F4937] bg-[#E6F0EB] px-2 py-0.5 rounded">
-                      {alt.total_score}% Score
-                    </span>
+                    <p className="text-xs text-slate-600 mb-3 leading-relaxed italic">
+                      "{alt.reason}"
+                    </p>
                   </div>
-                  <p className="text-xs text-[#436254] mb-3 leading-relaxed italic">
-                    "{alt.reason}"
-                  </p>
-                  <div className="text-[11px] text-[#557767] flex justify-between border-t border-[#EDF3EF] pt-2">
+                  <div className="text-[11px] text-slate-500 flex justify-between border-t border-slate-100 pt-2 font-medium">
                     <span>Wage: {alt.typical_wage}</span>
                     <span>Duration: {alt.duration_hours} hrs</span>
                   </div>
@@ -354,30 +425,29 @@ export const PMAJAYRecommendations: React.FC = () => {
           </div>
         )}
 
-        {/* Explicit Constraint Refusals Section (Key Requirement) */}
-        {refusals.length > 0 && (
-          <div className="mb-8 bg-[#FBF6F6] border border-[#E9CFCF] rounded-xl p-5">
-            <div className="flex items-center space-x-2 text-xs font-bold text-[#A82A2A] uppercase tracking-wider mb-2">
-              <XCircle className="w-4 h-4 text-[#C53030]" />
-              <span>Explicit Refusal Engine (कठिन बाधाओं के कारण निरस्त विकल्प)</span>
+        {/* Hard Constraint Refusals Section (Key Requirement) */}
+        {rawRefusals.length > 0 && (
+          <div className="mb-8 bg-rose-50/50 border-2 border-rose-200 rounded-xl p-5">
+            <div className="flex items-center gap-2 text-xs font-bold text-rose-800 uppercase tracking-wider mb-2">
+              <XCircle className="w-4 h-4 text-rose-600" />
+              <span>कठिन बाधाओं के कारण निरस्त विकल्प (Explicit Constraint Refusals)</span>
             </div>
-            <p className="text-xs text-[#633F3F] mb-4">
-              Options that conflict with the candidate's stated mobility, educational prerequisites, or self-employment preference 
-              are strictly refused rather than forced into the recommendation list.
+            <p className="text-xs text-slate-600 mb-4">
+              वे विकल्प जो लाभार्थी की यात्रा सीमा, पूर्व-अर्हता या स्वरोजगार प्राथमिकता के विपरीत हैं, उन्हें भ्रामक रूप से सुझाने के बजाय स्पष्ट कारण सहित निरस्त किया गया है:
             </p>
             <div className="space-y-2.5">
-              {refusals.slice(0, 3).map((ref, idx) => (
+              {rawRefusals.slice(0, 3).map((ref, idx) => (
                 <div
                   key={idx}
-                  className="bg-white border border-[#EDD5D5] p-3 rounded-lg text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2"
+                  className="bg-white border border-rose-200 p-3 rounded-lg text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2"
                 >
                   <div>
-                    <span className="font-bold text-[#7E2424]">{ref.title}</span>
-                    <p className="text-[11px] text-[#693E3E] mt-0.5 font-sans">
-                      {ref.refusal_reason}
+                    <span className="font-bold text-slate-900">{ref.title}</span>
+                    <p className="text-[11px] text-rose-800 mt-0.5">
+                      निरस्तीकरण कारण: {ref.refusal_reason}
                     </p>
                   </div>
-                  <span className="text-[10px] font-mono uppercase bg-[#FCEAEA] text-[#9E2A2A] font-semibold px-2 py-0.5 rounded whitespace-nowrap">
+                  <span className="text-[10px] font-mono uppercase bg-rose-100 text-rose-900 font-bold px-2 py-0.5 rounded border border-rose-200 whitespace-nowrap">
                     Refused (Incompatible)
                   </span>
                 </div>
@@ -386,22 +456,42 @@ export const PMAJAYRecommendations: React.FC = () => {
           </div>
         )}
 
-        {/* Action Link to Local Opportunities */}
-        <div className="bg-[#E7F0EB] border border-[#CCDCD4] rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="text-xs text-[#426052]">
-            <strong>Next Step:</strong> View verified local livelihood vacancies and PM-AJAY toolkit subsidy options 
-            for Varanasi and surrounding rural blocks.
+        {/* Action Link to Local Cluster Opportunities */}
+        <div className="bg-slate-100 border-2 border-slate-200 rounded-xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-xs text-slate-700">
+            <strong>अगला चरण:</strong> वाराणसी व चंदौली जिले के वास्तविक आजीविका अवसरों, टूलकिट संस्वीकृति एवं क्लस्टर लिंकेज को देखें।
           </div>
-          <button
-            type="button"
-            onClick={() => navigate("/pmajay/opportunities")}
-            className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 bg-[#2D5A46] hover:bg-[#396E56] text-white px-6 py-3 rounded-lg font-semibold text-sm shadow-md transition-all"
-          >
-            <span>View Local Cluster Opportunities</span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => setPassportOpen(true)}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-900 px-5 py-3 rounded-lg font-bold text-xs shadow-xs transition-all"
+            >
+              <Award className="w-4 h-4" />
+              <span>आजीविका पासपोर्ट जारी करें</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/pmajay/opportunities")}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#002147] hover:bg-blue-900 text-white px-6 py-3 rounded-lg font-bold text-xs shadow-md transition-all"
+            >
+              <span>स्थानीय क्लस्टर अवसर देखें</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </main>
+
+      {/* Livelihood Passport Modal */}
+      <LivelihoodPassportModal
+        isOpen={passportOpen}
+        onClose={() => setPassportOpen(false)}
+        matchedTrade={primaryMatch?.title}
+        qpCode={primaryMatch?.qp_code}
+        nsqfLevel={primaryMatch?.nsqf_level}
+        trainingCentre={primaryMatch?.nearest_centre?.name}
+        isRPL={whatIfParams.isRPLEligible}
+      />
     </div>
   );
 };
