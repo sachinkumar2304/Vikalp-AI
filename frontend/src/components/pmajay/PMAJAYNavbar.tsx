@@ -85,11 +85,11 @@ export const PMAJAYNavbar: React.FC = () => {
             <div className="flex items-center gap-2">
               <EmblemOfIndia size={16} variant="gold" className="shrink-0" />
               <span className="font-semibold text-white tracking-wide text-[11px] sm:text-xs">
-                भारत सरकार • Government of India
+                {t("gov_title")}
               </span>
               <span className="text-slate-600 hidden md:inline">|</span>
               <span className="text-slate-300 hidden md:inline text-[11px]">
-                सामाजिक न्याय एवं अधिकारिता मंत्रालय (MoSJE)
+                {t("ministry_title")} (MoSJE)
               </span>
             </div>
 
@@ -227,7 +227,11 @@ export const PMAJAYNavbar: React.FC = () => {
                   </span>
                 </div>
                 <div className="text-[11px] text-slate-500 font-medium hidden sm:block">
-                  आवाज-आधारित आजीविका एवं कौशल सहायक • MoSJE
+                  {lang === "en"
+                    ? "Voice AI Livelihood & Skilling Assistant • MoSJE"
+                    : lang === "mr"
+                    ? "आवाज-आधारित उपजीविका आणि कौशल्य सहाय्यक • MoSJE"
+                    : "आवाज-आधारित आजीविका एवं कौशल सहायक • MoSJE"}
                 </div>
               </div>
             </Link>
@@ -259,10 +263,10 @@ export const PMAJAYNavbar: React.FC = () => {
                 type="button"
                 onClick={() => setIvrOpen(true)}
                 className="hidden md:inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold shadow-2xs transition-all active:scale-[0.98]"
-                title="फीचर फोन IVR हेल्पलाइन 1800-11-2026 सिम्युलेटर"
+                title="IVR 1800-11-2026"
               >
                 <Phone className="w-3.5 h-3.5 text-slate-500" />
-                <span>IVR डायल (1800-11-2026)</span>
+                <span>{t("nav_ivr_cta")}</span>
               </button>
 
               {/* Livelihood Passport Button */}
@@ -270,19 +274,19 @@ export const PMAJAYNavbar: React.FC = () => {
                 type="button"
                 onClick={() => setPassportOpen(true)}
                 className="hidden sm:inline-flex items-center gap-1.5 h-9 px-3 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold shadow-2xs transition-all active:scale-[0.98]"
-                title="आधिकारिक आजीविका पासपोर्ट कार्ड"
+                title="Livelihood Passport"
               >
                 <Award className="w-3.5 h-3.5 text-amber-600" />
-                <span>आजीविका पासपोर्ट</span>
+                <span>{t("nav_passport_cta")}</span>
               </button>
 
               {/* Primary Voice Action Button */}
               <Link
-                to="/pmajay/interview"
+                to={`/pmajay/interview?lang=${lang === "en" ? "en-IN" : lang === "mr" ? "mr-IN" : "hi-IN"}`}
                 className="inline-flex items-center gap-2 h-9 px-3.5 rounded-lg bg-[#002147] hover:bg-[#002b5c] text-white text-xs font-bold shadow-xs transition-all active:scale-[0.98]"
               >
                 <Mic className="w-3.5 h-3.5 text-amber-300" />
-                <span>बोलकर बताएं</span>
+                <span>{t("btn_speak_nav")}</span>
               </Link>
 
               {/* Mobile Menu Toggle */}
@@ -328,7 +332,7 @@ export const PMAJAYNavbar: React.FC = () => {
                   className="w-full text-left px-3 py-2 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 shadow-2xs"
                 >
                   <Phone className="w-4 h-4 text-slate-500" />
-                  <span>फीचर फोन IVR डायल (1800-11-2026)</span>
+                  <span>{t("nav_ivr_cta")}</span>
                 </button>
                 <button
                   type="button"
@@ -339,7 +343,7 @@ export const PMAJAYNavbar: React.FC = () => {
                   className="w-full text-left px-3 py-2 rounded-lg bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 flex items-center gap-2 shadow-2xs"
                 >
                   <Award className="w-4 h-4 text-amber-600" />
-                  <span>आजीविका पासपोर्ट एवं अनुदान कार्ड</span>
+                  <span>{t("nav_passport_cta")}</span>
                 </button>
               </div>
             </div>

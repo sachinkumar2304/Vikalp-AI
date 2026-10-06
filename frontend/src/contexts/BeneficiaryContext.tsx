@@ -47,15 +47,42 @@ const BeneficiaryContext = createContext<BeneficiaryContextType | undefined>(und
 export const BeneficiaryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [profile, setProfileState] = useState<BeneficiaryProfileData>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_PROFILE);
+    const savedLang = localStorage.getItem("pmajay_selected_lang") || "hi-IN";
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (!parsed.language) parsed.language = savedLang;
+        return parsed;
       } catch {
-        return pmajayService.createDefaultProfile("eval-init", "hi-IN");
+        return pmajayService.createDefaultProfile("eval-init", savedLang);
       }
     }
-    return pmajayService.createDefaultProfile("eval-init", "hi-IN");
+    return pmajayService.createDefaultProfile("eval-init", savedLang);
   });
+
+  // Listen to broadcast language events to update profile language
+  useEffect(() => {
+    const handleLanguageChange = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      const code = customEvent.detail;
+      const fullCode = code === "hi" ? "hi-IN" : code === "mr" ? "mr-IN" : code === "en" ? "en-IN" : code;
+      setProfileState((prev) => {
+        if (prev.language === fullCode) return prev;
+        const updated = { ...prev, language: fullCode };
+        try {
+          localStorage.setItem(STORAGE_KEY_PROFILE, JSON.stringify(updated));
+        } catch {
+          // safe storage
+        }
+        return updated;
+      });
+    };
+
+    window.addEventListener("pmajay_language_change", handleLanguageChange);
+    return () => {
+      window.removeEventListener("pmajay_language_change", handleLanguageChange);
+    };
+  }, []);
 
   const [result, setResultState] = useState<RecommendationResult | null>(() => {
     const saved = localStorage.getItem(STORAGE_KEY_RESULT);

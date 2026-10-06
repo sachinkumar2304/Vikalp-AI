@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { PMAJAYNavbar } from "@/components/pmajay/PMAJAYNavbar";
 import { Volume2, Check, ArrowRight, PhoneCall, ShieldCheck, HelpCircle } from "lucide-react";
 import { IVRSimulatorModal } from "@/components/pmajay/IVRSimulatorModal";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface LanguageOption {
   code: string;
@@ -58,7 +59,10 @@ const LANGUAGES: LanguageOption[] = [
 ];
 
 export const PMAJAYLanguageSelect: React.FC = () => {
-  const [selectedLang, setSelectedLang] = useState<string>("hi-IN");
+  const { lang, setLang } = useLanguage();
+  const [selectedLang, setSelectedLang] = useState<string>(() => {
+    return lang === "en" ? "en-IN" : lang === "mr" ? "mr-IN" : "hi-IN";
+  });
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isIVROpen, setIsIVROpen] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -77,6 +81,8 @@ export const PMAJAYLanguageSelect: React.FC = () => {
   };
 
   const handleContinue = () => {
+    const shortCode = selectedLang.startsWith("en") ? "en" : selectedLang.startsWith("mr") ? "mr" : "hi";
+    setLang(shortCode);
     localStorage.setItem("pmajay_selected_lang", selectedLang);
     navigate(`/pmajay/interview?lang=${selectedLang}`);
   };

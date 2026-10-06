@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { IVRSimulatorModal } from "@/components/pmajay/IVRSimulatorModal";
 import { useBeneficiary } from "@/contexts/BeneficiaryContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TurnMessage {
   id: string;
@@ -73,9 +74,19 @@ const TURN_TITLES: Record<number, string> = {
 };
 
 export const PMAJAYVoiceInterview: React.FC = () => {
+  const { lang, setLang } = useLanguage();
   const [searchParams] = useSearchParams();
-  const selectedLang = searchParams.get("lang") || "hi-IN";
+  const queryLang = searchParams.get("lang");
+  const selectedLang = queryLang || (lang === "en" ? "en-IN" : lang === "mr" ? "mr-IN" : "hi-IN");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (queryLang) {
+      if (queryLang.startsWith("en") && lang !== "en") setLang("en");
+      else if (queryLang.startsWith("mr") && lang !== "mr") setLang("mr");
+      else if (queryLang.startsWith("hi") && lang !== "hi") setLang("hi");
+    }
+  }, [queryLang, lang, setLang]);
 
   // State
   const [sessionId, setSessionId] = useState<string>("");
