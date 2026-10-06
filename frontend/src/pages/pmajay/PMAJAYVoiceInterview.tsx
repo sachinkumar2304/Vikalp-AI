@@ -1,25 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { PMAJAYNavbar } from "@/components/pmajay/PMAJAYNavbar";
 import { pmajayService, BeneficiaryProfileData } from "@/services/pmajayService";
 import {
   Mic,
   MicOff,
   Volume2,
-  VolumeX,
   Send,
+  Radio,
+  ArrowRight,
+  ShieldCheck,
   CheckCircle2,
   Clock,
-  Radio,
-  FileText,
-  ShieldCheck,
-  Award,
-  ArrowRight,
+  User,
+  Bot,
+  HelpCircle,
   Phone,
-  AlertCircle,
-  RotateCcw,
+  Sparkles,
 } from "lucide-react";
-import { EmblemOfIndia } from "@/components/pmajay/EmblemOfIndia";
 import { IVRSimulatorModal } from "@/components/pmajay/IVRSimulatorModal";
 
 interface TurnMessage {
@@ -30,44 +28,47 @@ interface TurnMessage {
   timestamp: string;
 }
 
-const SAMPLE_BENEFICIARY_RESPONSES = [
-  // Turn 1: Basic Info & Location
-  [
-    "मेरा नाम रमेश कुमार है, सेवापुरी ब्लॉक, वाराणसी का निवासी हूँ।",
-    "सुनीता देवी, सकलडीहा गांव, चंदौली जिला।",
-    "My name is Amit Paswan, Babatpur rural cluster, Varanasi.",
+const SAMPLE_BENEFICIARY_RESPONSES: Record<number, string[]> = {
+  0: [
+    "मेरा नाम रामेश्वर कुमार है, मैं सेवापुरी ब्लॉक, वाराणसी का रहने वाला हूँ।",
+    "मेरा नाम सुनीता देवी है, चिरईगांव, जिला वाराणसी।",
+    "मेरा नाम अजय कुमार भारती है, मुगलसराय, चंदौली।",
   ],
-  // Turn 2: Education
-  [
-    "मैंने 10वीं पास की है गांव के राजकीय विद्यालय से।",
-    "आठवीं तक पढ़ाई की है (8th pass).",
-    "स्कूल नहीं जा सका, केवल नाम और हस्ताक्षर कर लेता हूँ (Below 8th).",
+  1: [
+    "मैं कक्षा 8 तक पढ़ा हूँ, ज्यादा पढ़ाई नहीं कर पाया।",
+    "मैंने 10वीं पास की है सरकारी स्कूल से।",
+    "कक्षा 5 तक पढ़ी हूँ, हस्ताक्षर कर लेती हूँ।",
   ],
-  // Turn 3: Current Work & Prior Skills (RPL)
-  [
-    "अभी गांव में बिजली के तार, मोटर रिपेयर व वायरिंग में हेल्पर का काम करता हूँ 4 साल से।",
-    "घर पर सिलाई और कढ़ाई का काम करती हूँ हाथों से।",
+  2: [
+    "मैं 2 साल से गांव में हाथ से सिलाई और कपड़ों की मरम्मत का काम करती हूँ।",
+    "बिजली वायरिंग और पंखे की मरम्मत में सहायक के रूप में 3 साल काम किया है।",
     "खेत में दैनिक मजदूरी और कभी-कभी पाइपलाइन का काम करता हूँ।",
   ],
-  // Turn 4: Aspiration & Trade Interest
-  [
-    "मुझे सोलर रूफटॉप पैनल और आधुनिक बिजली का काम सीखना है जिससे गांव में अपनी दुकान खोल सकूँ।",
-    "सिलाई और बुटीक का आधुनिक डिजाइन सीखना चाहती हूँ।",
-    "नल-जल योजना में प्लंबर और मोटर पंप मरम्मत का प्रशिक्षण लेना चाहता हूँ।",
+  3: [
+    "मुझे सोलर रूफटॉप पैनल और बिजली का काम सीखना है जिससे अपनी दुकान खोल सकूँ।",
+    "सिलाई और आधुनिक बुटीक का काम सीखना चाहती हूँ।",
+    "नल-जल योजना में प्लंबर और मोटर पंप मरम्मत का काम सीखना चाहता हूँ।",
   ],
-  // Turn 5: Employment Preference & Capital Goal
-  [
-    "मैं अपना खुद का सोलर रिपेयर सेंटर शुरू करना चाहता हूँ पीएम-अजय टूलकिट की मदद से।",
+  4: [
+    "मैं अपना खुद का काम शुरू करना चाहता हूँ टूलकिट अनुदान की मदद से।",
     "अपना स्वयं का सिलाई केंद्र और बुटीक चलाना चाहती हूँ (स्वरोजगार)।",
-    "मुझे किसी कंपनी या विद्युत ठेकेदार के पास निश्चित मासिक वेतन वाली नौकरी चाहिए।",
+    "मुझे किसी कंपनी या प्रोजेक्ट में निश्चित मासिक वेतन वाली नौकरी चाहिए।",
   ],
-  // Turn 6: Mobility Constraints (Crucial Guardrail)
-  [
+  5: [
     "मैं ब्लॉक और तहसील तक जा सकता हूँ, लेकिन बाहर दूसरे राज्य नहीं जा सकता।",
-    "सिर्फ गांव के भीतर ही काम कर सकती हूँ, बाहर यात्रा संभव नहीं है।",
-    "मैं पूरे जिले और शहर में कहीं भी काम के लिए यात्रा कर सकता हूँ।",
+    "सिर्फ गांव के भीतर ही काम कर सकती हूँ, बाहर जाना संभव नहीं है।",
+    "मैं पूरे जिले और शहर में कहीं भी काम के लिए जा सकता हूँ।",
   ],
-];
+};
+
+const TURN_TITLES: Record<number, string> = {
+  1: "नाम व निवास स्थान (Identity & Location)",
+  2: "शिक्षा स्तर (Educational Qualification)",
+  3: "पूर्व कार्य अनुभव (Work Experience & Prior Skills)",
+  4: "कौशल रुचि (Trade & Sector Aspiration)",
+  5: "रोजगार प्राथमिकता (Self-Employment or Wage Job)",
+  6: "यात्रा व मोबिलिटी सीमा (Mobility & Distance Limits)",
+};
 
 export const PMAJAYVoiceInterview: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -115,21 +116,19 @@ export const PMAJAYVoiceInterview: React.FC = () => {
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         };
         setMessages([initialAssistantMsg]);
-
-        // Speak aloud
         speakAloud(data.question_prompt, selectedLang);
       }
     };
     initSession();
   }, [selectedLang]);
 
-  // Speech Synthesis with replay
-  const speakAloud = (text: string, lang: string) => {
+  // Speech Synthesis
+  const speakAloud = (text: string, langCode: string) => {
     if ("speechSynthesis" in window) {
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang.startsWith("hi") ? "hi-IN" : "en-IN";
-      utterance.rate = 0.94;
+      utterance.lang = langCode;
+      utterance.rate = 0.92;
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => setIsSpeaking(false);
       utterance.onerror = () => setIsSpeaking(false);
@@ -137,18 +136,11 @@ export const PMAJAYVoiceInterview: React.FC = () => {
     }
   };
 
-  // Browser Speech Recognition
+  // Browser Web Speech API setup
   const toggleListening = () => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
-    }
-
     if (isListening) {
       if (recognitionRef.current) {
-        try {
-          recognitionRef.current.stop();
-        } catch {}
+        recognitionRef.current.stop();
       }
       setIsListening(false);
       return;
@@ -158,37 +150,25 @@ export const PMAJAYVoiceInterview: React.FC = () => {
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert(
-        "माइक्रोफोन वॉयस इनपुट क्रोम और एज ब्राउज़र में समर्थित है। आप नीचे दिए गए त्वरित नमूना उत्तरों पर क्लिक करके भी टेस्ट कर सकते हैं।"
-      );
+      alert("आपके ब्राउज़र में वाक् पहचान (Speech Recognition) उपलब्ध नहीं है। कृपया टाइप करें।");
       return;
     }
 
     try {
       const recognition = new SpeechRecognition();
-      recognition.lang = selectedLang.startsWith("hi") ? "hi-IN" : "en-IN";
+      recognition.lang = selectedLang;
+      recognition.continuous = false;
       recognition.interimResults = true;
-      recognition.continuous = true;
 
       recognition.onstart = () => {
         setIsListening(true);
       };
 
       recognition.onresult = (event: any) => {
-        let finalTranscript = "";
-        let interimTranscript = "";
-        for (let i = 0; i < event.results.length; i++) {
-          const transcript = event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            finalTranscript += transcript + " ";
-          } else {
-            interimTranscript += transcript;
-          }
-        }
-        const text = (finalTranscript + interimTranscript).trim();
-        if (text) {
-          setUserInput(text);
-        }
+        const transcript = Array.from(event.results)
+          .map((result: any) => result[0].transcript)
+          .join("");
+        setUserInput(transcript);
       };
 
       recognition.onerror = () => {
@@ -206,18 +186,19 @@ export const PMAJAYVoiceInterview: React.FC = () => {
     }
   };
 
-  // Submit Answer & advance turn
+  // Submit Answer
   const handleSubmitTurn = async (overrideText?: string) => {
     const textToSend = (overrideText || userInput).trim();
     if (!textToSend || isSubmitting) return;
 
     setIsSubmitting(true);
-    if (isListening && recognitionRef.current) {
+    setUserInput("");
+
+    if (recognitionRef.current && isListening) {
       recognitionRef.current.stop();
       setIsListening(false);
     }
 
-    // 1. Add user message
     const userMsg: TurnMessage = {
       id: "user-" + Date.now(),
       sender: "user",
@@ -226,25 +207,22 @@ export const PMAJAYVoiceInterview: React.FC = () => {
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     };
     setMessages((prev) => [...prev, userMsg]);
-    setUserInput("");
 
-    // 2. Call backend interview engine
-    const res = await pmajayService.processTurn(sessionId, currentTurn, textToSend);
+    const res = await pmajayService.submitTurn(sessionId, textToSend, currentTurn);
 
-    if (res && res.profile) {
-      setProfile(res.profile);
-      localStorage.setItem("pmajay_active_profile", JSON.stringify(res.profile));
+    if (res) {
+      setProfile(res.updated_profile);
 
-      if (res.is_completed) {
-        const finalMsg: TurnMessage = {
-          id: "assistant-" + Date.now(),
+      if (res.is_complete) {
+        const finishMsg: TurnMessage = {
+          id: "assistant-finish",
           sender: "assistant",
-          text: res.next_prompt,
-          turn: currentTurn,
+          text: "धन्यवाद! आपका साक्षात्कार पूर्ण हो चुका है। अब पारदर्शी एल्गोरिथ्म आपके लिए सबसे उपयुक्त NSQF कौशल और ₹50,000 टूलकिट अनुदान का मिलान कर रहा है...",
+          turn: totalTurns,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         };
-        setMessages((prev) => [...prev, finalMsg]);
-        speakAloud(res.next_prompt, selectedLang);
+        setMessages((prev) => [...prev, finishMsg]);
+        speakAloud(finishMsg.text, selectedLang);
 
         setTimeout(() => {
           navigate("/pmajay/profile");
@@ -278,60 +256,56 @@ export const PMAJAYVoiceInterview: React.FC = () => {
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       <PMAJAYNavbar />
 
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 flex-1 w-full flex flex-col">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full flex flex-col space-y-5">
         {/* Step Header Bar */}
-        <div className="bg-white border-2 border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs mb-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-bold text-[#b45309] uppercase tracking-wider">
-                <span className="bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300">
-                  चरण २ / ५ • Step 2 of 5
-                </span>
-                <span>•</span>
-                <span>मौखिक संवाद एवं आजीविका मैपिंग (Spoken Assessment)</span>
-              </div>
-              <h1 className="text-xl sm:text-2xl font-extrabold text-[#002147] mt-1">
-                आजीविका एवं कौशल साक्षात्कार (Beneficiary Voice Intake)
-              </h1>
-              <p className="text-xs text-slate-600 mt-0.5">
-                योजना: प्रधानमंत्री अनुसूचित जाति अभ्युदय योजना (PM-AJAY) • अनुदान सहायता (GIA) घटक
-              </p>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+              <span className="bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300">
+                चरण 2 / 5 • Step 2 of 5
+              </span>
+              <span>•</span>
+              <span>{TURN_TITLES[currentTurn] || "मौखिक संवाद"}</span>
             </div>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-[#002147]">
+              आजीविका एवं कौशल साक्षात्कार (Voice Intake)
+            </h1>
+            <p className="text-xs text-slate-500 mt-0.5">
+              अपनी मातृभाषा में बोलें — 6 आसान प्रश्नों में आपकी प्रोफाइल तैयार होगी।
+            </p>
+          </div>
 
-            {/* Quick Action Badges */}
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Feature Phone IVR Alternative Button */}
-              <button
-                type="button"
-                onClick={() => setIvrModalOpen(true)}
-                className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-xs font-bold flex items-center gap-1.5 transition-colors"
-                title="कीपैड फोन से कॉल करने का सिम्युलेटर"
-              >
-                <Phone className="w-3.5 h-3.5 text-amber-700" />
-                <span>IVR डायल (1800-11-2026)</span>
-              </button>
+          {/* Progress & Tools */}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIvrModalOpen(true)}
+              className="px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              title="कीपैड फोन से कॉल करने का सिम्युलेटर"
+            >
+              <Phone className="w-3.5 h-3.5 text-amber-700" />
+              <span>साधारण फोन IVR</span>
+            </button>
 
-              {/* Progress Pill */}
-              <div className="flex items-center gap-2 bg-slate-100 border border-slate-300 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-700">
-                <Clock className="w-3.5 h-3.5 text-[#002147]" />
-                <span>Turn {currentTurn} of {totalTurns}</span>
-                <div className="w-16 bg-slate-300 h-2 rounded-full overflow-hidden ml-1">
-                  <div
-                    className="bg-[#002147] h-full transition-all duration-300"
-                    style={{ width: `${(currentTurn / totalTurns) * 100}%` }}
-                  />
-                </div>
+            <div className="flex items-center gap-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700">
+              <Clock className="w-3.5 h-3.5 text-[#002147]" />
+              <span>प्रश्न {currentTurn} / {totalTurns}</span>
+              <div className="w-16 bg-slate-300 h-2 rounded-full overflow-hidden ml-1">
+                <div
+                  className="bg-emerald-600 h-full transition-all duration-300"
+                  style={{ width: `${(currentTurn / totalTurns) * 100}%` }}
+                />
               </div>
             </div>
           </div>
         </div>
 
-        {/* Two-Column Layout: Left Voice Interaction & Chat, Right Real-Time Structured Profile State */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 flex-1">
-          {/* Left Column: Voice Dialogue Console */}
-          <div className="lg:col-span-7 flex flex-col bg-white border-2 border-slate-200 rounded-xl shadow-xs overflow-hidden h-[600px]">
-            {/* Live Audio Status Bar */}
-            <div className="bg-[#002147] text-white px-4 py-2.5 flex items-center justify-between text-xs border-b border-blue-900">
+        {/* Two-Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+          {/* Left Column: Humane Conversation Box */}
+          <div className="lg:col-span-7 flex flex-col bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden h-[580px]">
+            {/* Live Audio Status Strip */}
+            <div className="bg-[#002147] text-white px-4 py-2.5 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
                 <span
                   className={`w-2.5 h-2.5 rounded-full ${
@@ -342,70 +316,69 @@ export const PMAJAYVoiceInterview: React.FC = () => {
                       : "bg-emerald-400"
                   }`}
                 />
-                <span className="font-semibold">
+                <span className="font-semibold text-xs">
                   {isListening
-                    ? "सुन रहा हूँ... बोलिए (Listening to Beneficiary...)"
+                    ? "आपकी आवाज सुनी जा रही है... बोलिए"
                     : isSpeaking
-                    ? "सहायक बोल रहा है (Assistant Speaking...)"
-                    : "संवाद के लिए तैयार (Ready for Speech)"}
+                    ? "सहायक बोल रहा है..."
+                    : "संवाद के लिए तैयार"}
                 </span>
               </div>
-
-              <div className="flex items-center gap-2 text-[11px] text-amber-300 font-mono">
-                <span>Sarvam AI / Bhashini Pipeline</span>
-              </div>
+              <span className="text-[11px] text-amber-300 font-mono">
+                Sarvam AI / Bhashini
+              </span>
             </div>
 
             {/* Conversation Messages Scroll Area */}
-            <div ref={chatScrollRef} className="flex-1 p-4 overflow-y-auto space-y-3.5 bg-slate-50/60">
+            <div ref={chatScrollRef} className="flex-1 p-5 overflow-y-auto space-y-4 bg-slate-50/50">
               {messages.map((m) => (
                 <div
                   key={m.id}
                   className={`flex flex-col ${m.sender === "user" ? "items-end" : "items-start"}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded-xl px-4 py-3 text-xs sm:text-sm leading-relaxed border shadow-xs ${
+                    className={`max-w-[88%] rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed shadow-xs ${
                       m.sender === "user"
-                        ? "bg-[#002147] text-white border-blue-900"
-                        : "bg-white text-slate-800 border-slate-300"
+                        ? "bg-[#002147] text-white rounded-br-xs"
+                        : "bg-white text-slate-800 border border-slate-200 rounded-bl-xs"
                     }`}
                   >
-                    <div className="flex items-center justify-between text-[10.5px] opacity-75 mb-1 pb-1 border-b border-current/15">
+                    <div className="flex items-center justify-between text-[11px] opacity-75 mb-1 pb-1 border-b border-current/15">
                       <span className="font-bold">
-                        {m.sender === "user" ? "लाभार्थी (Beneficiary Applicant)" : "विकल्प AI (MoSJE Assistant)"}
+                        {m.sender === "user" ? "लाभार्थी (आप)" : "पीएम-अजय सहायक"}
                       </span>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <span>{m.timestamp}</span>
                         {m.sender === "assistant" && (
                           <button
                             type="button"
                             onClick={() => speakAloud(m.text, selectedLang)}
-                            title="सवाल दोबारा सुनें"
-                            className="p-0.5 hover:bg-black/10 rounded text-amber-800 transition-colors"
+                            title="दोबारा सुनें"
+                            className="p-0.5 hover:bg-black/10 rounded transition-colors"
                           >
                             <Volume2 className="w-3.5 h-3.5" />
                           </button>
                         )}
                       </div>
                     </div>
-                    <p className="font-sans font-medium">{m.text}</p>
+                    <p className="font-medium text-slate-900">{m.text}</p>
                   </div>
                 </div>
               ))}
 
               {isListening && (
-                <div className="flex items-center gap-2 text-xs text-emerald-800 italic animate-pulse bg-emerald-50 p-2.5 rounded-lg border border-emerald-200">
-                  <Radio className="w-3.5 h-3.5 animate-spin text-emerald-700" />
-                  <span>आपकी आवाज दर्ज हो रही है... "{userInput || "बोलिए..."}"</span>
+                <div className="flex items-center gap-2 text-xs text-emerald-800 italic bg-emerald-50 p-3 rounded-xl border border-emerald-200 animate-pulse">
+                  <Radio className="w-4 h-4 animate-spin text-emerald-600" />
+                  <span>आपकी आवाज दर्ज हो रही है: "{userInput || "बोलिए..."}"</span>
                 </div>
               )}
             </div>
 
-            {/* Quick Answer Evaluation Presets (For fast evaluation without mic) */}
-            <div className="bg-slate-100 border-t border-slate-200 p-2.5">
-              <div className="text-[11px] font-bold text-slate-700 mb-1.5 flex items-center justify-between">
-                <span>त्वरित नमूना उत्तर (Turn {currentTurn} Presets for Evaluation):</span>
-                <span className="text-[10px] text-slate-500 font-mono">Tap to simulate live speech</span>
+            {/* Conversational Presets / One-Tap Suggestion Chips */}
+            <div className="bg-slate-100/80 border-t border-slate-200 p-3">
+              <div className="text-[11px] font-semibold text-slate-600 mb-1.5 flex items-center justify-between">
+                <span>त्वरित उत्तर विकल्प (Quick Tap):</span>
+                <span className="text-[10px] text-slate-400">माइक न होने पर दबाएं</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {sampleResponsesForTurn.map((sample, idx) => (
@@ -413,7 +386,7 @@ export const PMAJAYVoiceInterview: React.FC = () => {
                     key={idx}
                     type="button"
                     onClick={() => handleSubmitTurn(sample)}
-                    className="text-[11px] bg-white hover:bg-amber-50 text-slate-800 hover:text-amber-900 border border-slate-300 hover:border-amber-400 px-2.5 py-1 rounded text-left transition-colors font-medium truncate max-w-full shadow-xs"
+                    className="text-[11px] bg-white hover:bg-emerald-50 text-slate-700 hover:text-emerald-900 border border-slate-200 hover:border-emerald-300 px-3 py-1.5 rounded-lg text-left transition-colors font-medium shadow-2xs truncate max-w-full"
                   >
                     "{sample}"
                   </button>
@@ -421,18 +394,17 @@ export const PMAJAYVoiceInterview: React.FC = () => {
               </div>
             </div>
 
-            {/* Interactive Voice Mic & Input Bar */}
-            <div className="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
-              {/* Primary Mic Button */}
+            {/* Input & Microphone Console */}
+            <div className="p-3.5 bg-white border-t border-slate-200 flex items-center gap-2.5">
               <button
                 type="button"
                 onClick={toggleListening}
-                className={`p-3 rounded-full flex items-center justify-center transition-all ${
+                className={`p-3.5 rounded-full flex items-center justify-center transition-all ${
                   isListening
                     ? "bg-rose-600 text-white shadow-md animate-pulse ring-4 ring-rose-200"
-                    : "bg-[#15803d] hover:bg-[#166534] text-white shadow-sm ring-2 ring-emerald-400/30"
+                    : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm hover:scale-105"
                 }`}
-                title={isListening ? "सुनना बंद करें (Stop Listening)" : "माइक से बोलें (Start Voice Input)"}
+                title={isListening ? "सुनना बंद करें" : "माइक से बोलें"}
               >
                 {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
               </button>
@@ -444,17 +416,17 @@ export const PMAJAYVoiceInterview: React.FC = () => {
                 onKeyDown={(e) => e.key === "Enter" && handleSubmitTurn()}
                 placeholder={
                   isListening
-                    ? "सुन रहा हूँ... बोले जा रहे शब्द यहाँ दिखेंगे"
+                    ? "सुन रहा हूँ... बोलिए..."
                     : "माइक दबाकर बोलें या उत्तर यहाँ लिखें..."
                 }
-                className="flex-1 bg-slate-50 border border-slate-300 rounded-lg px-3 py-2 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-1 focus:ring-[#002147]"
+                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600"
               />
 
               <button
                 type="button"
                 disabled={!userInput.trim() || isSubmitting}
                 onClick={() => handleSubmitTurn()}
-                className="p-2.5 rounded-lg bg-[#002147] hover:bg-blue-900 disabled:opacity-40 text-white transition-colors"
+                className="p-3 rounded-xl bg-[#002147] hover:bg-blue-900 disabled:opacity-30 text-white transition-colors"
                 title="उत्तर भेजें"
               >
                 <Send className="w-4 h-4" />
@@ -462,126 +434,89 @@ export const PMAJAYVoiceInterview: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: Transparent Beneficiary Profile State Inspector */}
-          <div className="lg:col-span-5 flex flex-col bg-white border-2 border-slate-200 rounded-xl shadow-xs p-4 sm:p-5 h-[600px] overflow-hidden">
-            <div className="pb-3 border-b border-slate-200 flex items-center justify-between">
+          {/* Right Column: Clean Beneficiary Profile Summary Card */}
+          <div className="lg:col-span-5 flex flex-col bg-white border border-slate-200 rounded-2xl shadow-xs p-5 h-[580px] overflow-hidden">
+            <div className="pb-3 border-b border-slate-100 flex items-center justify-between">
               <div>
-                <h2 className="text-sm font-bold text-[#002147] uppercase tracking-wide">
-                  संरचित प्रोफाइल स्थिति (Live Profile State)
+                <h2 className="text-sm font-bold text-[#002147]">
+                  नागरिक प्रोफाइल सारांश (Live Profile)
                 </h2>
                 <p className="text-[11px] text-slate-500">
-                  Turn-by-turn field confidence & RPL readiness tracking
+                  वॉयस संवाद से स्वतः दर्ज विवरण
                 </p>
               </div>
-              <div className="text-right">
-                <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 px-2.5 py-1 rounded-full font-mono">
-                  {Math.round((profile?.metadata.profile_completeness || 0) * 100)}% Complete
-                </span>
-              </div>
+              <span className="text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full font-mono">
+                {Math.round((profile?.metadata.profile_completeness || 0) * 100)}% पूर्ण
+              </span>
             </div>
 
             {/* Profile Fields List */}
             <div className="flex-1 overflow-y-auto py-3 space-y-3 text-xs">
-              {/* Field 1: Basic Info & Eligibility */}
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <div className="font-bold text-slate-900 mb-1.5 flex justify-between">
-                  <span>१. आधार व मूल विवरण (Identity)</span>
+              {/* Field 1: Basic Info */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                <div className="font-bold text-slate-900 mb-1 flex justify-between">
+                  <span>१. आधार व मूल विवरण</span>
                   <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
-                    SC Verified
+                    SC सत्यापित
                   </span>
                 </div>
-                <div className="space-y-1 text-slate-700">
-                  <div>
-                    नाम: <strong className="text-slate-900">{profile?.basic_info.name.value || "—"}</strong>
-                    {profile?.basic_info.name.confidence ? (
-                      <span className="text-[10px] text-emerald-700 font-mono ml-1.5 font-bold">
-                        ({Math.round(profile.basic_info.name.confidence * 100)}% conf)
-                      </span>
-                    ) : null}
-                  </div>
-                  <div>
-                    स्थान: <strong className="text-slate-900">{profile?.basic_info.location.value || "—"}</strong>
-                  </div>
-                  <div>
-                    श्रेणी:{" "}
-                    <span className="bg-blue-100 text-blue-900 px-1.5 py-0.2 rounded font-mono font-bold text-[10px]">
-                      {profile?.basic_info.category.value || "SC (PM-AJAY Eligible)"}
-                    </span>
-                  </div>
+                <div className="space-y-0.5 text-slate-600">
+                  <div>नाम: <strong className="text-slate-900">{profile?.basic_info.name.value || "—"}</strong></div>
+                  <div>स्थान: <strong className="text-slate-900">{profile?.basic_info.location.value || "—"}</strong></div>
                 </div>
               </div>
 
-              {/* Field 2: Education Level */}
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <div className="font-bold text-slate-900 mb-1.5 flex justify-between">
-                  <span>२. शैक्षणिक योग्यता (Education)</span>
-                  <span className="text-[10px] text-slate-500 font-mono">
-                    Conf: {Math.round((profile?.education.highest_level.confidence || 0) * 100)}%
-                  </span>
-                </div>
+              {/* Field 2: Education */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                <div className="font-bold text-slate-900 mb-1">२. शैक्षणिक स्तर</div>
                 <div>
                   {profile?.education.highest_level.value ? (
-                    <span className="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded text-xs font-mono font-bold uppercase">
+                    <span className="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded text-xs font-bold uppercase">
                       {profile.education.highest_level.value.replace("_", " ")}
                     </span>
                   ) : (
-                    <span className="text-slate-400 italic">वॉयस उत्तर की प्रतीक्षा...</span>
+                    <span className="text-slate-400 italic">उत्तर की प्रतीक्षा...</span>
                   )}
                 </div>
               </div>
 
-              {/* Field 3: Current Work & RPL Potential */}
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <div className="font-bold text-slate-900 mb-1.5 flex justify-between">
-                  <span>३. वर्तमान कार्य व पूर्व अनुभव (Prior Skills)</span>
+              {/* Field 3: Prior Skills */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                <div className="font-bold text-slate-900 mb-1 flex justify-between">
+                  <span>३. पूर्व कार्य अनुभव</span>
                   <span className="text-[10px] text-amber-800 font-bold bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
-                    RPL Eligible
+                    RPL पात्र
                   </span>
                 </div>
-                <div className="space-y-1 text-slate-700">
+                <div className="space-y-0.5 text-slate-600">
+                  <div>कार्य: <strong className="text-slate-900">{profile?.current_livelihood.occupation.value || "—"}</strong></div>
                   <div>
-                    कार्य: <strong className="text-slate-900">{profile?.current_livelihood.occupation.value || "—"}</strong>
-                  </div>
-                  <div>
-                    निकाले गए हुनर:{" "}
+                    हुनर:{" "}
                     {profile?.current_livelihood.skills && profile.current_livelihood.skills.length > 0 ? (
                       <span className="text-[#002147] font-semibold">
                         {profile.current_livelihood.skills.join(", ")}
                       </span>
                     ) : (
-                      <span className="text-slate-400 italic">लंबित</span>
+                      <span className="text-slate-400 italic">दर्ज हो रहा है...</span>
                     )}
                   </div>
                 </div>
               </div>
 
               {/* Field 4: Aspirations */}
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <div className="font-bold text-slate-900 mb-1.5">४. रुचि व रोजगार प्रकार (Aspirations)</div>
-                <div className="space-y-1 text-slate-700">
-                  <div>
-                    ट्रेड रुचि:{" "}
-                    <strong className="text-slate-900">{profile?.aspirations.interest.value || "—"}</strong>
-                  </div>
-                  <div>
-                    मॉडल:{" "}
-                    {profile?.aspirations.employment_preference.value ? (
-                      <span className="bg-purple-100 text-purple-900 px-1.5 py-0.2 rounded font-semibold text-[11px]">
-                        {profile.aspirations.employment_preference.value.replace("_", " ")}
-                      </span>
-                    ) : (
-                      "—"
-                    )}
-                  </div>
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                <div className="font-bold text-slate-900 mb-1">४. रुचि व रोजगार प्रकार</div>
+                <div className="space-y-0.5 text-slate-600">
+                  <div>ट्रेड रुचि: <strong className="text-slate-900">{profile?.aspirations.interest.value || "—"}</strong></div>
                 </div>
               </div>
 
-              {/* Field 5: Mobility Constraints */}
-              <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                <div className="font-bold text-slate-900 mb-1.5">५. यात्रा सीमा (Mobility Constraint)</div>
-                <div>
-                  दूरी:{" "}
-                  <strong className="text-rose-800 font-bold">
+              {/* Field 5: Mobility */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                <div className="font-bold text-slate-900 mb-1">५. यात्रा सीमा (Mobility)</div>
+                <div className="text-slate-700">
+                  अधिकतम दूरी:{" "}
+                  <strong className="text-emerald-800">
                     {profile?.constraints.mobility.value
                       ? profile.constraints.mobility.value.replace("_", " ")
                       : "—"}
@@ -591,13 +526,13 @@ export const PMAJAYVoiceInterview: React.FC = () => {
             </div>
 
             {/* Bottom Proceed Action */}
-            <div className="pt-3 border-t border-slate-200">
+            <div className="pt-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => navigate("/pmajay/profile")}
-                className="w-full text-center py-2.5 px-3 rounded-lg bg-[#002147] hover:bg-blue-900 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-2.5 px-3 rounded-xl bg-[#002147] hover:bg-blue-900 text-white font-bold text-xs shadow-xs transition-colors flex items-center justify-center gap-1.5"
               >
-                <span>प्रोफाइल सारांश व पारदर्शी स्कोरिंग पर जाएं</span>
+                <span>प्रोफाइल सारांश व स्कोरिंग देखें</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -605,7 +540,6 @@ export const PMAJAYVoiceInterview: React.FC = () => {
         </div>
       </main>
 
-      {/* Feature Phone IVR Simulator Modal */}
       <IVRSimulatorModal isOpen={ivrModalOpen} onClose={() => setIvrModalOpen(false)} />
     </div>
   );

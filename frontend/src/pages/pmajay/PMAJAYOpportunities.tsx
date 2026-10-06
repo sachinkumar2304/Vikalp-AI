@@ -158,7 +158,7 @@ export const PMAJAYOpportunities: React.FC = () => {
 
       <main className="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-8 flex-1 w-full">
         {/* Step Indicator & Header */}
-        <div className="bg-white border-2 border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs mb-6">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs mb-6">
           <div className="flex items-center gap-2 text-xs font-bold text-[#b45309] uppercase tracking-wider mb-1">
             <span className="bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300">
               चरण ५ / ५ • Step 5 of 5
@@ -199,7 +199,7 @@ export const PMAJAYOpportunities: React.FC = () => {
         </div>
 
         {/* ════ APPLICATION TRACKING TIMELINE (COMPETITOR UPGRADE: NEXUS/LIVPATH BENCHMARK) ════ */}
-        <div className="bg-white border-2 border-slate-200 rounded-xl p-4 sm:p-5 shadow-xs mb-6">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs mb-6">
           <h3 className="font-bold text-xs sm:text-sm text-[#002147] uppercase tracking-wide mb-3 flex items-center justify-between">
             <span>आवेदन एवं संस्वीकृति स्थिति ट्रैक (Benefit Dispatch Lifecycle)</span>
             <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
@@ -304,7 +304,7 @@ export const PMAJAYOpportunities: React.FC = () => {
             return (
               <div
                 key={opp.id}
-                className="bg-white border-2 border-slate-200 hover:border-slate-300 rounded-xl p-5 shadow-xs transition-all flex flex-col justify-between"
+                className="bg-white border border-slate-200 hover:border-slate-300 rounded-2xl p-5 shadow-xs transition-all flex flex-col justify-between"
               >
                 <div>
                   <div className="flex justify-between items-start mb-2">
