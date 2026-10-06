@@ -145,8 +145,8 @@ export const LivelihoodPassportModal: React.FC<PassportProps> = ({
                   <div className="font-bold text-slate-900 mt-0.5">{district}</div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-slate-500">पहचान प्रमाणीकरण (Aadhaar Token)</div>
-                  <div className="font-mono text-slate-700 font-bold mt-0.5">XXXX-XXXX-4819</div>
+                  <div className="text-[10px] text-slate-500">सत्र संदर्भ टोकन (Session Reference)</div>
+                  <div className="font-mono text-slate-700 font-bold mt-0.5">PM-AJAY-REF-4819</div>
                 </div>
                 <div>
                   <div className="text-[10px] text-slate-500">संवाद माध्यम (Intake Channel)</div>
@@ -173,7 +173,7 @@ export const LivelihoodPassportModal: React.FC<PassportProps> = ({
                     </span>
                     {isRPL && (
                       <span className="ml-2 bg-[#b45309] text-white text-[10px] font-bold px-2 py-0.5 rounded">
-                        RPL Fast-Track Assessment (40 hrs)
+                        RPL Assessment (40 hrs)
                       </span>
                     )}
                     <h3 className="font-bold text-base text-slate-900 mt-1">
@@ -181,8 +181,8 @@ export const LivelihoodPassportModal: React.FC<PassportProps> = ({
                     </h3>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] text-slate-500">अपेक्षित मासिक आय (Est. Income)</div>
-                    <div className="font-bold text-emerald-700 text-sm">₹15,000 – ₹22,000 / माह</div>
+                    <div className="text-[10px] text-slate-500">आजीविका दर (Livelihood Scale)</div>
+                    <div className="font-bold text-emerald-700 text-sm">मानक जिला आजीविका दर</div>
                   </div>
                 </div>
 
@@ -199,27 +199,30 @@ export const LivelihoodPassportModal: React.FC<PassportProps> = ({
               </div>
             </div>
 
-            {/* Section 3: Financial Entitlements under PM-AJAY GIA */}
+            {/* Section 3: Livelihood Support Entitlements under PM-AJAY GIA */}
             <div className="font-sans mb-6">
               <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#002147] pb-1 border-b border-slate-300 mb-3">
-                ३. पीएम-अजय वित्तीय अनुदान एवं टूलकिट सहायता (Sanctioned Grant Checklist)
+                ३. पीएम-अजय आजीविका एवं टूलकिट सहायता (Livelihood Checklist)
               </h4>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                 <div className="bg-white border-2 border-emerald-600 rounded-lg p-3 text-center">
-                  <div className="text-[10px] text-slate-500 uppercase font-bold">टूलकिट पूंजी अनुदान</div>
-                  <div className="text-xl font-extrabold text-emerald-700 my-0.5">₹50,000/-</div>
-                  <div className="text-[10px] text-emerald-800 font-semibold">100% निःशुल्क सरकारी ग्रांट</div>
+                  <div className="text-[10px] text-slate-500 uppercase font-bold">टूलकिट उपकरण सहायता</div>
+                  <div className="text-base font-extrabold text-emerald-700 my-1">उपकरण किट संस्वीकृति</div>
+                  <div className="text-[10px] text-emerald-800 font-semibold">निःशुल्क सरकारी योजना सहयोग</div>
                 </div>
                 <div className="bg-white border border-slate-200 rounded-lg p-3 text-center">
                   <div className="text-[10px] text-slate-500 uppercase font-bold">कौशल प्रशिक्षण शुल्क</div>
-                  <div className="text-xl font-extrabold text-[#002147] my-0.5">₹0 (पूर्णतः मुफ्त)</div>
-                  <div className="text-[10px] text-slate-600">केंद्र सरकार द्वारा शत-प्रतिशत वित्तपोषित</div>
+                  <div className="text-base font-extrabold text-[#002147] my-1">100% निःशुल्क प्रशिक्षण</div>
+                  <div className="text-[10px] text-slate-600">शत-प्रतिशत सरकारी वित्तपोषित</div>
                 </div>
                 <div className="bg-white border border-slate-200 rounded-lg p-3 text-center">
-                  <div className="text-[10px] text-slate-500 uppercase font-bold">ऋण सहायता लिंकेज</div>
-                  <div className="text-sm font-extrabold text-amber-800 my-1">Mudra / NSFDC Linkage</div>
-                  <div className="text-[10px] text-slate-600">रियायती ब्याज दर पर सूक्ष्म उद्यम ऋण</div>
+                  <div className="text-[10px] text-slate-500 uppercase font-bold">संस्थागत लिंकेज</div>
+                  <div className="text-sm font-extrabold text-amber-800 my-1">क्लस्टर लिंकेज</div>
+                  <div className="text-[10px] text-slate-600">स्थानीय पंचायत व एमएसएमई लिंकेज</div>
                 </div>
+              </div>
+              <div className="mt-2 text-[10.5px] text-slate-500 text-center">
+                स्थानीय डेस्क से संपर्क करें; यह स्क्रीन धन स्वीकृत नहीं करती है।
               </div>
             </div>
 

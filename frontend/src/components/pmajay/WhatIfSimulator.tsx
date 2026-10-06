@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { SlidersHorizontal, MapPin, Clock, IndianRupee, RotateCcw, CheckCircle2, AlertCircle, Sparkles } from "lucide-react";
+import { SlidersHorizontal, MapPin, Clock, RotateCcw, Award, ShieldAlert } from "lucide-react";
 
 export interface WhatIfParams {
   travelRadiusKm: number; // 3, 10, 25, 50
   dailyHours: number; // 2 to 8
-  minIncome: number; // 10000 to 25000
   pathwayFilter: "all" | "self" | "wage" | "shg";
   isRPLEligible: boolean;
 }
@@ -21,9 +20,8 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
   className = "",
 }) => {
   const [params, setParams] = useState<WhatIfParams>({
-    travelRadiusKm: initialParams?.travelRadiusKm ?? 10,
+    travelRadiusKm: initialParams?.travelRadiusKm ?? 5,
     dailyHours: initialParams?.dailyHours ?? 6,
-    minIncome: initialParams?.minIncome ?? 12000,
     pathwayFilter: initialParams?.pathwayFilter ?? "all",
     isRPLEligible: initialParams?.isRPLEligible ?? true,
   });
@@ -36,9 +34,8 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
 
   const handleReset = () => {
     const resetVals: WhatIfParams = {
-      travelRadiusKm: 10,
+      travelRadiusKm: 5,
       dailyHours: 6,
-      minIncome: 12000,
       pathwayFilter: "all",
       isRPLEligible: true,
     };
@@ -47,10 +44,10 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
   };
 
   const getMobilityLabel = (km: number) => {
-    if (km <= 3) return "गांव के भीतर ही (Village Only - 0 to 3 km)";
+    if (km <= 3) return "गांव के भीतर ही (Village Level - 0 to 3 km)";
     if (km <= 10) return "ब्लॉक / तहसील स्तर (Block Level - up to 10 km)";
     if (km <= 25) return "जिला मुख्यालय तक (District HQ - up to 25 km)";
-    return "राज्य / अंतर्राज्यीय (Interstate - > 25 km)";
+    return "राज्य स्तर (State Level - > 25 km)";
   };
 
   return (
@@ -65,10 +62,10 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
           </div>
           <div>
             <h3 className="font-bold text-sm text-[#002147]">
-              इंटरैक्टिव "What-If" परिस्थिति सिम्युलेटर (Dynamic Constraint Re-Ranker)
+              परिस्थिति सिम्युलेटर (Dynamic Constraint Re-Ranker)
             </h3>
             <p className="text-[11px] text-slate-500">
-              दूरी, समय व आय की शर्तें बदलें और देखें कि अनुशंसाएं तुरंत कैसे पुनर्गठित होती हैं
+              दूरी व समय की सीमाएं बदलें और देखें कि अनुशंसाएं तुरंत कैसे पुनर्गठित होती हैं
             </p>
           </div>
         </div>
@@ -83,7 +80,7 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Slider 1: Mobility Radius */}
         <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
           <div className="flex justify-between items-center text-xs font-bold text-slate-800 mb-1">
@@ -132,41 +129,17 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
           <div className="text-[10.5px] font-medium text-slate-600 leading-tight">
             {params.dailyHours <= 3
               ? "अंशकालिक / घरेलू जिम्मेदारी अनुकूल (Part-Time)"
-              : "पूर्णकालिक गहन प्रशिक्षण (Full-Time Certification)"}
+              : "पूर्णकालिक गहन प्रशिक्षण (Full-Time Training)"}
           </div>
         </div>
 
-        {/* Slider 3: Minimum Monthly Target Income */}
-        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
-          <div className="flex justify-between items-center text-xs font-bold text-slate-800 mb-1">
-            <span className="flex items-center gap-1">
-              <IndianRupee className="w-3.5 h-3.5 text-emerald-700" />
-              <span>न्यूनतम लक्ष्य आय:</span>
-            </span>
-            <span className="font-mono text-emerald-800 font-extrabold">
-              ₹{params.minIncome.toLocaleString("en-IN")}/mo
-            </span>
-          </div>
-
-          <input
-            type="range"
-            min="9000"
-            max="22000"
-            step="1000"
-            value={params.minIncome}
-            onChange={(e) => handleUpdate({ minIncome: Number(e.target.value) })}
-            className="w-full accent-emerald-700 h-2 bg-slate-200 rounded-lg cursor-pointer my-2"
-          />
-
-          <div className="text-[10.5px] font-medium text-slate-600 leading-tight">
-            उच्च आय वाले ट्रेड्स को प्राथमिकता स्कोरिंग मिलेगी
-          </div>
-        </div>
-
-        {/* Toggle 4: RPL Fast-Track vs Fresh Skilling */}
+        {/* Rule 3: RPL Prior Experience Validation */}
         <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
           <div className="text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
-            <span>RPL पूर्व अनुभव मूल्यांकन:</span>
+            <span className="flex items-center gap-1">
+              <Award className="w-3.5 h-3.5 text-amber-700" />
+              <span>RPL पूर्व अनुभव नियम:</span>
+            </span>
             <span
               className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
                 params.isRPLEligible
@@ -174,7 +147,7 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
                   : "bg-slate-200 text-slate-700"
               }`}
             >
-              {params.isRPLEligible ? "४० घंटे फास्ट-ट्रैक" : "३००+ घंटे फ्रेश"}
+              {params.isRPLEligible ? "४० घंटे मूल्यांकन" : "३००+ घंटे क्लास"}
             </span>
           </div>
 
@@ -186,12 +159,12 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
               className="w-4 h-4 text-[#002147] rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
             />
             <span className="text-[11px] font-semibold text-slate-700">
-              पूर्व अनौपचारिक कार्य अनुभव है (Prior Skills)
+              12+ महीने का व्यावहारिक पूर्व अनुभव दर्ज है
             </span>
           </label>
 
           <div className="text-[10px] text-slate-500 leading-tight">
-            RPL सक्रिय करने पर सीधे प्रमाणन व ₹50,000 टूलकिट अनुदान मिलता है।
+            RPL एक पात्रता नियम है (12+ माह अनुभव व कौशल सामंजस्य होने पर ही 40 घंटे मूल्यांकन अनुमत)।
           </div>
         </div>
       </div>
@@ -204,7 +177,7 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
         <div className="flex flex-wrap gap-1.5">
           {[
             { id: "all", label: "सभी 3 मॉडल (All Pathways)" },
-            { id: "self", label: "स्वरोजगार व टूलकिट (Self-Employment)" },
+            { id: "self", label: "स्वरोजगार क्लस्टर (Self-Employment)" },
             { id: "wage", label: "स्थानीय वेतन रोजगार (Wage Jobs)" },
             { id: "shg", label: "महिला SHG क्लस्टर (SHG Enterprise)" },
           ].map((item) => (
@@ -222,6 +195,12 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
             </button>
           ))}
         </div>
+      </div>
+
+      {/* Official Funding Notice */}
+      <div className="mt-3 text-[11px] text-slate-600 bg-amber-50/80 border border-amber-200 rounded-lg p-2 flex items-center gap-2">
+        <ShieldAlert className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+        <span>स्थानीय डेस्क से संपर्क करें; यह स्क्रीन धन स्वीकृत नहीं करती है। (Consult the local desk; this screen does not grant funds.)</span>
       </div>
     </div>
   );

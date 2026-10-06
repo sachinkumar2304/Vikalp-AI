@@ -36,7 +36,7 @@ export const WhatsAppDispatchModal: React.FC<WhatsAppProps> = ({
 - संस्वीकृति क्रमांक: ${sanctionId}
 - चयनित ट्रेड: ${matchedTrade}
 - आवंटित केंद्र: ${centreName}
-- टूलकिट अनुदान: ₹50,000/- (100% निःशुल्क सरकारी सहायता)
+- टूलकिट सहायता: निःशुल्क सरकारी योजना सहयोग (स्थानीय डेस्क से संपर्क करें; यह स्क्रीन धन स्वीकृत नहीं करती है)
 - हेल्पलाइन: 1800-11-2026 (टोल-फ्री)
 
 कृपया यह संदेश अपने नजदीकी कौशल केंद्र या जिला समाज कल्याण अधिकारी को दिखाएं।
@@ -126,7 +126,7 @@ export const WhatsAppDispatchModal: React.FC<WhatsAppProps> = ({
           <div className="text-xs font-bold text-slate-700 mb-2 flex items-center justify-between">
             <span>प्राप्तकर्ता मोबाइल: <strong className="text-slate-900 font-mono">{mobileNumber}</strong></span>
             <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-              Aadhaar Linked SIM
+              Verified Mobile SIM
             </span>
           </div>
 

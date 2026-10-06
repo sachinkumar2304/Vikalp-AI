@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Phone, PhoneOff, Volume2, VolumeX, X, Radio, CheckCircle, ShieldCheck, Hash } from "lucide-react";
+import { Phone, PhoneOff, Volume2, VolumeX, X, Radio, CheckCircle, ShieldCheck, Hash, AlertTriangle } from "lucide-react";
 import { EmblemOfIndia } from "./EmblemOfIndia";
+import { pmajayService, BeneficiaryProfileData } from "../../services/pmajayService";
 
 interface IVRProps {
   isOpen: boolean;
@@ -32,6 +33,8 @@ interface IVRState {
   interest: string;
   mobility: string;
   matchedTrade: string;
+  matchedReason: string;
+  nearestCentre: string;
   history: string[];
 }
 
@@ -45,6 +48,8 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
     interest: "",
     mobility: "",
     matchedTrade: "",
+    matchedReason: "",
+    nearestCentre: "",
     history: [],
   });
 
@@ -105,92 +110,70 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  // Start Call
-  const handleDialCall = () => {
+  const handleStartCall = () => {
     setIvr((prev) => ({
       ...prev,
       stage: "ringing",
-      step: 1,
-      duration: 0,
-      history: ["कॉल डायल की जा रही है: 1800-11-2026 (टोल-फ्री)..."],
+      history: ["कॉल प्रारंभ: टोल-फ्री डेमो लाइन पर डायल किया जा रहा है..."],
     }));
 
     setTimeout(() => {
       setIvr((prev) => ({
         ...prev,
         stage: "connected",
+        step: 1,
+        duration: 0,
         history: [
           ...prev.history,
-          "कॉल कनेक्ट हो गई। आईवीआर स्वागत संदेश शुरू हुआ।",
+          "कॉल कनेक्ट: पीएम-अजय कौशल सहायक कीपैड डेमो से जुड़ाव।",
+          "चरण 1: भाषा चयन — हिंदी के लिए 1, मराठी के लिए 2, अंग्रेजी के लिए 3 दबाएं।",
         ],
       }));
 
-      // Start duration timer
+      // Start duration counter
       timerRef.current = setInterval(() => {
         setIvr((prev) => ({ ...prev, duration: prev.duration + 1 }));
       }, 1000);
 
       speakIVR(
-        "नमस्ते! भारत सरकार, सामाजिक न्याय एवं अधिकारिता मंत्रालय के पीएम-अजय कौशल हेल्पलाइन 1800-11-2026 में आपका स्वागत है। हिंदी के लिए 1 दबाएं। For English press 2. मराठीसाठी 3 दाबा।",
+        "Namaskar! PM-AJAY GIA Kaushal Sahayak keypad demo me aapka swagat hai. Hindi ke liye 1 dabayein, Marathi ke liye 2 dabayein, English ke liye 3 dabayein.",
         "hi-IN"
       );
-    }, 1800);
+    }, 1200);
   };
 
-  // End Call
   const handleEndCall = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
     if ("speechSynthesis" in window) {
       window.speechSynthesis.cancel();
     }
-    if (timerRef.current) clearInterval(timerRef.current);
     setIsSpeaking(false);
     setIvr((prev) => ({
       ...prev,
       stage: "ended",
-      history: [...prev.history, "कॉल समाप्त हुई (Call Disconnected)"],
+      history: [...prev.history, "कॉल समाप्त की गई।"],
     }));
   };
 
-  // Reset simulator
-  const handleReset = () => {
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-    }
-    if (timerRef.current) clearInterval(timerRef.current);
-    setIsSpeaking(false);
-    setIvr({
-      stage: "idle",
-      step: 1,
-      duration: 0,
-      selectedLang: "hi",
-      education: "",
-      interest: "",
-      mobility: "",
-      matchedTrade: "",
-      history: [],
-    });
-  };
-
-  // Handle Keypad Press
-  const handleKeyPress = (digit: string) => {
-    playDTMFTone(digit);
+  const handleKeypadPress = async (digit: string) => {
     if (ivr.stage !== "connected") return;
+    playDTMFTone(digit);
 
     if (ivr.step === 1) {
       // Language selection
-      let lang = "hi";
+      let lang: "hi" | "en" | "mr" = "hi";
       let langCode = "hi-IN";
       if (digit === "2") {
-        lang = "en";
-        langCode = "en-IN";
-      } else if (digit === "3") {
         lang = "mr";
         langCode = "mr-IN";
+      } else if (digit === "3") {
+        lang = "en";
+        langCode = "en-IN";
       }
 
       setIvr((prev) => ({
         ...prev,
-        selectedLang: lang as any,
+        selectedLang: lang,
         step: 2,
         history: [
           ...prev.history,
@@ -201,20 +184,19 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
       setTimeout(() => {
         const prompt =
           lang === "hi"
-            ? "अपनी उच्चतम शिक्षा चुनें: आठवीं पास के लिए 1, दसवीं पास के लिए 2, आठवीं से कम या अनपढ़ के लिए 3 दबाएं।"
-            : lang === "mr"
-            ? "तुमचे शिक्षण निवडा: ८वी उत्तीर्णसाठी १, १०वी उत्तीर्णसाठी २, निरक्षर किंवा ८वी पेक्षा कमीसाठी ३ दाबा."
-            : "Select your highest education: Press 1 for 8th pass, 2 for 10th pass, 3 for below 8th or non-formal.";
+            ? "अपनी शिक्षा दर्ज करें: 8वीं से कम के लिए 1, 8वीं पास के लिए 2, 10वीं पास के लिए 3, 12वीं या स्नातक के लिए 4 दबाएं।"
+            : "Enter your education: Press 1 for below 8th, 2 for 8th pass, 3 for 10th pass, 4 for 12th or graduate.";
         speakIVR(prompt, langCode);
       }, 400);
     } else if (ivr.step === 2) {
       // Education selection
       const eduMap: Record<string, string> = {
-        "1": "8th_pass",
-        "2": "10th_pass",
-        "3": "below_8th",
+        "1": "below_8th",
+        "2": "8th_pass",
+        "3": "10th_pass",
+        "4": "12th_pass",
       };
-      const chosenEdu = eduMap[digit] || "8th_pass";
+      const chosenEdu = eduMap[digit] || "below_8th";
 
       setIvr((prev) => ({
         ...prev,
@@ -222,26 +204,26 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
         step: 3,
         history: [
           ...prev.history,
-          `कुंजी ${digit} दबाई गई: शिक्षा - ${chosenEdu.replace("_", " ")}`,
+          `कुंजी ${digit} दबाई गई: शिक्षा स्तर - ${chosenEdu.replace("_", " ")}`,
         ],
       }));
 
       setTimeout(() => {
         const prompt =
           ivr.selectedLang === "hi"
-            ? "आप किस काम में रुचि रखते हैं? सोलर व बिजली कार्य के लिए 1, सिलाई व बुटीक के लिए 2, प्लंबिंग नल जल के लिए 3, मोटर मैकेनिक के लिए 4 दबाएं।"
-            : "Select interest: Press 1 for Solar/Electrical, 2 for Tailoring/Boutique, 3 for Plumbing, 4 for Automotive Mechanic.";
+            ? "ट्रेड की रुचि चुनें: सोलर व बिजली के लिए 1, सिलाई व गारमेंट के लिए 2, उपकरण रिपेयर के लिए 3, प्लंबिंग व नल फिटिंग के लिए 4 दबाएं।"
+            : "Select trade interest: Press 1 for Solar energy, 2 for Tailoring, 3 for Appliance repair, 4 for Plumbing.";
         speakIVR(prompt, ivr.selectedLang === "hi" ? "hi-IN" : "en-IN");
       }, 400);
     } else if (ivr.step === 3) {
-      // Interest selection
+      // Trade interest selection
       const tradeMap: Record<string, string> = {
-        "1": "Solar PV Installer (Suryamitra) - ELE/Q1401",
-        "2": "Self Employed Tailor & Boutique - AMH/Q1947",
-        "3": "General Plumber (Jal Jeevan) - PLU/Q0101",
-        "4": "Two-Wheeler & EV Technician - ASC/Q9702",
+        "1": "Solar PV Installer (Suryamitra)",
+        "2": "Self Employed Tailor & Boutique Manager",
+        "3": "Field Technician - Home Appliances",
+        "4": "Plumber (General Maintenance)",
       };
-      const chosenTrade = tradeMap[digit] || tradeMap["1"];
+      const chosenTrade = tradeMap[digit] || "General Technical";
 
       setIvr((prev) => ({
         ...prev,
@@ -257,11 +239,11 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
         const prompt =
           ivr.selectedLang === "hi"
             ? "यात्रा की सीमा: गांव के अंदर ही काम करने के लिए 1, ब्लॉक या तहसील जाने के लिए 2, जिले में यात्रा के लिए 3 दबाएं।"
-            : "Mobility range: Press 1 for within village only, 2 for block level, 3 for within district.";
+            : "Mobility range: Press 1 for within village, 2 for block level, 3 for within district.";
         speakIVR(prompt, ivr.selectedLang === "hi" ? "hi-IN" : "en-IN");
       }, 400);
     } else if (ivr.step === 4) {
-      // Mobility selection & Final recommendation
+      // Mobility selection & Final recommendation evaluated using the EXACT SAME evaluate_profile engine
       const mobMap: Record<string, string> = {
         "1": "within_village",
         "2": "within_block",
@@ -269,28 +251,59 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
       };
       const chosenMob = mobMap[digit] || "within_block";
 
-      const matched =
-        ivr.interest.includes("Tailor") || chosenMob === "within_village"
-          ? "Self Employed Tailor & Boutique (AMH/Q1947) - 100% Village Friendly"
-          : ivr.interest || "Solar PV Installer (ELE/Q1401)";
+      // Build structured profile and query the same engine
+      const tempProfile: BeneficiaryProfileData = pmajayService.createDefaultProfile(
+        "ivr-" + Math.random().toString(36).substring(2, 7),
+        ivr.selectedLang === "hi" ? "hi-IN" : "en-IN"
+      );
+      tempProfile.education.highest_level.value = ivr.education;
+      tempProfile.aspirations.interest.value = ivr.interest;
+      tempProfile.constraints.mobility.value = chosenMob;
+      if (chosenMob === "within_village") {
+        tempProfile.constraints.max_travel_km = 5.0;
+      } else if (chosenMob === "within_block") {
+        tempProfile.constraints.max_travel_km = 10.0;
+      } else {
+        tempProfile.constraints.max_travel_km = 30.0;
+      }
+
+      let matchedTitle = "Self Employed Tailor & Boutique Manager (AMH/Q1947)";
+      let matchedReason = "Village-level livelihood matching your constraints.";
+      let matchedCentreName = "Sewapuri Model Kaushal Kendra (4.0 km)";
+
+      try {
+        const evalRes = await pmajayService.evaluateRecommendations(tempProfile);
+        if (evalRes && evalRes.top_recommendations && evalRes.top_recommendations.length > 0) {
+          const topRec = evalRes.top_recommendations[0];
+          matchedTitle = topRec.title;
+          matchedReason = topRec.reason;
+          if (topRec.nearest_centre) {
+            matchedCentreName = `${topRec.nearest_centre.name} (${topRec.nearest_centre.distance_km} km)`;
+          }
+        }
+      } catch {
+        // Fallback already assigned
+      }
 
       setIvr((prev) => ({
         ...prev,
         mobility: chosenMob,
-        matchedTrade: matched,
+        matchedTrade: matchedTitle,
+        matchedReason: matchedReason,
+        nearestCentre: matchedCentreName,
         step: 5,
         history: [
           ...prev.history,
           `कुंजी ${digit} दबाई गई: यात्रा सीमा - ${chosenMob.replace("_", " ")}`,
-          `सफलतापूर्वक मिलान: ${matched}`,
+          `समान गणना परिणाम (Same Engine Match): ${matchedTitle}`,
         ],
       }));
 
       setTimeout(() => {
         const prompt =
           ivr.selectedLang === "hi"
-            ? `बधाई हो! आपकी जानकारी के अनुसार आपके लिए उपयुक्त सरकारी कोर्स '${matched}' है। आपको पीएम-अजय योजना के तहत ₹50,000 की टूलकिट सब्सिडी और 100% मुफ्त ट्रेनिंग मिलेगी। आपके मोबाइल नंबर पर एसएमएस द्वारा विवरण भेज दिया गया है। कॉल करने के लिए धन्यवाद!`
-            : `Congratulations! Matched trade is '${matched}'. Eligible for ₹50,000 toolkit subsidy and free NSQF training under PM-AJAY GIA. Confirmation sent via SMS. Thank you!`;
+            ? `आपकी जानकारी के अनुसार अनुशंसित ट्रेड '${matchedTitle}' है। निकट-तम केंद्र '${matchedCentreName}' है। स्थानीय डेस्क से संपर्क करें; यह स्क्रीन धन स्वीकृत नहीं करती है। कॉल करने के लिए धन्यवाद!`
+            : `Recommended trade for your profile is '${matchedTitle}'. Nearest centre is '${matchedCentreName}'. Consult the local desk; this screen does not grant funds. Thank you!`;
         speakIVR(prompt, ivr.selectedLang === "hi" ? "hi-IN" : "en-IN");
       }, 400);
     }
@@ -322,22 +335,22 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
       aria-modal="true"
       aria-labelledby="ivr-modal-title"
     >
-      <div className="bg-[#0b1c2d] border-2 border-[#b45309] rounded-2xl max-w-2xl w-full text-slate-100 shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
-        {/* Header */}
-        <div className="bg-[#002147] text-white px-5 py-3 border-b-2 border-[#b45309] flex items-center justify-between">
+      <div className="bg-[#0f172a] border border-slate-700 rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Modal Top Banner with Official Emblem & Explicit Demo Label */}
+        <div className="bg-[#002147] px-4 py-3 border-b border-amber-500/40 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <EmblemOfIndia size={32} variant="gold" />
+            <EmblemOfIndia className="h-10 w-auto" />
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] uppercase font-bold tracking-wider text-amber-300 bg-amber-950/80 border border-amber-600/50 px-2 py-0.5 rounded">
-                  ग्रामीण फीचर फोन आईवीआर सिम्युलेटर
+                  कीपैड डेमो — लाइव फोन लाइन नहीं (Keypad Demo — Not a live phone line)
                 </span>
                 <span className="text-[10px] text-emerald-400 font-mono">
-                  DTMF + ASR Toll-Free 1800-11-2026
+                  DTMF Simulation Channel
                 </span>
               </div>
               <h3 id="ivr-modal-title" className="text-sm sm:text-base font-bold text-white">
-                PM-AJAY GIA Feature-Phone Telephony Channel
+                PM-AJAY GIA Keypad Telephony Demo (कीपैड डेमो)
               </h3>
             </div>
           </div>
@@ -353,7 +366,7 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
 
         {/* Content Body: Feature Phone Interface on Left + Live Call Transcript / Audit on Right */}
         <div className="p-4 sm:p-6 grid grid-cols-1 md:grid-cols-12 gap-6 overflow-y-auto flex-1">
-          {/* Nokia / Feature Phone Mockup */}
+          {/* Feature Phone Mockup */}
           <div className="md:col-span-6 flex flex-col items-center">
             <div className="w-[260px] bg-[#1e293b] border-4 border-[#334155] rounded-3xl p-3.5 shadow-2xl flex flex-col items-center ring-2 ring-amber-500/30">
               {/* Phone Earpiece */}
@@ -364,14 +377,14 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
                 <div className="flex justify-between items-center text-[10px] text-[#4ade80] border-b border-[#22553b] pb-1 mb-1">
                   <div className="flex items-center gap-1">
                     <Radio className="w-2.5 h-2.5 animate-pulse" />
-                    <span>BSNL 4G</span>
+                    <span>SIM 1 DEMO</span>
                   </div>
                   <span>{formatTime(ivr.duration)}</span>
                 </div>
 
                 <div className="flex-1 flex flex-col justify-center text-center py-1">
                   <div className="text-[10px] uppercase text-emerald-300 tracking-wider font-sans font-semibold">
-                    PM-AJAY HELPLINE
+                    KEYPAD DEMO LINE
                   </div>
                   <div className="text-sm font-bold text-white font-mono mt-0.5">
                     1800-11-2026
@@ -394,7 +407,6 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
                       <div className="text-[10px] text-amber-300 font-sans">
                         {isSpeaking ? "वॉयस संदेश चल रहा है..." : "कुंजी दबाएं (Press Key)"}
                       </div>
-                      {/* Audio wave animation */}
                       <div className="flex items-center justify-center gap-0.5 h-3 my-1">
                         <span className="w-1 bg-[#4ade80] rounded-full animate-pulse h-2" />
                         <span className="w-1 bg-[#4ade80] rounded-full animate-pulse h-3" />
@@ -415,35 +427,35 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
                   )}
                 </div>
 
-                <div className="text-[9px] text-[#22553b] text-center pt-1 border-t border-[#1e4833]">
-                  Ministry of Social Justice & Empowerment
+                <div className="text-[9px] text-[#4ade80]/70 text-center border-t border-[#22553b] pt-1">
+                  कीपैड डेमो — लाइव फोन लाइन नहीं
                 </div>
               </div>
 
-              {/* Call Control Buttons */}
+              {/* Call Control Action Buttons */}
               <div className="w-full grid grid-cols-2 gap-2 mb-3">
                 <button
                   type="button"
-                  onClick={handleDialCall}
+                  onClick={handleStartCall}
                   disabled={ivr.stage === "connected" || ivr.stage === "ringing"}
-                  className="py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-bold text-xs flex items-center justify-center gap-1 shadow-md transition-all active:scale-95"
+                  className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white rounded-xl py-2 flex items-center justify-center gap-1.5 text-xs font-bold shadow-md transition-all active:scale-95"
                 >
-                  <Phone className="w-3.5 h-3.5" />
-                  <span>Call (डायल)</span>
+                  <Phone className="w-4 h-4" />
+                  <span>कॉल</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleEndCall}
-                  disabled={ivr.stage !== "connected"}
-                  className="py-2 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-bold text-xs flex items-center justify-center gap-1 shadow-md transition-all active:scale-95"
+                  disabled={ivr.stage === "idle" || ivr.stage === "ended"}
+                  className="bg-rose-600 hover:bg-rose-500 disabled:opacity-40 text-white rounded-xl py-2 flex items-center justify-center gap-1.5 text-xs font-bold shadow-md transition-all active:scale-95"
                 >
-                  <PhoneOff className="w-3.5 h-3.5" />
-                  <span>End (काटें)</span>
+                  <PhoneOff className="w-4 h-4" />
+                  <span>काटें</span>
                 </button>
               </div>
 
-              {/* Physical DTMF Keypad Grid */}
-              <div className="w-full grid grid-cols-3 gap-1.5">
+              {/* Physical Keypad Buttons (DTMF) */}
+              <div className="grid grid-cols-3 gap-2 w-full">
                 {[
                   { k: "1", sub: "" },
                   { k: "2", sub: "ABC" },
@@ -461,14 +473,14 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
                   <button
                     key={item.k}
                     type="button"
-                    onClick={() => handleKeyPress(item.k)}
-                    className="h-10 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-amber-600 text-white flex flex-col items-center justify-center border border-slate-700 transition-colors shadow-xs group"
+                    onClick={() => handleKeypadPress(item.k)}
+                    className="bg-[#334155] hover:bg-[#475569] active:bg-[#64748b] text-white rounded-xl py-2 flex flex-col items-center justify-center border border-slate-600 shadow-sm transition-all active:scale-95 group"
                   >
-                    <span className="font-bold text-sm leading-none font-mono group-active:text-white">
+                    <span className="font-bold text-sm leading-none font-mono group-hover:text-amber-300">
                       {item.k}
                     </span>
                     {item.sub && (
-                      <span className="text-[7.5px] text-slate-400 leading-none mt-0.5 font-mono">
+                      <span className="text-[8px] text-slate-400 font-mono tracking-widest mt-0.5">
                         {item.sub}
                       </span>
                     )}
@@ -478,28 +490,22 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Right Panel: Live Call Audit Transcript & Beneficiary Output */}
-          <div className="md:col-span-6 flex flex-col bg-[#0f172a] border border-slate-700 rounded-xl p-4 shadow-sm">
-            <div className="flex items-center justify-between pb-2.5 border-b border-slate-700 mb-3">
-              <div>
-                <h4 className="font-bold text-sm text-amber-300">
-                  टेलीफोनी सत्र विवरण (Live IVR Log)
+          {/* Live Call Transcript / Audit Trail on Right */}
+          <div className="md:col-span-6 flex flex-col bg-[#1e293b]/70 border border-slate-700/80 rounded-2xl p-4">
+            <div className="flex items-center justify-between border-b border-slate-700 pb-2 mb-3">
+              <div className="flex items-center gap-2">
+                <Hash className="w-4 h-4 text-amber-400" />
+                <h4 className="font-bold text-xs text-white">
+                  डेमो लाइव ऑडिट व पारदर्शी गणना (Same Scoring Engine)
                 </h4>
-                <p className="text-[11px] text-slate-400">
-                  Dual-Tone Multi-Frequency (DTMF) Auditable State
-                </p>
               </div>
-              <button
-                type="button"
-                onClick={handleReset}
-                className="text-[11px] text-slate-300 hover:text-white underline underline-offset-2"
-              >
-                रीसेट (Reset)
-              </button>
+              <span className="text-[10px] text-slate-400 font-mono">
+                {ivr.stage === "connected" ? "LIVE DEMO" : "STANDBY"}
+              </span>
             </div>
 
-            {/* Turn by turn progress checklist */}
-            <div className="space-y-2 mb-4 text-xs">
+            {/* Current DTMF State Summary */}
+            <div className="grid grid-cols-2 gap-2 text-[11px] mb-3">
               <div
                 className={`p-2 rounded-lg border flex items-center justify-between ${
                   ivr.step > 1
@@ -507,9 +513,9 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
                     : "bg-slate-800/40 border-slate-700 text-slate-400"
                 }`}
               >
-                <span>1. भाषा चयन (Language)</span>
-                <span className="font-bold font-mono">
-                  {ivr.selectedLang.toUpperCase()}
+                <span>1. भाषा (Language)</span>
+                <span className="font-bold uppercase font-mono">
+                  {ivr.selectedLang}
                 </span>
               </div>
 
@@ -520,7 +526,7 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
                     : "bg-slate-800/40 border-slate-700 text-slate-400"
                 }`}
               >
-                <span>2. शिक्षा स्तर (Education)</span>
+                <span>2. शिक्षा (Education)</span>
                 <span className="font-bold font-mono">
                   {ivr.education ? ivr.education.replace("_", " ") : "लंबित"}
                 </span>
@@ -533,8 +539,8 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
                     : "bg-slate-800/40 border-slate-700 text-slate-400"
                 }`}
               >
-                <span>3. ट्रेड व हुनर रुचि (Interest)</span>
-                <span className="font-bold font-mono truncate max-w-[140px]">
+                <span>3. ट्रेड रुचि (Interest)</span>
+                <span className="font-bold font-mono truncate max-w-[90px]">
                   {ivr.interest || "लंबित"}
                 </span>
               </div>
@@ -558,20 +564,23 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
               <div className="bg-[#14532d]/40 border-2 border-emerald-500 rounded-xl p-3.5 mb-3 text-xs">
                 <div className="flex items-center gap-1.5 text-emerald-300 font-bold mb-1">
                   <CheckCircle className="w-4 h-4 text-emerald-400" />
-                  <span>आईवीआर परिणाम (Calculated Match):</span>
+                  <span>समान इंजन गणना परिणाम (Calculated Match):</span>
                 </div>
                 <div className="font-bold text-white text-sm">
                   {ivr.matchedTrade}
                 </div>
                 <div className="text-[11px] text-emerald-200/90 mt-1">
-                  Grant Support: ₹50,000 PM-AJAY Toolkit Subsidy + SMS Reference Sent to SIM
+                  केंद्र: {ivr.nearestCentre}
+                </div>
+                <div className="text-[10px] text-amber-200/90 mt-1.5 bg-amber-950/50 p-1.5 rounded border border-amber-700/40">
+                  स्थानीय डेस्क से संपर्क करें; यह स्क्रीन धन स्वीकृत नहीं करती है। (Consult the local desk; this screen does not grant funds.)
                 </div>
               </div>
             )}
 
             {/* History Logs */}
             <div className="flex-1 bg-[#020617] rounded-lg p-2.5 font-mono text-[10.5px] text-slate-300 space-y-1 overflow-y-auto max-h-36 border border-slate-800">
-              <div className="text-slate-500">// IVR Telephony Gateway Logs:</div>
+              <div className="text-slate-500">// Keypad Demo Logs:</div>
               {ivr.history.map((log, idx) => (
                 <div key={idx} className="leading-snug">
                   <span className="text-emerald-500">[{idx + 1}]</span> {log}
@@ -588,17 +597,11 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
         <div className="bg-[#002147] px-5 py-3 border-t border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-300">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-amber-400" />
-            <span>
-              MoSJE GIA Component • Designed for low-literacy basic keypad phone users
-            </span>
+            <span>कीपैड डेमो — लाइव फोन लाइन नहीं (Keypad Demo — Not a live phone line)</span>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-4 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-semibold transition-colors"
-          >
-            बंद करें (Close)
-          </button>
+          <span className="text-[11px] text-slate-400">
+            Same scoring engine as portal recommendations
+          </span>
         </div>
       </div>
     </div>

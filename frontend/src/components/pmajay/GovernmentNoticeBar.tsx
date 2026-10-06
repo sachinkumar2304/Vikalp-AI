@@ -24,7 +24,7 @@ export const GovernmentNoticeBar: React.FC = () => {
               फा. सं. 11014/03/2023-SCD-V:
             </span>
             <span className="truncate">
-              पीएम-अजय GIA घटक के अंतर्गत SC लाभार्थियों हेतु टूलकिट सब्सिडी ₹50,000 स्वीकृत। राष्ट्रीय टोल-फ्री हेल्पलाइन: 1800-11-2026 (24x7)
+              पीएम-अजय GIA घटक के अंतर्गत SC लाभार्थियों हेतु आजीविका व कौशल सहायता स्वीकृत। राष्ट्रीय हेल्पलाइन: 1800-11-2026 (24x7)
             </span>
             <span className="text-slate-400 hidden md:inline">•</span>
             <span className="hidden md:inline text-slate-600 truncate">

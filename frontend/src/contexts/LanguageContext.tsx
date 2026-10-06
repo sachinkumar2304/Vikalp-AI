@@ -32,7 +32,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     hero_badge: "पीएम-अजय विकल्प AI • प्रत्यक्ष आजीविका सहायता",
     hero_h1_1: "अपनी बोली में बताएं अपना हुनर,",
     hero_h1_2: "पाएं मुफ्त सरकारी कोर्स व टूलकिट",
-    hero_desc: "अनुसूचित जाति (SC) के ग्रामीण भाई-बहनों और कारीगरों के लिए विशेष वॉयस सेवा। कोई फॉर्म नहीं भरना — बस बोलकर बताएं और पाएं 100% फ्री NSQF सर्टिफाइड ट्रेनिंग, पास का सेंटर और ₹50,000 तक की टूलकिट सहायता।",
+    hero_desc: "अनुसूचित जाति (SC) के ग्रामीण भाई-बहनों और कारीगरों के लिए विशेष वॉयस सेवा। कोई फॉर्म नहीं भरना — बस बोलकर बताएं और पाएं 100% फ्री NSQF सर्टिफाइड ट्रेनिंग, पास का सेंटर और टूलकिट सहायता।",
     btn_start_voice: "अभी माइक दबाकर बोलें",
     btn_view_jobs: "स्थानीय अवसर देखें",
 
@@ -53,7 +53,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     step3_title: "03. सही कोर्स का चयन",
     step3_desc: "आपकी सुविधा अनुसार सोलर, सिलाई, प्लंबिंग आदि कोर्स मिलते हैं।",
     step4_title: "04. टूलकिट व सेंटर",
-    step4_desc: "नजदीकी केंद्र से जुड़ें और ₹50,000 तक की टूलकिट ग्रांट पाएं।",
+    step4_desc: "नजदीकी केंद्र से जुड़ें और टूलकिट सहायता पाएं।",
 
     // NSQF Popular Trades
     popular_heading: "लोकप्रिय सरकारी कौशल पाठ्यक्रम",
@@ -98,7 +98,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     hero_badge: "PM-AJAY Vikalp AI • Direct Livelihood Support",
     hero_h1_1: "Speak In Your Own Language,",
     hero_h1_2: "Get Certified NSQF Skilling & Toolkits",
-    hero_desc: "Specialized voice AI service for Scheduled Caste (SC) rural youth, women, and artisans. No typing required — speak naturally to get matched with 100% grant-funded courses, local training centres, and up to ₹50,000 toolkit capital subsidies.",
+    hero_desc: "Specialized voice AI service for Scheduled Caste (SC) rural youth, women, and artisans. No typing required — speak naturally to get matched with 100% grant-funded courses, local training centres, and toolkit equipment support.",
     btn_start_voice: "Start Voice Assessment",
     btn_view_jobs: "View Local Opportunities",
 
@@ -119,7 +119,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     step3_title: "03. Transparent Matching",
     step3_desc: "Rule-based engine recommends NSQF courses with explainable logic.",
     step4_title: "04. Toolkits & Centers",
-    step4_desc: "Connect with accredited centers and claim up to ₹50,000 toolkit grants.",
+    step4_desc: "Connect with accredited centers and claim toolkit support.",
 
     // NSQF Popular Trades
     popular_heading: "Popular NSQF Skill Trades",
@@ -164,7 +164,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     hero_badge: "पीएम-अजय कौशल्य मित्र • थेट उपजीविका सहाय्य",
     hero_h1_1: "तुमच्या भाषेत सांगा तुमचे कौशल्य,",
     hero_h1_2: "मिळवा मोफत सरकारी कोर्स व टूलकिट",
-    hero_desc: "अनुसूचित जातीच्या (SC) तरुण व कारागिरांसाठी विशेष व्हॉइस सेवा. कोणताही फॉर्म भरण्याची गरज नाही — फक्त बोलून सांगा आणि १००% मोफत NSQF प्रशिक्षण, जवळचे केंद्र आणि ₹५०,००० पर्यंत टूलकिट अनुदान मिळवा.",
+    hero_desc: "अनुसूचित जातीच्या (SC) तरुण व कारागिरांसाठी विशेष व्हॉइस सेवा. कोणताही फॉर्म भरण्याची गरज नाही — फक्त बोलून सांगा आणि १००% मोफत NSQF प्रशिक्षण, जवळचे केंद्र आणि टूलकिट अनुदान मिळवा.",
     btn_start_voice: "आता माइक दाबून बोला",
     btn_view_jobs: "स्थानिक संधी पहा",
 
@@ -185,7 +185,7 @@ const TRANSLATIONS: Record<SupportedLang, Record<string, string>> = {
     step3_title: "०३. योग्य कोर्सची निवड",
     step3_desc: "तुमच्या गरजेनुसार सोलर, टेलरिंग, प्लंबिंग इत्यादी कोर्सेस मिळतात.",
     step4_title: "०४. टूलकिट व केंद्र",
-    step4_desc: "जवळच्या केंद्राशी जोडा आणि ₹५०,००० पर्यंत टूलकिट अनुदान मिळवा.",
+    step4_desc: "जवळच्या केंद्राशी जोडा आणि टूलकिट अनुदान मिळवा.",
 
     // NSQF Popular Trades
     popular_heading: "लोकप्रिय सरकारी कौशल्य कोर्सेस",

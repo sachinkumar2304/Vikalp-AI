@@ -47,23 +47,23 @@ export const PMAJAYLanding: React.FC = () => {
     {
       id: "self",
       icon: <Award className="w-6 h-6 text-amber-700" />,
-      tag: "100% सरकारी अनुदान",
+      tag: "सरकारी योजना सहयोग",
       tagBg: "bg-amber-100 text-amber-900 border-amber-300",
-      title: "स्वरोजगार एवं ₹50,000 टूलकिट सहायता",
-      subtitle: "Self-Employment & Enterprise Grant",
-      desc: "सिलाई, बढ़ईगीरी, सोलर रिपेयर, मोटर वाइंडिंग या इलेक्ट्रिकल कार्य में अपनी दुकान या स्वतंत्र सेवा शुरू करने हेतु ₹50,000 का निःशुल्क टूलकिट अनुदान।",
-      highlight: "₹50,000 टूलकिट • पूंजी सहायता",
+      title: "स्वरोजगार एवं टूलकिट सहायता",
+      subtitle: "Self-Employment & Enterprise Support",
+      desc: "सिलाई, बढ़ईगीरी, सोलर रिपेयर, मोटर वाइंडिंग या इलेक्ट्रिकल कार्य में अपनी दुकान या स्वतंत्र सेवा शुरू करने हेतु टूलकिट उपकरण सहयोग।",
+      highlight: "टूलकिट उपकरण सहयोग",
       link: "/pmajay/recommendations?pathway=self",
     },
     {
       id: "wage",
       icon: <Briefcase className="w-6 h-6 text-blue-700" />,
-      tag: "निश्चित मासिक आय",
+      tag: "नियमित आजीविका",
       tagBg: "bg-blue-100 text-blue-900 border-blue-300",
-      title: "स्थानीय वेतन रोजगार (स्थिर मासिक नौकरी)",
+      title: "स्थानीय वेतन रोजगार (स्थिर रोजगार)",
       subtitle: "Wage Employment in Local Clusters",
-      desc: "नजदीकी औद्योगिक क्षेत्र, एमएसएमई वर्कशॉप, पीएम सूर्य घर योजना व जल जीवन मिशन प्रोजेक्ट्स में नियमित वेतन आधारित रोजगार।",
-      highlight: "₹12,000 – ₹22,000 / माह वेतन",
+      desc: "नजदीकी औद्योगिक क्षेत्र, एमएसएमई वर्कशॉप, पीएम सूर्य घर योजना व जल जीवन मिशन प्रोजेक्ट्स में नियमित कार्य आधारित रोजगार।",
+      highlight: "स्थानीय औद्योगिक क्लस्टर लिंकेज",
       link: "/pmajay/recommendations?pathway=wage",
     },
     {
@@ -86,8 +86,8 @@ export const PMAJAYLanding: React.FC = () => {
       hindiTitle: "सोलर पीवी इंस्टॉलर (सूर्यमित्र)",
       sector: "Green Energy / Power",
       nsqf: "NSQF Level 4",
-      duration: "40 घंटे RPL / 300 घंटे फ्रेश",
-      wage: "₹15,000 – ₹22,000 / माह",
+      duration: "40 घंटे RPL / 300 घंटे क्लास",
+      wage: "मानक जिला आजीविका दर",
       desc: "रूफटॉप सोलर पैनल फिटिंग, इन्वर्टर टेस्टिंग व कृषि सोलर पंप रखरखाव।",
       rpl: true,
       accent: "border-l-4 border-amber-500",
@@ -98,8 +98,8 @@ export const PMAJAYLanding: React.FC = () => {
       hindiTitle: "सिलाई, कटिंग एवं बुटीक स्वरोजगार",
       sector: "Apparel & Textiles",
       nsqf: "NSQF Level 4",
-      duration: "40 घंटे RPL फास्ट-ट्रैक",
-      wage: "₹12,000 – ₹25,000 / माह",
+      duration: "40 घंटे RPL मूल्यांकन",
+      wage: "स्थानीय बाजार आजीविका दर",
       desc: "वस्त्र सिलाई, ब्लाउज व सूट डिजाइनिंग व गांव में ही स्वतंत्र बुटीक स्वरोजगार।",
       rpl: true,
       accent: "border-l-4 border-emerald-600",
@@ -111,7 +111,7 @@ export const PMAJAYLanding: React.FC = () => {
       sector: "Electronics",
       nsqf: "NSQF Level 4",
       duration: "360 घंटे (प्रैक्टिकल)",
-      wage: "₹14,000 – ₹20,000 / माह",
+      wage: "मानक जिला आजीविका दर",
       desc: "घरेलू पंखा, कूलर, मोटर व मिक्सर ग्राइंडर रिपेयर व इलेक्ट्रॉनिक सर्विसिंग।",
       rpl: true,
       accent: "border-l-4 border-blue-600",
@@ -123,7 +123,7 @@ export const PMAJAYLanding: React.FC = () => {
       sector: "Plumbing",
       nsqf: "NSQF Level 3",
       duration: "240 घंटे",
-      wage: "₹12,000 – ₹18,000 / माह",
+      wage: "मानक जिला आजीविका दर",
       desc: "ग्रामीण पेयजल पाइपलाइन फिटिंग, नल लीकेज मरम्मत व ग्राम जल समिति पंप ऑपरेटर।",
       rpl: true,
       accent: "border-l-4 border-sky-600",
@@ -166,7 +166,7 @@ export const PMAJAYLanding: React.FC = () => {
                 </h1>
 
                 <p className="text-slate-200 text-sm sm:text-base leading-relaxed max-w-xl">
-                  अनुसूचित जाति (SC) के ग्रामीण युवाओं, महिलाओं और अनुभवी कारीगरों के लिए विशेष आवाज-आधारित सेवा। कोई जटिल कागजी फॉर्म नहीं — बस बोलकर बताएं और पाएं मुफ्त NSQF प्रशिक्षण, नजदीकी कौशल केंद्र व <strong>₹50,000 का टूलकिट अनुदान</strong>।
+                  अनुसूचित जाति (SC) के ग्रामीण युवाओं, महिलाओं और अनुभवी कारीगरों के लिए विशेष आवाज-आधारित सेवा। कोई जटिल कागजी फॉर्म नहीं — बस बोलकर बताएं और पाएं मुफ्त NSQF प्रशिक्षण, नजदीकी कौशल केंद्र व <strong>टूलकिट सहायता</strong>।
                 </p>
 
                 {/* Primary Action Buttons */}
@@ -208,7 +208,7 @@ export const PMAJAYLanding: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0" />
-                    <span>₹50,000 टूलकिट संस्वीकृति</span>
+                    <span>टूलकिट उपकरण सहायता</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -360,7 +360,7 @@ export const PMAJAYLanding: React.FC = () => {
                   क्या आपके पास पहले से काम का अनुभव है?
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 max-w-2xl leading-relaxed">
-                  यदि आप पहले से सिलाई, बिजली, राजमिस्त्री या नल फिटिंग का काम जानते हैं, तो आपको 300 घंटे की लंबी क्लास करने की आवश्यकता नहीं है। <strong>मात्र 40 घंटे (5 दिन) के RPL मूल्यांकन</strong> से सीधा NCVET सरकारी प्रमाण पत्र और ₹50,000 टूलकिट सहायता संस्वीकृति प्राप्त करें।
+                  यदि आप पहले से सिलाई, बिजली, राजमिस्त्री या नल फिटिंग का काम जानते हैं, तो आपको 300 घंटे की लंबी क्लास करने की आवश्यकता नहीं है। <strong>मात्र 40 घंटे (5 दिन) के RPL मूल्यांकन</strong> से सीधा NCVET सरकारी प्रमाण पत्र और टूलकिट सहायता संस्वीकृति प्राप्त करें।
                 </p>
               </div>
 
@@ -420,7 +420,7 @@ export const PMAJAYLanding: React.FC = () => {
                       <span className="font-bold text-emerald-700">{t.wage}</span>
                     </div>
                     <div className="text-[11px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 inline-block">
-                      ₹50,000 टूलकिट अनुदान पात्र
+                      टूलकिट उपकरण सहायता पात्र
                     </div>
                   </div>
                 </div>
@@ -460,9 +460,9 @@ export const PMAJAYLanding: React.FC = () => {
 
               <div className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs">
                 <div className="text-2xl font-black text-amber-500 font-mono mb-2">03</div>
-                <h3 className="font-bold text-sm text-slate-900 mb-1">केंद्र व ₹50,000 अनुदान</h3>
+                <h3 className="font-bold text-sm text-slate-900 mb-1">केंद्र व टूलकिट सहायता</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  नजदीकी मान्यता प्राप्त केंद्र का आवंटन और ₹50,000 टूलकिट अनुदान संस्वीकृति।
+                  नजदीकी मान्यता प्राप्त केंद्र का आवंटन और टूलकिट उपकरण सहयोग। स्थानीय डेस्क से संपर्क करें; यह स्क्रीन धन स्वीकृत नहीं करती है।
                 </p>
               </div>
 

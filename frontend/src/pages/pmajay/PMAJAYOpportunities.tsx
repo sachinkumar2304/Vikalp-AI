@@ -45,9 +45,9 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "Surya Urja Vikas Samiti & Local EPC Contractors",
     location: "Babatpur Block, Varanasi",
     distanceKm: 7.5,
-    earnings: "₹16,000 / माह + यात्रा भत्ता",
+    earnings: "मानक जिला आजीविका दर",
     openings: 12,
-    schemeAssistance: "PM Surya Ghar Muft Bijli Yojana & PM-AJAY Apprenticeship Grant",
+    schemeAssistance: "PM Surya Ghar Muft Bijli Yojana & PM-AJAY Livelihood Convergence",
     contact: "District Skill Nodal Officer, ITI Karaundi (0542-2578901)",
     matchedTrade: "Solar PV Installer",
     qpCode: "ELE/Q1401",
@@ -60,9 +60,9 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "Self-Employed / PM-AJAY Cluster Support",
     location: "Arajiline Block / Village Cluster",
     distanceKm: 1.2,
-    earnings: "₹12,000 - ₹25,000 / माह शुद्ध आय",
-    openings: "असीमित (स्वरोजगार)",
-    schemeAssistance: "PM-AJAY GIA Capital Subsidy up to ₹50,000 for Sewing Machinery",
+    earnings: "स्थानीय बाजार आजीविका दर",
+    openings: "स्वरोजगार क्लस्टर",
+    schemeAssistance: "PM-AJAY GIA Livelihood Component (स्थानीय डेस्क से संपर्क करें; यह स्क्रीन धन स्वीकृत नहीं करती है)",
     contact: "Block Development Officer (BDO), Social Welfare Cell",
     matchedTrade: "Self Employed Tailor & Boutique",
     qpCode: "AMH/Q1947",
@@ -75,9 +75,9 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "Kashi Gramin Seva Kendra & Local Retail Networks",
     location: "Sewapuri Model Block",
     distanceKm: 5.0,
-    earnings: "₹14,000 - ₹20,000 / माह",
+    earnings: "मानक जिला आजीविका दर",
     openings: 8,
-    schemeAssistance: "PM-AJAY Skill Upgradation Toolkit Scheme (Free Toolbag & Multimeter)",
+    schemeAssistance: "PM-AJAY Skill Upgradation Toolkit Scheme (स्थानीय डेस्क से संपर्क करें)",
     contact: "Sewapuri Skill Facilitation Cell (0542-2891234)",
     matchedTrade: "Field Technician Home Appliances",
     qpCode: "ELE/Q3102",
@@ -90,7 +90,7 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "Jal Jeevan Mission Village Water & Sanitation Committee (VWSC)",
     location: "Gram Panchayat Level (Direct local posting)",
     distanceKm: 2.0,
-    earnings: "₹10,500 - ₹14,000 / माह + आपातकालीन सेवा शुल्क",
+    earnings: "मानक ग्राम पंचायत आजीविका दर",
     openings: 15,
     schemeAssistance: "Convergence with Jal Jeevan Mission Maintenance Fund",
     contact: "Gram Pradhan / Panchayat Secretary",
@@ -105,9 +105,9 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "Prerna Samuh / PM-AJAY GIA Producer Cluster",
     location: "Chiraigaon Block",
     distanceKm: 4.5,
-    earnings: "₹11,000 - ₹18,000 / माह लाभांश",
+    earnings: "सामूहिक लाभांश आधारित",
     openings: 20,
-    schemeAssistance: "PM-AJAY Cluster Infrastructure Grant & PMFME Seed Capital",
+    schemeAssistance: "PM-AJAY Cluster Infrastructure & PMFME Convergence",
     contact: "NRLM Block Mission Manager",
     matchedTrade: "Food Processing Technician",
     qpCode: "FIC/Q0103",
@@ -120,9 +120,9 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
     employer: "CSC e-Governance Services India Ltd",
     location: "Rohaniya Market Hub",
     distanceKm: 4.0,
-    earnings: "कमीशन आधारित, औसत ₹12,000 - ₹18,000 / माह",
+    earnings: "सेवा शुल्क आधारित",
     openings: 4,
-    schemeAssistance: "PM-AJAY Entrepreneurship Development Program & Hardware Grant",
+    schemeAssistance: "PM-AJAY Entrepreneurship Development Program & Hardware Facilitation",
     contact: "CSC District VLE Manager",
     matchedTrade: "Domestic Data Entry Operator",
     qpCode: "SSC/Q2212",
@@ -243,8 +243,8 @@ export const PMAJAYOpportunities: React.FC = () => {
                 ४
               </div>
               <div>
-                <div className="font-bold text-slate-700">₹50,000 टूलकिट अनुदान</div>
-                <div className="text-[10.5px] text-slate-500 mt-0.5">DBT संस्वीकृति पत्रक जारी</div>
+                <div className="font-bold text-slate-700">टूलकिट उपकरण सहयोग</div>
+                <div className="text-[10.5px] text-slate-500 mt-0.5">संस्वीकृति पत्रक (डेस्क से संपर्क करें)</div>
               </div>
             </div>
           </div>

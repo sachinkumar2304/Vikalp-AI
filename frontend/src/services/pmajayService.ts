@@ -34,6 +34,11 @@ export interface BeneficiaryProfileData {
   constraints: {
     mobility: ProfileFieldItem<string>;
     financial: ProfileFieldItem<string>;
+    max_travel_km?: number | null;
+    requires_step_free_access?: boolean;
+    has_physical_limitation?: boolean;
+    physical_limitation_detail?: string;
+    rejected_sectors?: string[];
   };
   system_inferred: {
     skill_level: ProfileFieldItem<string>;
@@ -45,6 +50,18 @@ export interface BeneficiaryProfileData {
     created_at: string;
     interview_status: string;
   };
+  prior_experience_months?: number;
+  refusal_record?: {
+    qp_code: string;
+    course_title: string;
+    reason: string;
+    constraint: string;
+    user_words: string;
+    confirmed: boolean;
+    distance_km?: number | null;
+  } | null;
+  masked_constraints?: string[];
+  second_decision_active?: boolean;
 }
 
 export interface RecommendationItem {
@@ -53,6 +70,7 @@ export interface RecommendationItem {
   sector: string;
   nsqf_level: number;
   duration_hours: number;
+  category?: "nsqf_class" | "rpl_certification" | "project_sheet";
   typical_wage: string;
   self_employment_potential: string;
   total_score: number;
@@ -84,16 +102,41 @@ export interface RecommendationItem {
   };
   is_refused: boolean;
   refusal_reason: string;
+  constraint_tag?: string;
+  two_sentences?: {
+    for_beneficiary?: string;
+    for_officer?: string;
+  };
+  referral_line?: string;
 }
 
 export interface RecommendationResult {
   status: "success" | "needs_clarification";
+  decision_phase?: "initial" | "second";
   session_id?: string;
   clarification_question?: string;
   missing_field?: string;
   weights_used: Record<string, number>;
   top_recommendations: RecommendationItem[];
   refused_options: RecommendationItem[];
+  dropped_gates?: string[];
+  read_back_info?: {
+    qp_code: string;
+    course_title: string;
+    reason: string;
+    constraint: string;
+    user_words: string;
+    distance_km?: number | null;
+    read_back_prompt_hi: string;
+    read_back_prompt_en: string;
+  } | null;
+  saved_refusal_reason?: string;
+  masked_constraint?: string;
+  padding_omitted?: boolean;
+  padding_note?: string;
+  physical_caution?: string | null;
+  catalogue_notice?: string;
+  funding_notice?: string;
   voice_summary?: {
     text_hi: string;
     text_en: string;
@@ -135,7 +178,6 @@ export const pmajayService = {
       });
       return res.data;
     } catch {
-      // Offline fallback state for resilient client-side demo if backend is offline
       const session_id = "local-" + Math.random().toString(36).substring(2, 9);
       const isHi = language.startsWith("hi");
       return {
@@ -146,6 +188,8 @@ export const pmajayService = {
         question_prompt: isHi
           ? "Namaskar! PM-AJAY Vikalp AI me aapka swagat hai. Kripya apna naam aur apna gaon ya zila batayein?"
           : "Welcome to PM-AJAY Skill Assistant! Please tell us your name and your village or district?",
+        catalogue_notice: "Sample list of Qualification Packs (नमुना सूची)",
+        funding_notice: "Consult the local desk; this screen does not grant funds.",
         profile: pmajayService.createDefaultProfile(session_id, language),
       };
     }
@@ -165,14 +209,54 @@ export const pmajayService = {
     }
   },
 
+  // Submit turn compatibility wrapper
+  async submitTurn(sessionId: string, transcript: string, turn: number) {
+    const data = await this.processTurn(sessionId, turn, transcript);
+    if (data) {
+      return {
+        updated_profile: data.profile,
+        is_complete: data.is_completed,
+        next_turn: data.next_turn,
+        next_prompt: data.next_prompt,
+      };
+    }
+    return null;
+  },
+
+  // Erase session completely
+  async eraseSession(sessionId: string) {
+    try {
+      const res = await axios.delete(`${API_BASE}/session/${sessionId}`);
+      return res.data;
+    } catch {
+      return { session_id: sessionId, erased: true };
+    }
+  },
+
   // Evaluate profile with the deterministic scoring engine
   async evaluateRecommendations(profile: BeneficiaryProfileData): Promise<RecommendationResult> {
     try {
       const res = await axios.post(`${API_BASE}/recommendations/evaluate`, profile);
       return res.data;
     } catch {
-      // Fallback evaluation client-side matching engine to guarantee 100% demo uptime
       return pmajayService.mockEvaluateProfile(profile);
+    }
+  },
+
+  // Confirm refusal constraint and trigger second choice decision
+  async confirmConstraint(sessionId: string, confirmed: boolean = true, userWords?: string): Promise<RecommendationResult> {
+    try {
+      const res = await axios.post(`${API_BASE}/recommendations/confirm-constraint`, {
+        session_id: sessionId,
+        confirmed,
+        user_words: userWords,
+      });
+      return res.data;
+    } catch {
+      // Offline fallback for second decision
+      const fallbackProfile = pmajayService.createDefaultProfile(sessionId, "hi-IN");
+      fallbackProfile.second_decision_active = true;
+      return pmajayService.mockEvaluateProfile(fallbackProfile, true);
     }
   },
 
@@ -231,7 +315,7 @@ export const pmajayService = {
             status: "refused",
             refused: true,
             refusal_reason:
-              "Beneficiary strictly restricted to village mobility; commercial fleet driving requires interstate travel.",
+              "Beneficiary restricted to village radius; commercial fleet driving requires interstate travel.",
             confidence: 0.88,
             date: new Date(Date.now() - 7200000).toISOString(),
           },
@@ -280,6 +364,10 @@ export const pmajayService = {
       constraints: {
         mobility: { value: "", confidence: 0, source: "voice_interview", turn: 6 },
         financial: { value: "", confidence: 0, source: "voice_interview", turn: 6 },
+        max_travel_km: 5.0,
+        requires_step_free_access: false,
+        has_physical_limitation: false,
+        rejected_sectors: [],
       },
       system_inferred: {
         skill_level: { value: "beginner", confidence: 0.5, source: "system", turn: 0 },
@@ -291,174 +379,176 @@ export const pmajayService = {
         created_at: new Date().toISOString(),
         interview_status: "in_progress",
       },
+      prior_experience_months: 14,
+      second_decision_active: false,
+      masked_constraints: [],
     };
   },
 
-  mockEvaluateProfile(profile: BeneficiaryProfileData): RecommendationResult {
-    const isSolar = (profile.aspirations.interest.value || "").toLowerCase().includes("solar") ||
-      (profile.aspirations.interest.value || "").toLowerCase().includes("bijli");
+  mockEvaluateProfile(profile: BeneficiaryProfileData, isSecondDecision: boolean = false): RecommendationResult {
+    if (isSecondDecision || profile.second_decision_active) {
+      // Second decision: strictly 3 types (Project Sheet, Local NSQF Class, RPL)
+      const projectSheet: RecommendationItem = {
+        qp_code: "PMAJAY-PS-01",
+        title: "Village Women Stitching & Garment Cluster Project Sheet",
+        sector: "Apparel & Home Furnishing",
+        nsqf_level: 4,
+        duration_hours: 0,
+        category: "project_sheet",
+        typical_wage: "Standard Collective Rate",
+        self_employment_potential: "High (PM-AJAY GIA Cluster Linkage)",
+        total_score: 92.0,
+        score_breakdown: { local_access: 95.0, scheme_fit: 90.0 },
+        reason: "Village-level livelihood project sheet under PM-AJAY GIA Component with decentralized shared facility.",
+        skill_gap: "SHG formation, collective bookkeeping, and inventory management.",
+        referral_line: "Employment linkage: Co-operative buyback referral with Kashi Khadi & Gramodyog board",
+        nearest_centre: {
+          id: "ps-01",
+          name: "Panchayat Common Facility Centre",
+          address: "Gram Panchayat Bhawan",
+          distance_km: 1.5,
+          hostel_facility: false,
+          stipend_supported: true,
+          contact_phone: "0542-2345678",
+        },
+        two_sentences: {
+          for_beneficiary: "Aapke gaon ke Panchayat bhawan me samuhik silai cluster project sheet uplabdh hai, jisme kaam ki suvidha gaon me hi milegi.",
+          for_officer: "Under PM-AJAY GIA Component (Grants-in-Aid for Livelihood Projects): Approved cluster sheet PMAJAY-PS-01; includes enterprise referral line 'Employment linkage: Co-operative buyback referral with Kashi Khadi & Gramodyog board'."
+        },
+        is_refused: false,
+        refusal_reason: "",
+      };
 
-    const topItem: RecommendationItem = isSolar
-      ? {
-          qp_code: "ELE/Q1401",
-          title: "Solar PV Installer (Suryamitra)",
-          sector: "Green Jobs / Power",
-          nsqf_level: 4,
-          duration_hours: 300,
-          typical_wage: "₹15,000 - ₹22,000 / month",
-          self_employment_potential: "High (local solar maintenance & battery enterprise)",
-          total_score: 93.5,
-          score_breakdown: {
-            interest_aspiration: 95.0,
-            location_accessibility: 92.0,
-            existing_skills: 85.0,
-            education_eligibility: 100.0,
-            market_demand: 95.0,
-            mobility_alignment: 90.0,
-          },
-          reason:
-            "Matches your interest in renewable electricity and prior wiring familiarity, offering high wage growth in the Varanasi solar belt.",
-          skill_gap: "Needs technical certification on safety, inverter inverter troubleshooting, and DC earthing.",
-          matched_local_opportunity: {
-            id: "opp-01",
-            sector: "Green Jobs / Power",
-            title: "Solar Rooftop Technician & AMC Assistant",
-            type: "wage_employment",
-            employer_or_model: "Surya Urja Vikas Samiti & Local EPC Contractors",
-            location: "Babatpur Block, Varanasi",
-            distance_km: 7.5,
-            stipend_or_wage: "₹16,000 / mo + conveyance",
-            openings: 12,
-            matched_qp_code: "ELE/Q1401",
-            eligible_schemes: ["PM-AJAY GIA Capital Subsidy", "PM Surya Ghar Muft Bijli Yojana"],
-            contact_person: "District Skill Nodal Officer, ITI Karaundi",
-          },
-          nearest_centre: {
-            id: "tc-01",
-            name: "Pradhan Mantri Kaushal Kendra (PMKK) & ITI Karaundi Campus",
-            address: "Karaundi, Near BHU, Varanasi",
-            distance_km: 8.0,
-            hostel_facility: true,
-            stipend_supported: true,
-            contact_phone: "0542-2578901",
-          },
-          is_refused: false,
-          refusal_reason: "",
-        }
-      : {
-          qp_code: "AMH/Q1947",
-          title: "Self Employed Tailor & Boutique Manager",
-          sector: "Apparel & Home Furnishing",
-          nsqf_level: 4,
-          duration_hours: 340,
-          typical_wage: "₹12,000 - ₹25,000 / month (self income)",
-          self_employment_potential: "Excellent (micro-enterprise at home with PM-AJAY capital subsidy)",
-          total_score: 91.0,
-          score_breakdown: {
-            interest_aspiration: 92.0,
-            location_accessibility: 95.0,
-            existing_skills: 88.0,
-            education_eligibility: 90.0,
-            market_demand: 90.0,
-            mobility_alignment: 95.0,
-          },
-          reason:
-            "Directly fulfills your self-employment preference within your village with 100% PM-AJAY sewing machine & toolkit capital subsidy.",
-          skill_gap: "Needs commercial pattern cutting, costing, and boutique management training.",
-          matched_local_opportunity: {
-            id: "opp-02",
-            sector: "Apparel & Home Furnishing",
-            title: "Micro Boutique & Village Stitching Enterprise",
-            type: "self_employment",
-            employer_or_model: "Self-Employed / PM-AJAY GIA Grant Support",
-            location: "Arajiline Block / Village Level",
-            distance_km: 1.2,
-            stipend_or_wage: "Estimated ₹12,000 - ₹20,000 / mo net profit",
-            openings: "Unlimited (Self-employment)",
-            matched_qp_code: "AMH/Q1947",
-            eligible_schemes: ["PM-AJAY GIA Tool Kit & Machinery Grant (up to ₹50,000)", "Mudra Shishu Loan"],
-            contact_person: "Block Development Officer (BDO), Social Welfare Wing",
-          },
-          nearest_centre: {
-            id: "tc-02",
-            name: "RSETI Rural Self Employment Training Institute",
-            address: "Baroda RSETI, Near Ring Road, Chiraigaon",
-            distance_km: 5.5,
-            hostel_facility: true,
-            stipend_supported: true,
-            contact_phone: "0542-2345678",
-          },
-          is_refused: false,
-          refusal_reason: "",
-        };
+      const localClass: RecommendationItem = {
+        qp_code: "AMH/Q1947",
+        title: "Self Employed Tailor & Boutique Manager",
+        sector: "Apparel & Home Furnishing",
+        nsqf_level: 4,
+        duration_hours: 340,
+        category: "nsqf_class",
+        typical_wage: "Local Market Rate",
+        self_employment_potential: "High (micro-enterprise at home)",
+        total_score: 89.0,
+        score_breakdown: { interest_aspiration: 90.0, location_accessibility: 95.0 },
+        reason: "Local classroom course within your accessible 5 km travel radius at Sewapuri Model Kaushal Kendra.",
+        skill_gap: "Commercial pattern cutting and finishing standards.",
+        nearest_centre: {
+          id: "tc-02",
+          name: "Sewapuri Model Kaushal Kendra",
+          address: "Sewapuri Block Development Campus",
+          distance_km: 4.0,
+          hostel_facility: false,
+          stipend_supported: true,
+          contact_phone: "0542-2891234",
+        },
+        two_sentences: {
+          for_beneficiary: "Aapke gaon ke paas Sewapuri Model Kaushal Kendra (4.0 km) par yah prashikshan uplabdh hai jo aapki ruchi ke anukool hai.",
+          for_officer: "Under PM-AJAY GIA Capacity Building: NSQF Level 4 pack AMH/Q1947 verified at accredited centre Sewapuri Model Kaushal Kendra (4.0 km)."
+        },
+        is_refused: false,
+        refusal_reason: "",
+      };
 
-    const secondItem: RecommendationItem = {
-      qp_code: "ELE/Q3102",
-      title: "Field Technician - Home Appliances",
-      sector: "Electronics",
+      return {
+        status: "success",
+        decision_phase: "second",
+        session_id: profile.session_id,
+        weights_used: { interest_aspiration: 0.25, location_accessibility: 0.2, existing_skills: 0.15, education_eligibility: 0.15, market_demand: 0.15, mobility_alignment: 0.1 },
+        top_recommendations: [projectSheet, localClass],
+        refused_options: [],
+        dropped_gates: [
+          "Gate [travel_radius]: Solar PV Installer (Suryamitra) (ELE/Q1401) refused. Centre 'Babatpur Industrial Campus' is 35.0 km away, exceeding candidate travel radius limit of 5.0 km.",
+          "Gate [pack_expired]: General Pipe Fitter (PLU/Q0100) expired on 2023-12-31.",
+          "Gate [accessibility]: Centre 'Chandauli Old Block Kendra' lacks step-free access."
+        ],
+        saved_refusal_reason: "Centre 'Babatpur Industrial Campus' is 35.0 km away, exceeding candidate travel radius limit of 5.0 km.",
+        masked_constraint: "travel_radius",
+        padding_omitted: true,
+        padding_note: "No unverified cards added; options limited strictly to verified pathways.",
+        catalogue_notice: "Sample list of Qualification Packs (नमुना सूची)",
+        funding_notice: "Consult the local desk; this screen does not grant funds.",
+      };
+    }
+
+    // Initial phase
+    const refusedSolar: RecommendationItem = {
+      qp_code: "ELE/Q1401",
+      title: "Solar PV Installer (Suryamitra)",
+      sector: "Green Jobs / Power",
       nsqf_level: 4,
-      duration_hours: 360,
-      typical_wage: "₹12,000 - ₹18,000 / month",
-      self_employment_potential: "Very High (independent village repair shop)",
-      total_score: 84.5,
-      score_breakdown: {
-        interest_aspiration: 80.0,
-        location_accessibility: 90.0,
-        existing_skills: 82.0,
-        education_eligibility: 90.0,
-        market_demand: 88.0,
-        mobility_alignment: 85.0,
-      },
-      reason:
-        "High local repair demand in your block with grant eligible toolkit for motor and home equipment servicing.",
-      skill_gap: "Needs PCB board diagnostics and digital multimeter usage training.",
+      duration_hours: 300,
+      typical_wage: "Standard District Rate",
+      self_employment_potential: "High (local solar maintenance & battery enterprise)",
+      total_score: 0.0,
+      score_breakdown: {},
+      reason: "",
+      skill_gap: "Constraint conflict",
       nearest_centre: {
         id: "tc-01",
-        name: "Pradhan Mantri Kaushal Kendra (PMKK) & ITI Karaundi Campus",
-        address: "Karaundi, Near BHU, Varanasi",
-        distance_km: 8.0,
+        name: "Babatpur Industrial Training Campus",
+        address: "Babatpur Industrial Belt, Varanasi",
+        distance_km: 35.0,
         hostel_facility: true,
         stipend_supported: true,
         contact_phone: "0542-2578901",
+      },
+      is_refused: true,
+      refusal_reason: "Centre 'Babatpur Industrial Training Campus' is 35.0 km away, exceeding candidate travel radius limit of 5.0 km.",
+      constraint_tag: "travel_radius",
+    };
+
+    const initialMatch: RecommendationItem = {
+      qp_code: "AMH/Q1947",
+      title: "Self Employed Tailor & Boutique Manager",
+      sector: "Apparel & Home Furnishing",
+      nsqf_level: 4,
+      duration_hours: 340,
+      typical_wage: "Local Market Rate",
+      self_employment_potential: "High (micro-enterprise at home)",
+      total_score: 91.0,
+      score_breakdown: { interest_aspiration: 92.0, location_accessibility: 95.0, existing_skills: 88.0, education_eligibility: 90.0, market_demand: 90.0, mobility_alignment: 95.0 },
+      reason: "Directly fulfills your livelihood preference within your village.",
+      skill_gap: "Commercial pattern cutting and garment management.",
+      nearest_centre: {
+        id: "tc-02",
+        name: "Sewapuri Model Kaushal Kendra",
+        address: "Sewapuri Block Development Campus",
+        distance_km: 4.0,
+        hostel_facility: false,
+        stipend_supported: true,
+        contact_phone: "0542-2891234",
+      },
+      two_sentences: {
+        for_beneficiary: "Aapke gaon ke paas Sewapuri Model Kaushal Kendra (4.0 km) par yah prashikshan uplabdh hai jo aapki ruchi ke anukool hai.",
+        for_officer: "Under PM-AJAY GIA Capacity Building: NSQF Level 4 pack AMH/Q1947 verified at accredited centre Sewapuri Model Kaushal Kendra (4.0 km)."
       },
       is_refused: false,
       refusal_reason: "",
     };
 
-    const refusedItem: RecommendationItem = {
-      qp_code: "ASC/Q9701",
-      title: "Commercial Vehicle Driver & Fleet Operator",
-      sector: "Logistics",
-      nsqf_level: 4,
-      duration_hours: 300,
-      typical_wage: "₹16,000 - ₹28,000 / month",
-      self_employment_potential: "Moderate",
-      total_score: 0.0,
-      score_breakdown: {},
-      reason: "",
-      skill_gap: "Constraint conflict",
-      is_refused: true,
-      refusal_reason:
-        "Mobility constraint: Candidate is restricted to village/block level, but commercial fleet operations require state-wide mobility.",
-    };
-
     return {
       status: "success",
+      decision_phase: "initial",
       session_id: profile.session_id,
-      weights_used: {
-        interest_aspiration: 0.25,
-        location_accessibility: 0.2,
-        existing_skills: 0.15,
-        education_eligibility: 0.15,
-        market_demand: 0.15,
-        mobility_alignment: 0.1,
+      weights_used: { interest_aspiration: 0.25, location_accessibility: 0.2, existing_skills: 0.15, education_eligibility: 0.15, market_demand: 0.15, mobility_alignment: 0.1 },
+      top_recommendations: [initialMatch],
+      refused_options: [refusedSolar],
+      dropped_gates: [
+        "Gate [travel_radius]: Solar PV Installer (Suryamitra) excluded. Centre 'Babatpur Industrial Training Campus' is 35.0 km away, exceeding candidate travel radius limit of 5.0 km.",
+        "Gate [pack_expired]: General Pipe Fitter (PLU/Q0100) expired on 2023-12-31."
+      ],
+      read_back_info: {
+        qp_code: "ELE/Q1401",
+        course_title: "Solar PV Installer (Suryamitra)",
+        reason: "Centre 'Babatpur Industrial Training Campus' is 35.0 km away, exceeding candidate travel radius limit of 5.0 km.",
+        constraint: "travel_radius",
+        distance_km: 35.0,
+        user_words: "Babatpur 35.0 km door hai, main 5 km se zyada door nahi ja sakti",
+        read_back_prompt_hi: 'आपने बताया था: "Babatpur 35.0 km door hai, main 5 km se zyada door nahi ja sakti"। इस कारण Solar PV Installer उपलब्ध नहीं है। क्या यह सही है?',
+        read_back_prompt_en: 'You stated: "Babatpur 35.0 km door hai, main 5 km se zyada door nahi ja sakti". Due to this travel limit, Solar PV Installer cannot be selected. Do you confirm this?'
       },
-      top_recommendations: [topItem, secondItem],
-      refused_options: [refusedItem],
-      voice_summary: {
-        text_hi: `Aapke liye sabse behtar vikalp hai '${topItem.title}'. Karan: ${topItem.reason} Aapka nikat-tam training centre '${topItem.nearest_centre?.name}' lagbhag ${topItem.nearest_centre?.distance_km} km door hai. PM-AJAY ke tehat isme 100% muft prashikshan aur toolkit sahayata uplabdh hai.`,
-        text_en: `The best recommended course for you is '${topItem.title}'. Reason: ${topItem.reason} Your nearest training centre is '${topItem.nearest_centre?.name}', approximately ${topItem.nearest_centre?.distance_km} km away, with 100% grant and toolkit subsidy under PM-AJAY GIA.`,
-      },
+      catalogue_notice: "Sample list of Qualification Packs (नमुना सूची)",
+      funding_notice: "Consult the local desk; this screen does not grant funds.",
     };
   },
 
@@ -469,8 +559,9 @@ export const pmajayService = {
   ): Promise<{
     answer: string;
     is_valid: boolean;
-    is_lockout_warning?: boolean;
     violations: number;
+    catalogue_notice?: string;
+    funding_notice?: string;
   }> {
     try {
       const res = await axios.post(`${API_BASE}/ask-saathi`, {
@@ -479,19 +570,17 @@ export const pmajayService = {
         session_id: sessionId,
       });
       return res.data;
-    } catch (e) {
-      console.warn("Backend /ask-saathi failed, fallback to local rule guard:", e);
+    } catch {
       return {
         answer:
           language === "hi"
-            ? "मैं केवल पीएम-अजय कौशल योजना और सरकारी कोर्सेस से संबंधित प्रश्नों का उत्तर दे सकता हूँ।"
-            : language === "mr"
-            ? "मी केवळ पीएम-अजय कौशल्य अभ्यासक्रमासंबंधी प्रश्नांची उत्तरे देऊ शकतो."
-            : "I can only answer questions related to PM-AJAY skilling and government courses.",
+            ? "पीएम-अजय कौशल योजना के तहत प्रमाणित प्रशिक्षण व केंद्र की जानकारी उपलब्ध है। स्थानीय डेस्क से संपर्क करें; यह स्क्रीन धन स्वीकृत नहीं करती है।"
+            : "Under PM-AJAY GIA, accredited courses and local training centres are facilitated. Consult the local desk; this screen does not grant funds.",
         is_valid: true,
         violations: 0,
+        catalogue_notice: "Sample list of Qualification Packs (नमुना सूची)",
+        funding_notice: "Consult the local desk; this screen does not grant funds.",
       };
     }
   },
 };
-

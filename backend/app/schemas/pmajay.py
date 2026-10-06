@@ -50,12 +50,28 @@ class Constraints(BaseModel):
     )  # within_village, within_block, within_district, state_level, cannot_travel
     financial: ProfileField = Field(
         default_factory=lambda: ProfileField(value="")
-    )  # immediate_stipend_needed, low_cost_only, subsidy_grant_needed
+    )
+    max_travel_km: Optional[float] = None
+    requires_step_free_access: bool = False
+    has_physical_limitation: bool = False
+    physical_limitation_detail: str = ""
+    rejected_sectors: List[str] = Field(default_factory=list)
 
 
 class SystemInferred(BaseModel):
     skill_level: ProfileField = Field(default_factory=lambda: ProfileField(value="beginner"))
     suitable_sectors: List[str] = Field(default_factory=list)
+
+
+class RefusalRecord(BaseModel):
+    qp_code: str = ""
+    course_title: str = ""
+    reason: str = ""
+    constraint: str = ""
+    user_words: str = ""
+    confirmed: bool = False
+    distance_km: Optional[float] = None
+    expiry_date: Optional[str] = None
 
 
 class BeneficiaryMetadata(BaseModel):
@@ -75,3 +91,8 @@ class BeneficiaryProfile(BaseModel):
     constraints: Constraints = Field(default_factory=Constraints)
     system_inferred: SystemInferred = Field(default_factory=SystemInferred)
     metadata: BeneficiaryMetadata = Field(default_factory=BeneficiaryMetadata)
+    prior_experience_months: int = 0
+    refusal_record: Optional[RefusalRecord] = None
+    masked_constraints: List[str] = Field(default_factory=list)
+    second_decision_active: bool = False
+

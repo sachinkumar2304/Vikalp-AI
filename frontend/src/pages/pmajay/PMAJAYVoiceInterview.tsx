@@ -17,6 +17,7 @@ import {
   HelpCircle,
   Phone,
   Sparkles,
+  Trash2,
 } from "lucide-react";
 import { IVRSimulatorModal } from "@/components/pmajay/IVRSimulatorModal";
 
@@ -45,19 +46,19 @@ const SAMPLE_BENEFICIARY_RESPONSES: Record<number, string[]> = {
     "खेत में दैनिक मजदूरी और कभी-कभी पाइपलाइन का काम करता हूँ।",
   ],
   3: [
+    "मुझे सोलर बिजली में रुचि है पर बाबतपुर दूर है, मैं सिलाई भी 1.5 साल से जानती हूँ।",
     "मुझे सोलर रूफटॉप पैनल और बिजली का काम सीखना है जिससे अपनी दुकान खोल सकूँ।",
     "सिलाई और आधुनिक बुटीक का काम सीखना चाहती हूँ।",
-    "नल-जल योजना में प्लंबर और मोटर पंप मरम्मत का काम सीखना चाहता हूँ।",
   ],
   4: [
-    "मैं अपना खुद का काम शुरू करना चाहता हूँ टूलकिट अनुदान की मदद से।",
+    "मैं अपना खुद का काम शुरू करना चाहता हूँ सरकारी सहायता से।",
     "अपना स्वयं का सिलाई केंद्र और बुटीक चलाना चाहती हूँ (स्वरोजगार)।",
     "मुझे किसी कंपनी या प्रोजेक्ट में निश्चित मासिक वेतन वाली नौकरी चाहिए।",
   ],
   5: [
+    "बाबतपुर 35 किमी दूर है, मैं 5 किमी से ज्यादा दूर नहीं जा सकती।",
     "मैं ब्लॉक और तहसील तक जा सकता हूँ, लेकिन बाहर दूसरे राज्य नहीं जा सकता।",
-    "सिर्फ गांव के भीतर ही काम कर सकती हूँ, बाहर जाना संभव नहीं है।",
-    "मैं पूरे जिले और शहर में कहीं भी काम के लिए जा सकता हूँ।",
+    "गांव के भीतर ही काम कर सकती हूँ, बाहर जाना संभव नहीं है।",
   ],
 };
 
@@ -214,10 +215,11 @@ export const PMAJAYVoiceInterview: React.FC = () => {
       setProfile(res.updated_profile);
 
       if (res.is_complete) {
+        localStorage.setItem("pmajay_current_profile", JSON.stringify(res.updated_profile));
         const finishMsg: TurnMessage = {
           id: "assistant-finish",
           sender: "assistant",
-          text: "धन्यवाद! आपका साक्षात्कार पूर्ण हो चुका है। अब पारदर्शी एल्गोरिथ्म आपके लिए सबसे उपयुक्त NSQF कौशल और ₹50,000 टूलकिट अनुदान का मिलान कर रहा है...",
+          text: "धन्यवाद! आपका साक्षात्कार पूर्ण हो चुका है। अब पारदर्शी एल्गोरिथ्म आपके लिए उपयुक्त NSQF कौशल और प्रशिक्षण केंद्र का मिलान कर रहा है...",
           turn: totalTurns,
           timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         };
@@ -225,8 +227,8 @@ export const PMAJAYVoiceInterview: React.FC = () => {
         speakAloud(finishMsg.text, selectedLang);
 
         setTimeout(() => {
-          navigate("/pmajay/profile");
-        }, 2200);
+          navigate("/pmajay/recommendations");
+        }, 1800);
       } else {
         setCurrentTurn(res.next_turn);
         const nextMsg: TurnMessage = {
@@ -277,6 +279,22 @@ export const PMAJAYVoiceInterview: React.FC = () => {
 
           {/* Progress & Tools */}
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={async () => {
+                if (sessionId) {
+                  await pmajayService.eraseSession(sessionId);
+                }
+                localStorage.removeItem("pmajay_current_profile");
+                navigate("/pmajay");
+              }}
+              className="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              title="सत्र डेटा मिटाएं"
+            >
+              <Trash2 className="w-3.5 h-3.5 text-rose-700" />
+              <span>सत्र मिटाएं (Erase Session)</span>
+            </button>
+
             <button
               type="button"
               onClick={() => setIvrModalOpen(true)}

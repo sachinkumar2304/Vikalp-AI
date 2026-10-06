@@ -1,12 +1,15 @@
 """
 NSQF Qualification Packs & Local Opportunity Curated Dataset
+Sample list of Qualification Packs (नमुना सूची) - Demonstrative dataset
 Structured like the official National Qualifications Register (NQR) / National Skill Qualification Framework (NSQF).
 Sample data curated specifically for PM-AJAY GIA demonstration purposes.
 """
 
 from typing import List, Dict, Any
 
-# Curated NSQF Courses (18 packs covering rural/semi-urban livelihoods)
+CATALOGUE_NOTICE = "Sample list of Qualification Packs (नमुना सूची)"
+
+# Curated NSQF Courses (Sample packs covering rural/semi-urban livelihoods)
 NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
     {
         "qp_code": "ELE/Q1401",
@@ -21,7 +24,12 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["solar", "electricity", "energy", "wiring", "repair", "electrical", "bijli", "panel"],
         "description": "Installation, testing, and maintenance of rooftop and agricultural solar PV systems.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹15,000 - ₹22,000 / month",
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": False,
+        "min_prior_experience_months": 0,
+        "rpl_duration_hours": 0,
+        "typical_wage": "Standard District Wage Rate",
         "self_employment_potential": "High (local solar maintenance & battery enterprise)"
     },
     {
@@ -37,8 +45,13 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["repair", "appliance", "fan", "motor", "mixer", "cooler", "electrical", "electronics", "mechanic"],
         "description": "Diagnosis, repair, and servicing of household electrical items and motors.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹12,000 - ₹18,000 / month",
-        "self_employment_potential": "Very High (independent village repair shop with toolkit subsidy)"
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": True,
+        "min_prior_experience_months": 12,
+        "rpl_duration_hours": 40,
+        "typical_wage": "Standard District Wage Rate",
+        "self_employment_potential": "High (independent village repair shop)"
     },
     {
         "qp_code": "AMH/Q1947",
@@ -53,8 +66,13 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["tailoring", "stitching", "sewing", "boutique", "garment", "silai", "cloth", "fashion"],
         "description": "Pattern making, cutting, stitching garments and managing small-scale tailoring enterprise.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹10,000 - ₹25,000 / month (self income)",
-        "self_employment_potential": "Excellent (micro-enterprise at home with PM-AJAY capital subsidy)"
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": True,
+        "min_prior_experience_months": 12,
+        "rpl_duration_hours": 40,
+        "typical_wage": "Local Market Livelihood Rate",
+        "self_employment_potential": "High (micro-enterprise at home)"
     },
     {
         "qp_code": "AMH/Q0102",
@@ -69,7 +87,12 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["sewing", "garment", "factory", "textile", "clothes", "machine"],
         "description": "Operating industrial sewing machinery for garment export and textile clusters.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹11,000 - ₹15,000 / month",
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": True,
+        "min_prior_experience_months": 12,
+        "rpl_duration_hours": 40,
+        "typical_wage": "Standard District Wage Rate",
         "self_employment_potential": "Moderate"
     },
     {
@@ -85,8 +108,13 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["food", "pickle", "spices", "masala", "grain", "packaging", "khana", "achar", "processing"],
         "description": "Preservation, hygienic spice grinding, pickle formulation, packaging, and FSSAI basic compliance.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹9,000 - ₹16,000 / month",
-        "self_employment_potential": "High (SHG / Individual micro-food business with GIA fund)"
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": True,
+        "min_prior_experience_months": 12,
+        "rpl_duration_hours": 40,
+        "typical_wage": "Local Market Livelihood Rate",
+        "self_employment_potential": "High (SHG / Individual micro-food business)"
     },
     {
         "qp_code": "FIC/Q7001",
@@ -101,8 +129,13 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["dairy", "cow", "buffalo", "milk", "cattle", "fodder", "animal husbandry", "doodh", "kisan"],
         "description": "Scientific animal care, milk hygiene, testing, fat measurement, and cold storage linkup.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹12,000 - ₹28,000 / month",
-        "self_employment_potential": "Very High (PM-AJAY animal husbandry capital grant)"
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": True,
+        "min_prior_experience_months": 12,
+        "rpl_duration_hours": 40,
+        "typical_wage": "Local Market Livelihood Rate",
+        "self_employment_potential": "High"
     },
     {
         "qp_code": "AGR/Q1201",
@@ -117,7 +150,12 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["irrigation", "drip", "sprinkler", "water", "plumbing", "kheti", "farming", "pipes"],
         "description": "Laying, testing, and servicing water-efficient drip irrigation systems for horticulture.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹13,000 - ₹20,000 / month",
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": False,
+        "min_prior_experience_months": 0,
+        "rpl_duration_hours": 0,
+        "typical_wage": "Standard District Wage Rate",
         "self_employment_potential": "High (contract service for farmers)"
     },
     {
@@ -133,8 +171,13 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["electrician", "wiring", "switch", "meter", "line", "bijli", "construction", "cables"],
         "description": "Conduit laying, domestic and commercial wiring, earthing, fuse and circuit breaker fittings.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹14,000 - ₹22,000 / month",
-        "self_employment_potential": "Very High"
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": True,
+        "min_prior_experience_months": 12,
+        "rpl_duration_hours": 40,
+        "typical_wage": "Standard District Wage Rate",
+        "self_employment_potential": "High"
     },
     {
         "qp_code": "CON/Q0102",
@@ -149,7 +192,12 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["mason", "brick", "cement", "tile", "mistri", "construction", "building", "plaster"],
         "description": "Brick work, concrete mixing, plastering, floor and wall tiling for rural housing schemes (PMAY).",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹16,000 - ₹26,000 / month (daily wages ₹600-800)",
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": True,
+        "min_prior_experience_months": 12,
+        "rpl_duration_hours": 40,
+        "typical_wage": "Standard District Wage Rate",
         "self_employment_potential": "High (independent civil contractor)"
     },
     {
@@ -165,104 +213,13 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["bike", "motorcycle", "scooter", "e-rickshaw", "battery", "mechanic", "automotive", "gaadi"],
         "description": "Periodic servicing, brake inspection, engine tuning, and EV battery/motor troubleshooting.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹14,000 - ₹24,000 / month",
-        "self_employment_potential": "Very High (roadside garage / EV service unit)"
-    },
-    {
-        "qp_code": "ASC/Q9701",
-        "title": "Commercial Vehicle Driver & Fleet Operator",
-        "sector": "Logistics & Automotive",
-        "nsqf_level": 4,
-        "min_education": "8th_pass",
-        "duration_hours": 300,
-        "employment_type": "wage_and_self",
-        "mobility_required": "state_level",
-        "market_demand_score": 0.88,
-        "keywords": ["driver", "driving", "truck", "van", "pickup", "transport", "logistics", "delivery"],
-        "description": "Safe operation of light/medium goods carriers, GPS navigation, and highway vehicle upkeep.",
-        "pmajay_grant_eligible": True,
-        "typical_wage": "₹16,000 - ₹28,000 / month",
-        "self_employment_potential": "High (goods pickup vehicle under PM-AJAY credit scheme)"
-    },
-    {
-        "qp_code": "RAS/Q0102",
-        "title": "Retail Store Sales Associate & Cashier",
-        "sector": "Retail",
-        "nsqf_level": 4,
-        "min_education": "10th_pass",
-        "duration_hours": 240,
-        "employment_type": "wage_employment",
-        "mobility_required": "within_district",
-        "market_demand_score": 0.81,
-        "keywords": ["retail", "sales", "shop", "cashier", "customer", "counter", "store", "billing"],
-        "description": "Customer greeting, inventory handling, POS computerized billing, and merchandise display.",
-        "pmajay_grant_eligible": True,
-        "typical_wage": "₹12,000 - ₹17,000 / month",
-        "self_employment_potential": "Moderate"
-    },
-    {
-        "qp_code": "SSC/Q2212",
-        "title": "Domestic Data Entry Operator & CSC Assistant",
-        "sector": "IT-ITeS",
-        "nsqf_level": 4,
-        "min_education": "10th_pass",
-        "duration_hours": 400,
-        "employment_type": "wage_and_self",
-        "mobility_required": "within_block",
-        "market_demand_score": 0.79,
-        "keywords": ["computer", "data entry", "typing", "csc", "internet", "government forms", "online", "office"],
-        "description": "Accurate alphanumeric data entry, operating MS Office, digital payment handling, citizen e-services.",
-        "pmajay_grant_eligible": True,
-        "typical_wage": "₹11,000 - ₹18,000 / month",
-        "self_employment_potential": "High (village Common Service Centre / Jan Seva Kendra kiosk)"
-    },
-    {
-        "qp_code": "HSS/Q5101",
-        "title": "General Duty Assistant (Healthcare Nursing Aide)",
-        "sector": "Healthcare",
-        "nsqf_level": 4,
-        "min_education": "10th_pass",
-        "duration_hours": 480,
-        "employment_type": "wage_employment",
-        "mobility_required": "within_district",
-        "market_demand_score": 0.91,
-        "keywords": ["health", "hospital", "patient", "nurse", "clinic", "elderly care", "medical", "dawa"],
-        "description": "Patient mobility, vital signs monitoring, bed preparation, and primary health centre support.",
-        "pmajay_grant_eligible": True,
-        "typical_wage": "₹13,000 - ₹20,000 / month",
-        "self_employment_potential": "Moderate (home nursing attendant)"
-    },
-    {
-        "qp_code": "BWP/Q0102",
-        "title": "Assistant Beauty Therapist & Wellness Consultant",
-        "sector": "Beauty & Wellness",
-        "nsqf_level": 3,
-        "min_education": "below_8th",
-        "duration_hours": 240,
-        "employment_type": "wage_and_self",
-        "mobility_required": "within_village",
-        "market_demand_score": 0.85,
-        "keywords": ["beauty", "parlour", "salon", "makeup", "haircut", "skincare", "mehendi"],
-        "description": "Basic skincare, bridal make-up, threading, waxing, hair grooming, and rural salon setup.",
-        "pmajay_grant_eligible": True,
-        "typical_wage": "₹10,000 - ₹22,000 / month",
-        "self_employment_potential": "Very High (home-based village beauty parlour)"
-    },
-    {
-        "qp_code": "CSC/Q0204",
-        "title": "Manual Metal Arc Welder (MMAW)",
-        "sector": "Capital Goods / Fabrication",
-        "nsqf_level": 3,
-        "min_education": "8th_pass",
-        "duration_hours": 300,
-        "employment_type": "wage_and_self",
-        "mobility_required": "within_block",
-        "market_demand_score": 0.87,
-        "keywords": ["welding", "welder", "iron", "grill", "gate", "metal", "fabrication", "loha"],
-        "description": "Shielded metal arc welding, cutting, grinding, and fabrication of agricultural tools and door gates.",
-        "pmajay_grant_eligible": True,
-        "typical_wage": "₹15,000 - ₹25,000 / month",
-        "self_employment_potential": "High (fabrication workshop)"
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": True,
+        "min_prior_experience_months": 12,
+        "rpl_duration_hours": 40,
+        "typical_wage": "Standard District Wage Rate",
+        "self_employment_potential": "High (local garage / EV service unit)"
     },
     {
         "qp_code": "PLU/Q0101",
@@ -277,28 +234,151 @@ NSQF_QUALIFICATION_PACKS: List[Dict[str, Any]] = [
         "keywords": ["plumber", "pipe", "water", "tap", "nal", "leakage", "sanitary", "tank", "jal jeevan"],
         "description": "PVC/GI pipe laying, pump installation, sanitary fittings, and village tap water maintenance.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹14,000 - ₹22,000 / month",
-        "self_employment_potential": "Very High (Panchayat water operator or self contractor)"
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": True,
+        "min_prior_experience_months": 12,
+        "rpl_duration_hours": 40,
+        "typical_wage": "Standard District Wage Rate",
+        "self_employment_potential": "High (Panchayat water operator or self contractor)"
     },
     {
-        "qp_code": "SEC/Q0101",
-        "title": "Unarmed Security Guard",
-        "sector": "Security",
-        "nsqf_level": 4,
-        "min_education": "8th_pass",
-        "duration_hours": 160,
-        "employment_type": "wage_employment",
-        "mobility_required": "within_district",
-        "market_demand_score": 0.83,
-        "keywords": ["guard", "security", "watchman", "patrolling", "chowkidar", "safety"],
-        "description": "Access control, perimeter surveillance, visitor register maintenance, and emergency response.",
+        "qp_code": "BWP/Q0102",
+        "title": "Assistant Beauty Therapist & Wellness Consultant",
+        "sector": "Beauty & Wellness",
+        "nsqf_level": 3,
+        "min_education": "below_8th",
+        "duration_hours": 240,
+        "employment_type": "wage_and_self",
+        "mobility_required": "within_village",
+        "market_demand_score": 0.85,
+        "keywords": ["beauty", "parlour", "salon", "makeup", "haircut", "skincare", "mehendi"],
+        "description": "Basic skincare, bridal make-up, threading, waxing, hair grooming, and rural salon setup.",
         "pmajay_grant_eligible": True,
-        "typical_wage": "₹12,000 - ₹16,000 / month + uniform/esi",
+        "valid_until": "2026-12-31",
+        "is_expired": False,
+        "rpl_eligible": True,
+        "min_prior_experience_months": 12,
+        "rpl_duration_hours": 40,
+        "typical_wage": "Local Market Livelihood Rate",
+        "self_employment_potential": "High (home-based village beauty parlour)"
+    },
+    # Sample Expired Pack to demonstrate NCVET validity filtering
+    {
+        "qp_code": "PLU/Q0100",
+        "title": "General Pipe Fitter (Legacy Pack)",
+        "sector": "Plumbing",
+        "nsqf_level": 3,
+        "min_education": "below_8th",
+        "duration_hours": 200,
+        "employment_type": "wage_employment",
+        "mobility_required": "within_block",
+        "market_demand_score": 0.40,
+        "keywords": ["plumber", "pipe", "legacy", "fitting"],
+        "description": "Legacy pipe fitting course superseded by NCVET 2024 standards.",
+        "pmajay_grant_eligible": False,
+        "valid_until": "2023-12-31",
+        "is_expired": True,
+        "rpl_eligible": False,
+        "min_prior_experience_months": 0,
+        "rpl_duration_hours": 0,
+        "typical_wage": "Standard District Wage Rate",
         "self_employment_potential": "Low"
     }
 ]
 
-# Sample Local Opportunities Dataset for a Representative District (e.g. Varanasi / Chandauli rural belt)
+# Nearest PM-AJAY Approved Skill Training Centres
+APPROVED_TRAINING_CENTRES: List[Dict[str, Any]] = [
+    {
+        "id": "tc-01",
+        "name": "Babatpur Industrial Training Campus",
+        "address": "Babatpur Industrial Belt, Near Airport, Varanasi",
+        "distance_km": 35.0,
+        "hostel_facility": True,
+        "has_ramp_access": True,
+        "stipend_supported": True,
+        "contact_phone": "0542-2578901",
+        "courses_offered": ["ELE/Q1401", "CON/Q0102"]
+    },
+    {
+        "id": "tc-02",
+        "name": "Sewapuri Model Kaushal Kendra",
+        "address": "Sewapuri Block Development Campus, Sewapuri",
+        "distance_km": 4.0,
+        "hostel_facility": False,
+        "has_ramp_access": True,
+        "stipend_supported": True,
+        "contact_phone": "0542-2891234",
+        "courses_offered": ["AMH/Q1947", "FIC/Q0103", "BWP/Q0102", "ELE/Q3102", "PLU/Q0101"]
+    },
+    {
+        "id": "tc-03",
+        "name": "Arajiline Community Livelihood Centre",
+        "address": "Arajiline Block Headquarters",
+        "distance_km": 2.5,
+        "hostel_facility": False,
+        "has_ramp_access": True,
+        "stipend_supported": True,
+        "contact_phone": "0542-2345678",
+        "courses_offered": ["AMH/Q1947", "FIC/Q7001", "CON/Q0602"]
+    },
+    {
+        "id": "tc-04",
+        "name": "Chandauli Old Block Kendra",
+        "address": "Old Tehsil Complex, Chandauli",
+        "distance_km": 12.0,
+        "hostel_facility": False,
+        "has_ramp_access": False,  # No ramp/wheelchair accessibility
+        "stipend_supported": True,
+        "contact_phone": "05412-260111",
+        "courses_offered": ["ASC/Q9702", "AGR/Q1201"]
+    }
+]
+
+# PM-AJAY GIA Component Project Sheets (Type 3 of the Second Decision)
+PM_AJAY_PROJECT_SHEETS: List[Dict[str, Any]] = [
+    {
+        "project_id": "PMAJAY-PS-01",
+        "title": "Village Women Stitching & Garment Cluster Project Sheet",
+        "sector": "Apparel & Home Furnishing",
+        "scheme_component": "PM-AJAY GIA Component (Grants-in-Aid for Livelihood Projects)",
+        "target_group": "Rural SC Women & Experienced Tailors",
+        "description": "Localized decentralized garment production unit operating at village level with shared work tables and centralized raw material linkage.",
+        "support_type": "Production workspace allocation & institutional order linkage (referral)",
+        "mobility_required": "within_village",
+        "prior_skill_required": "Basic tailoring / garment experience",
+        "location": "Panchayat Common Facility Centre",
+        "referral_line": "Employment linkage: Co-operative buyback referral with Kashi Khadi & Gramodyog board"
+    },
+    {
+        "project_id": "PMAJAY-PS-02",
+        "title": "Community Solar Maintenance & Agri-Pump Service Project Sheet",
+        "sector": "Green Energy / Rural Utilities",
+        "scheme_component": "PM-AJAY GIA Infrastructure & Livelihood Convergence",
+        "target_group": "SC Rural Technicians",
+        "description": "Block-level mobile servicing unit for PM-KUSUM agricultural pumps and Gram Panchayat rooftop solar arrays.",
+        "support_type": "Institutional service contract linkage with Gram Panchayat",
+        "mobility_required": "within_block",
+        "prior_skill_required": "Basic electrical handling",
+        "location": "Block Development Office (BDO) Cluster",
+        "referral_line": "Employment linkage: Panchayat maintenance contract roster"
+    },
+    {
+        "project_id": "PMAJAY-PS-03",
+        "title": "Rural Organic Spices & Dal Processing Project Sheet",
+        "sector": "Food Processing / Agro",
+        "scheme_component": "PM-AJAY GIA Component",
+        "target_group": "Rural SC SHG Artisans",
+        "description": "Hygienic local spice formulation and pulses cleaning unit with FSSAI basic standard equipment.",
+        "support_type": "Cluster processing facility access",
+        "mobility_required": "within_village",
+        "prior_skill_required": "Food preservation knowledge",
+        "location": "Village Panchayat Hall",
+        "referral_line": "Employment linkage: Local Haat & Fair Price retail supply network"
+    }
+]
+
+# Sample Local Opportunities Dataset for a Representative District (No Monetary Figures)
 SAMPLE_DISTRICT = "Varanasi / Chandauli Rural Cluster"
 
 LOCAL_OPPORTUNITIES: List[Dict[str, Any]] = [
@@ -309,25 +389,25 @@ LOCAL_OPPORTUNITIES: List[Dict[str, Any]] = [
         "type": "wage_employment",
         "employer_or_model": "Surya Urja Vikas Samiti & Local EPC Contractors",
         "location": "Babatpur Block, Varanasi",
-        "distance_km": 7.5,
-        "stipend_or_wage": "₹16,000 / mo + conveyance",
+        "distance_km": 35.0,
+        "stipend_or_wage": "Standard District Wage Rate",
         "openings": 12,
         "matched_qp_code": "ELE/Q1401",
-        "eligible_schemes": ["PM-AJAY GIA Capital Subsidy", "PM Surya Ghar Muft Bijli Yojana"],
-        "contact_person": "District Skill Nodal Officer, ITI Karaundi"
+        "eligible_schemes": ["PM-AJAY GIA Livelihood Convergence"],
+        "contact_person": "District Skill Nodal Officer"
     },
     {
         "id": "opp-02",
         "sector": "Apparel & Home Furnishing",
         "title": "Micro Boutique & Village Stitching Enterprise",
         "type": "self_employment",
-        "employer_or_model": "Self-Employed / PM-AJAY GIA Grant Support",
+        "employer_or_model": "Self-Employed / PM-AJAY GIA Support (Referral)",
         "location": "Arajiline Block / Village Level",
-        "distance_km": 1.2,
-        "stipend_or_wage": "Estimated ₹12,000 - ₹20,000 / mo net profit",
-        "openings": "Unlimited (Self-employment)",
+        "distance_km": 2.5,
+        "stipend_or_wage": "Local Market Livelihood Rate",
+        "openings": "Open",
         "matched_qp_code": "AMH/Q1947",
-        "eligible_schemes": ["PM-AJAY GIA Tool Kit & Machinery Grant (up to ₹50,000)", "Mudra Shishu Loan"],
+        "eligible_schemes": ["PM-AJAY GIA Livelihood Component (consult desk, screen does not grant funds)"],
         "contact_person": "Block Development Officer (BDO), Social Welfare Wing"
     },
     {
@@ -337,115 +417,25 @@ LOCAL_OPPORTUNITIES: List[Dict[str, Any]] = [
         "type": "wage_and_self",
         "employer_or_model": "Kashi Gramin Seva Kendra & Local Retail Networks",
         "location": "Sewapuri Model Block",
-        "distance_km": 5.0,
-        "stipend_or_wage": "₹14,000 - ₹19,000 / mo",
+        "distance_km": 4.0,
+        "stipend_or_wage": "Standard District Wage Rate",
         "openings": 8,
         "matched_qp_code": "ELE/Q3102",
-        "eligible_schemes": ["PM-AJAY Skill Upgradation & Tool Kit Scheme"],
+        "eligible_schemes": ["PM-AJAY Skill Upgradation"],
         "contact_person": "Sewapuri Skill Facilitation Cell"
     },
     {
         "id": "opp-04",
-        "sector": "Automotive",
-        "title": "E-Rickshaw & Electric Two-Wheeler Battery Service",
-        "type": "wage_and_self",
-        "employer_or_model": "Green Mobility Cooperative / Private Workshop",
-        "location": "Chandauli Main Road junction",
-        "distance_km": 6.8,
-        "stipend_or_wage": "₹15,000 - ₹22,000 / mo",
-        "openings": 6,
-        "matched_qp_code": "ASC/Q9702",
-        "eligible_schemes": ["Stand-Up India / PM-AJAY Credit Linked Scheme"],
-        "contact_person": "District Industries Centre (DIC) Assistant Director"
-    },
-    {
-        "id": "opp-05",
         "sector": "Plumbing",
         "title": "Panchayat Har Ghar Jal Pipeline Maintenance Operator",
         "type": "wage_employment",
         "employer_or_model": "Jal Jeevan Mission Village Water & Sanitation Committee (VWSC)",
-        "location": "Gram Panchayat Level (Local posting)",
+        "location": "Gram Panchayat Level",
         "distance_km": 2.0,
-        "stipend_or_wage": "₹9,500 - ₹12,000 / mo + emergency fix fees",
+        "stipend_or_wage": "Standard District Wage Rate",
         "openings": 15,
         "matched_qp_code": "PLU/Q0101",
         "eligible_schemes": ["PM-AJAY Infrastructure & Skilling Convergence"],
         "contact_person": "Gram Pradhan / Panchayat Secretary"
-    },
-    {
-        "id": "opp-06",
-        "sector": "Food Processing",
-        "title": "SC Women SHG Spices & Dal Processing Unit",
-        "type": "self_employment",
-        "employer_or_model": "Prerna Samuh / PM-AJAY GIA Producer Cluster",
-        "location": "Chiraigaon Block",
-        "distance_km": 4.5,
-        "stipend_or_wage": "₹11,000 - ₹18,000 / mo profit share",
-        "openings": 20,
-        "matched_qp_code": "FIC/Q0103",
-        "eligible_schemes": ["PM-AJAY GIA Cluster Development Grant", "PMFME Seed Capital"],
-        "contact_person": "NRLM Block Mission Manager"
-    },
-    {
-        "id": "opp-07",
-        "sector": "IT-ITeS",
-        "title": "CSC Digital Village Citizen Service Operator",
-        "type": "self_employment",
-        "employer_or_model": "CSC e-Governance Services India Ltd",
-        "location": "Rohaniya Market Hub",
-        "distance_km": 4.0,
-        "stipend_or_wage": "Commission based, avg ₹12,000 - ₹18,000 / mo",
-        "openings": 4,
-        "matched_qp_code": "SSC/Q2212",
-        "eligible_schemes": ["PM-AJAY Entrepreneurship Development Program"],
-        "contact_person": "CSC District VLE Manager"
-    },
-    {
-        "id": "opp-08",
-        "sector": "Agriculture & Dairy",
-        "title": "Micro Dairy Farming & Chilling Centre Linkage",
-        "type": "self_employment",
-        "employer_or_model": "Parag Milk Producers Cooperative Union",
-        "location": "Pindra Block",
-        "distance_km": 3.5,
-        "stipend_or_wage": "Estimated ₹15,000 - ₹25,000 / mo net",
-        "openings": "Open",
-        "matched_qp_code": "FIC/Q7001",
-        "eligible_schemes": ["PM-AJAY Beneficiary Capital Subsidy for SC Cattle Keepers"],
-        "contact_person": "Veterinary Officer, Block Dispensary"
-    }
-]
-
-# Nearest PM-AJAY Approved Skill Training Centres
-APPROVED_TRAINING_CENTRES: List[Dict[str, Any]] = [
-    {
-        "id": "tc-01",
-        "name": "Pradhan Mantri Kaushal Kendra (PMKK) & ITI Karaundi Campus",
-        "address": "Karaundi, Near BHU, Varanasi",
-        "distance_km": 8.0,
-        "hostel_facility": True,
-        "stipend_supported": True,
-        "contact_phone": "0542-2578901",
-        "courses_offered": ["ELE/Q1401", "ELE/Q3102", "ASC/Q9702", "CON/Q0602"]
-    },
-    {
-        "id": "tc-02",
-        "name": "RSETI Rural Self Employment Training Institute",
-        "address": "Baroda RSETI, Near Ring Road, Chiraigaon",
-        "distance_km": 5.5,
-        "hostel_facility": True,
-        "stipend_supported": True,
-        "contact_phone": "0542-2345678",
-        "courses_offered": ["AMH/Q1947", "FIC/Q0103", "BWP/Q0102", "FIC/Q7001"]
-    },
-    {
-        "id": "tc-03",
-        "name": "Block Livelihood & Skill Development Centre",
-        "address": "Sewapuri Block Campus",
-        "distance_km": 3.8,
-        "hostel_facility": False,
-        "stipend_supported": True,
-        "contact_phone": "0542-2891234",
-        "courses_offered": ["PLU/Q0101", "AMH/Q0102", "SSC/Q2212", "AGR/Q1201"]
     }
 ]
