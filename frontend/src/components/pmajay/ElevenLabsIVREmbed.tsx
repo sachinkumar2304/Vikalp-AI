@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from "react";
-import { Phone, Radio } from "lucide-react";
 
 declare global {
   namespace JSX {
@@ -25,6 +24,13 @@ declare global {
  */
 export const launchIVRVoiceCall = () => {
   try {
+    const el = document.querySelector("elevenlabs-convai") as HTMLElement;
+    if (el) {
+      el.setAttribute("data-active", "true");
+      el.style.setProperty("display", "block", "important");
+      el.style.setProperty("visibility", "visible", "important");
+      el.style.setProperty("pointer-events", "auto", "important");
+    }
     document.dispatchEvent(
       new CustomEvent("elevenlabs-agent:expand", {
         detail: { action: "expand" },
@@ -32,6 +38,26 @@ export const launchIVRVoiceCall = () => {
     );
   } catch (err) {
     console.error("Unable to launch IVR telephony assistant:", err);
+  }
+};
+
+/**
+ * Collapses the live telephony voice assistant
+ */
+export const closeIVRVoiceCall = () => {
+  try {
+    document.dispatchEvent(
+      new CustomEvent("elevenlabs-agent:expand", {
+        detail: { action: "collapse" },
+      })
+    );
+    const el = document.querySelector("elevenlabs-convai") as HTMLElement;
+    if (el) {
+      el.removeAttribute("data-active");
+      el.style.setProperty("display", "none", "important");
+    }
+  } catch (err) {
+    console.error("Unable to collapse IVR telephony assistant:", err);
   }
 };
 
@@ -155,6 +181,22 @@ export const ElevenLabsIVREmbed: React.FC = () => {
         `;
         card.appendChild(badge);
       }
+
+      // Attach collapse click listener to conceal on close
+      const closeButtons = shadowRoot.querySelectorAll(
+        'button[aria-label*="Collapse" i], button[aria-label*="Close" i], button[aria-label*="go_back" i]'
+      );
+      closeButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          setTimeout(() => {
+            const widget = document.querySelector("elevenlabs-convai") as HTMLElement;
+            if (widget && !widget.getAttribute("data-keep-open")) {
+              widget.style.setProperty("display", "none", "important");
+              widget.removeAttribute("data-active");
+            }
+          }, 150);
+        });
+      });
     };
 
     // 3. Attach MutationObserver to custom element shadow root
@@ -163,7 +205,14 @@ export const ElevenLabsIVREmbed: React.FC = () => {
 
     const attachToWidget = () => {
       const widget = document.querySelector("elevenlabs-convai") as HTMLElement;
-      if (!widget || !widget.shadowRoot) return false;
+      if (!widget) return false;
+
+      // Keep hidden initially until requested by user action
+      if (!widget.hasAttribute("data-active")) {
+        widget.style.setProperty("display", "none", "important");
+      }
+
+      if (!widget.shadowRoot) return false;
 
       const sr = widget.shadowRoot;
       sanitizeRoot(sr);
@@ -185,7 +234,7 @@ export const ElevenLabsIVREmbed: React.FC = () => {
         if (attachToWidget()) {
           clearInterval(pollInterval);
         }
-      }, 250);
+      }, 200);
     }
 
     // 4. Global custom event listener
@@ -207,40 +256,14 @@ export const ElevenLabsIVREmbed: React.FC = () => {
       className="pmajay-telephony-embed-wrapper pointer-events-none select-none"
       aria-label="PM-AJAY GIA Official Telephony Voice Demo"
     >
-      {/* Official Government Conversational AI Web Component */}
+      {/* Official Government Conversational AI Web Component (initially hidden until user invokes) */}
       <elevenlabs-convai
         agent-id="agent_7901m4802g9ye4r9rx4kd1gznqkj"
-        placement="bottom-left"
+        placement="bottom-right"
         avatar-orb-color-1="#002147"
         avatar-orb-color-2="#d97706"
+        style={{ display: "none" }}
       />
-
-      {/* Floating Call Launcher Label Bar (docked near the bottom-left trigger) */}
-      <div className="fixed bottom-4 left-20 z-50 pointer-events-auto hidden sm:flex items-center gap-2 bg-[#002147]/95 hover:bg-[#002855] text-white border border-amber-500/50 rounded-full px-3.5 py-1.5 shadow-xl backdrop-blur-md transition-all active:scale-95 group">
-        <button
-          type="button"
-          onClick={launchIVRVoiceCall}
-          className="flex items-center gap-2 text-left"
-          title="टोल-फ्री IVR वॉयस AI डेमो खोलें"
-        >
-          <div className="w-5 h-5 rounded-full bg-emerald-600/80 flex items-center justify-center shrink-0">
-            <Radio className="w-3 h-3 text-emerald-200 animate-pulse" />
-          </div>
-          <div className="leading-tight">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-bold text-amber-300 font-mono">
-                1800-11-2026
-              </span>
-              <span className="text-[9px] uppercase font-bold tracking-wider px-1 py-0.2 bg-amber-500/20 text-amber-200 rounded border border-amber-500/30">
-                IVR AI
-              </span>
-            </div>
-            <div className="text-[10px] text-slate-300 group-hover:text-white">
-              वॉयस हेल्पलाइन डेमो (कॉल करें)
-            </div>
-          </div>
-        </button>
-      </div>
     </div>
   );
 };

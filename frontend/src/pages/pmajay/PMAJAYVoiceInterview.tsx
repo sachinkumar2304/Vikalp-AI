@@ -20,6 +20,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { IVRSimulatorModal } from "@/components/pmajay/IVRSimulatorModal";
+import { launchIVRVoiceCall } from "@/components/pmajay/ElevenLabsIVREmbed";
 import { useBeneficiary } from "@/contexts/BeneficiaryContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -99,6 +100,7 @@ export const PMAJAYVoiceInterview: React.FC = () => {
   const { profile, setProfile, eraseSession: ctxEraseSession, runEvaluation } = useBeneficiary();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [ivrModalOpen, setIvrModalOpen] = useState<boolean>(false);
+  const [interviewMode, setInterviewMode] = useState<"web" | "ivr">("web");
 
   // Audio / Speech Recognition Ref
   const recognitionRef = useRef<any>(null);
@@ -327,8 +329,112 @@ export const PMAJAYVoiceInterview: React.FC = () => {
           </div>
         </div>
 
-        {/* Two-Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+        {/* Interview Mode Selector Bar */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-3 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-slate-500">साक्षात्कार माध्यम (Interview Mode):</span>
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+              <button
+                type="button"
+                onClick={() => setInterviewMode("web")}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+                  interviewMode === "web"
+                    ? "bg-[#002147] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <Mic className="w-3.5 h-3.5" />
+                <span>वेब संवाद (Web Voice Intake)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setInterviewMode("ivr");
+                  launchIVRVoiceCall();
+                }}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all ${
+                  interviewMode === "ivr"
+                    ? "bg-emerald-700 text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <Phone className="w-3.5 h-3.5 text-amber-300" />
+                <span>IVR हेल्पलाइन मोड (1800-11-2026 Telephony)</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="text-[11px] text-slate-500 font-medium">
+            {interviewMode === "web"
+              ? "6 प्रश्नों में क्रमिक प्रोफाइल व कौशल मैपिंग"
+              : "लाइव टेलीफोनी वॉयस सहायक (Conversational AI Assistant)"}
+          </div>
+        </div>
+
+        {interviewMode === "ivr" ? (
+          /* Live Telephony IVR Interface */
+          <div className="bg-white border border-slate-200 rounded-2xl shadow-xs p-6 md:p-8 flex flex-col items-center justify-center text-center space-y-6 flex-1 min-h-[520px]">
+            <div className="w-20 h-20 rounded-full bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center text-emerald-700 shadow-inner">
+              <Phone className="w-9 h-9 animate-pulse" />
+            </div>
+
+            <div className="max-w-md space-y-2">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold">
+                <Radio className="w-3 h-3 text-emerald-600 animate-pulse" />
+                <span>IVR टेलीफोनी वॉयस चैनल सक्रिय (1800-11-2026)</span>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-[#002147]">
+                पीएम-अजय लाइव IVR टेलीफोनी साक्षात्कार
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                आप सीधे विकल्प साथी से प्राकृतिक भाषा में बात कर रहे हैं। अपनी पढ़ाई, काम का अनुभव और रुचि बताएं — AI आपकी पात्रता और कौशल केंद्र का मिलान करेगा।
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => launchIVRVoiceCall()}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-xl flex items-center gap-2 shadow-lg transition-all active:scale-95 text-sm"
+              >
+                <Phone className="w-4 h-4 text-white" />
+                <span>लाइव वॉयस कॉल शुरू करें / पुनः कनेक्ट करें</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIvrModalOpen(true)}
+                className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-3 rounded-xl flex items-center gap-2 border border-slate-300 transition-all text-xs"
+              >
+                <span>कीपैड DTMF सिम्युलेटर खोलें</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setInterviewMode("web")}
+                className="bg-white hover:bg-slate-50 text-slate-600 font-medium px-4 py-3 rounded-xl flex items-center gap-2 border border-slate-200 transition-all text-xs"
+              >
+                <Mic className="w-3.5 h-3.5 text-slate-500" />
+                <span>वेब संवाद पर वापस जाएं</span>
+              </button>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 max-w-lg w-full text-left text-xs space-y-2">
+              <div className="font-bold text-slate-800 flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>टेलीफोनी हेल्पलाइन निर्देश (Guidelines)</span>
+              </div>
+              <ul className="text-slate-600 space-y-1 list-disc list-inside text-[11px] leading-relaxed">
+                <li>हेडफ़ोन या साफ़ माइक्रोफ़ोन का उपयोग करें।</li>
+                <li>हिंदी, मराठी या अंग्रेजी में स्वाभाविक रूप से बोलें।</li>
+                <li>कॉल पूरी होने के बाद प्रोफाइल व अनुशंसित केंद्र तुरंत तैयार होंगे।</li>
+              </ul>
+            </div>
+          </div>
+        ) : (
+          /* Two-Column Layout for Web Voice Intake */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
           {/* Left Column: Humane Conversation Box */}
           <div className="lg:col-span-7 flex flex-col bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden h-[580px]">
             {/* Live Audio Status Strip */}
@@ -565,6 +671,7 @@ export const PMAJAYVoiceInterview: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
       </main>
 
       <IVRSimulatorModal isOpen={ivrModalOpen} onClose={() => setIvrModalOpen(false)} />

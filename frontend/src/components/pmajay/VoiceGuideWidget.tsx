@@ -20,8 +20,10 @@ import {
   ShieldCheck,
   Radio,
   X,
+  Phone,
 } from "lucide-react";
 import { EmblemOfIndia } from "./EmblemOfIndia";
+import { launchIVRVoiceCall } from "./ElevenLabsIVREmbed";
 
 interface TourStep {
   targetId?: string;
@@ -34,12 +36,12 @@ export const VoiceGuideWidget: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(-1);
   const [isTourRunning, setIsTourRunning] = useState<boolean>(false);
 
-  // AMA State
-  const [activeTab, setActiveTab] = useState<"tour" | "ask">("tour");
+  // AMA & IVR State
+  const [activeTab, setActiveTab] = useState<"tour" | "ask" | "ivr">("tour");
   const [userQuery, setUserQuery] = useState<string>("");
   const [isListeningUser, setIsListeningUser] = useState<boolean>(false);
   const [isAnswering, setIsAnswering] = useState<boolean>(false);
@@ -60,6 +62,7 @@ export const VoiceGuideWidget: React.FC = () => {
       close_guide: "बंद करें",
       tab_tour: "वेबसाइट टूर",
       tab_ask: "सवाल पूछें (AMA)",
+      tab_ivr: "IVR कॉल",
       ask_placeholder: "पीएम-अजय, कोर्स या टूलकिट के बारे में पूछें...",
       ask_btn: "पूछें",
       ask_mic_listening: "सुन रहा हूँ... बोलिए",
@@ -90,6 +93,7 @@ export const VoiceGuideWidget: React.FC = () => {
       close_guide: "Close",
       tab_tour: "Website Tour",
       tab_ask: "Ask Questions (AMA)",
+      tab_ivr: "IVR Call",
       ask_placeholder: "Ask about PM-AJAY, courses, or training centers...",
       ask_btn: "Ask",
       ask_mic_listening: "Listening... speak now",
@@ -120,6 +124,7 @@ export const VoiceGuideWidget: React.FC = () => {
       close_guide: "बंद करा",
       tab_tour: "वेबसाइट टूर",
       tab_ask: "प्रश्न विचारा (AMA)",
+      tab_ivr: "IVR कॉल",
       ask_placeholder: "पीएम-अजय, कोर्सेस किंवा केंद्रांबद्दल विचारा...",
       ask_btn: "विचारा",
       ask_mic_listening: "ऐकत आहे... बोला",
@@ -363,31 +368,43 @@ export const VoiceGuideWidget: React.FC = () => {
             </div>
           )}
 
-          {/* Tab Selector */}
-          <div className="grid grid-cols-2 gap-1 bg-slate-800/80 p-1 rounded-lg mb-2.5 border border-slate-700/60 text-xs font-medium">
+          {/* Tab Selector: 3 Tabs (Tour, Ask, IVR) */}
+          <div className="grid grid-cols-3 gap-1 bg-slate-800/80 p-1 rounded-lg mb-2.5 border border-slate-700/60 text-xs font-medium">
             <button
               type="button"
               onClick={() => setActiveTab("tour")}
-              className={`py-1.5 rounded-md flex items-center justify-center gap-1.5 transition-all ${
+              className={`py-1.5 rounded-md flex items-center justify-center gap-1 transition-all ${
                 activeTab === "tour"
                   ? "bg-slate-700 text-white shadow-2xs font-semibold"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <Compass className="w-3.5 h-3.5" />
-              <span>{tr.tab_tour}</span>
+              <span className="truncate">{tr.tab_tour}</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("ask")}
-              className={`py-1.5 rounded-md flex items-center justify-center gap-1.5 transition-all ${
+              className={`py-1.5 rounded-md flex items-center justify-center gap-1 transition-all ${
                 activeTab === "ask"
                   ? "bg-slate-700 text-white shadow-2xs font-semibold"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>{tr.tab_ask}</span>
+              <span className="truncate">{tr.tab_ask}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("ivr")}
+              className={`py-1.5 rounded-md flex items-center justify-center gap-1 transition-all ${
+                activeTab === "ivr"
+                  ? "bg-emerald-700 text-white shadow-2xs font-semibold"
+                  : "text-slate-400 hover:text-slate-200"
+              }`}
+            >
+              <Phone className="w-3.5 h-3.5" />
+              <span className="truncate">{tr.tab_ivr}</span>
             </button>
           </div>
 
@@ -537,6 +554,35 @@ export const VoiceGuideWidget: React.FC = () => {
                   <Send className="w-3.5 h-3.5" />
                 </button>
               </div>
+            </div>
+          )}
+
+          {/* ════ TAB 3: LIVE TELEPHONY IVR (1800-11-2026) ════ */}
+          {activeTab === "ivr" && (
+            <div className="space-y-2.5 bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-amber-300 font-bold text-xs">
+                  <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>1800-11-2026 वॉयस हेल्पलाइन</span>
+                </div>
+                <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono font-bold">
+                  LIVE IVR
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                सीधे AI वॉयस कॉल पर बात करें। विकल्प साथी आपकी भाषा में संवाद करके उपयुक्त कौशल व आजीविका विकल्प समझाएगा।
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  launchIVRVoiceCall();
+                }}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>लाइव IVR वॉयस कॉल शुरू करें</span>
+              </button>
             </div>
           )}
 
