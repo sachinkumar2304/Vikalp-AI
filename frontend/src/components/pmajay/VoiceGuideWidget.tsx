@@ -93,7 +93,7 @@ export const VoiceGuideWidget: React.FC = () => {
       ask_placeholder: "Ask about PM-AJAY, courses, or training centers...",
       ask_btn: "Ask",
       ask_mic_listening: "Listening... speak now",
-      ask_guideline: "Safety boundary: Only PM-AJAY and skill related queries permitted.",
+      ask_guideline: "Safety boundary: Exclusively PM-AJAY and skill related queries permitted.",
       lockout_alert: "Strict Alert: 10 violations may result in 4-day temporary restriction.",
       interview_cue: "Welcome! Are you ready to begin your voice interview? Just tap the voice interview button!",
       recommendations_cue: "Here are government skill courses matched to your profile and location.",
@@ -237,7 +237,7 @@ export const VoiceGuideWidget: React.FC = () => {
       const fallbackMsg =
         lang === "hi"
           ? "मैं केवल पीएम-अजय कौशल योजना के सवालों के उत्तर दे सकता हूँ।"
-          : "I can answer questions regarding PM-AJAY skill programs only.";
+          : "I can answer questions regarding PM-AJAY skill programs exclusively.";
       setLastAnswer(fallbackMsg);
       playVoice(fallbackMsg);
     } finally {

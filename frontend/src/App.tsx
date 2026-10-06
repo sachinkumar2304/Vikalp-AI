@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { BeneficiaryProvider } from "@/contexts/BeneficiaryContext";
 
 // ─── PM-AJAY GIA Voice Assistant (Problem Statement 26097) ───
 import { PMAJAYLanding } from "./pages/pmajay/PMAJAYLanding";
@@ -24,7 +25,8 @@ const App = () => (
     <ThemeProvider>
       <AuthProvider>
         <LanguageProvider>
-          <TooltipProvider>
+          <BeneficiaryProvider>
+            <TooltipProvider>
             <Toaster />
             <Sonner />
             <BrowserRouter>
@@ -48,7 +50,8 @@ const App = () => (
               <VoiceGuideWidget />
             </BrowserRouter>
           </TooltipProvider>
-        </LanguageProvider>
+        </BeneficiaryProvider>
+      </LanguageProvider>
       </AuthProvider>
     </ThemeProvider>
   </QueryClientProvider>

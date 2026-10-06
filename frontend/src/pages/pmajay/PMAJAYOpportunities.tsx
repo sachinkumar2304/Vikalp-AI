@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { PMAJAYNavbar } from "@/components/pmajay/PMAJAYNavbar";
+import { useBeneficiary } from "@/contexts/BeneficiaryContext";
 import {
   MapPin,
   Briefcase,
-  IndianRupee,
   ShieldCheck,
   Phone,
   CheckCircle2,
@@ -130,6 +130,7 @@ const SAMPLE_LOCAL_OPPORTUNITIES: Opportunity[] = [
 ];
 
 export const PMAJAYOpportunities: React.FC = () => {
+  const { profile, primaryMatch } = useBeneficiary();
   const [filterType, setFilterType] = useState<string>("all");
   const [appliedIds, setAppliedIds] = useState<string[]>([]);
   const [dispatchModalOpen, setDispatchModalOpen] = useState<boolean>(false);
@@ -399,12 +400,24 @@ export const PMAJAYOpportunities: React.FC = () => {
       <WhatsAppDispatchModal
         isOpen={dispatchModalOpen}
         onClose={() => setDispatchModalOpen(false)}
-        matchedTrade={selectedOpp?.matchedTrade}
-        centreName={selectedOpp?.employer}
+        beneficiaryName={profile?.basic_info?.name?.value || "Ramesh Kumar"}
+        matchedTrade={selectedOpp?.matchedTrade || primaryMatch?.course_name || "Solar PV Installer (ELE/Q1401)"}
+        centreName={selectedOpp?.employer || primaryMatch?.training_centre_name || "PMKK ITI Karaundi Campus, Varanasi"}
       />
 
       {/* Livelihood Passport Modal */}
-      <LivelihoodPassportModal isOpen={passportOpen} onClose={() => setPassportOpen(false)} />
+      <LivelihoodPassportModal
+        isOpen={passportOpen}
+        onClose={() => setPassportOpen(false)}
+        beneficiaryName={profile?.basic_info?.name?.value || "Ramesh Kumar"}
+        district={`${profile?.basic_info?.location?.value || "Varanasi"}, Uttar Pradesh`}
+        education={profile?.education?.highest_level?.value?.replace("_", " ") || "10th Pass"}
+        matchedTrade={primaryMatch?.course_name || selectedOpp?.matchedTrade || "Solar PV Installer (Suryamitra)"}
+        qpCode={primaryMatch?.qp_code || selectedOpp?.qpCode || "ELE/Q1401"}
+        nsqfLevel={primaryMatch?.nsqf_level || 4}
+        trainingCentre={primaryMatch?.training_centre_name || selectedOpp?.employer || "PM Kaushal Kendra (PMKK) & ITI Karaundi Campus, Varanasi"}
+        isRPL={primaryMatch?.is_rpl ?? ((profile?.current_livelihood?.skills?.length ?? 0) > 0)}
+      />
     </div>
   );
 };

@@ -20,6 +20,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { IVRSimulatorModal } from "@/components/pmajay/IVRSimulatorModal";
+import { useBeneficiary } from "@/contexts/BeneficiaryContext";
 
 interface TurnMessage {
   id: string;
@@ -84,7 +85,7 @@ export const PMAJAYVoiceInterview: React.FC = () => {
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
   const [userInput, setUserInput] = useState<string>("");
   const [messages, setMessages] = useState<TurnMessage[]>([]);
-  const [profile, setProfile] = useState<BeneficiaryProfileData | null>(null);
+  const { profile, setProfile, eraseSession: ctxEraseSession, runEvaluation } = useBeneficiary();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [ivrModalOpen, setIvrModalOpen] = useState<boolean>(false);
 
@@ -215,7 +216,7 @@ export const PMAJAYVoiceInterview: React.FC = () => {
       setProfile(res.updated_profile);
 
       if (res.is_complete) {
-        localStorage.setItem("pmajay_current_profile", JSON.stringify(res.updated_profile));
+        runEvaluation(res.updated_profile).catch(() => {});
         const finishMsg: TurnMessage = {
           id: "assistant-finish",
           sender: "assistant",
@@ -282,10 +283,7 @@ export const PMAJAYVoiceInterview: React.FC = () => {
             <button
               type="button"
               onClick={async () => {
-                if (sessionId) {
-                  await pmajayService.eraseSession(sessionId);
-                }
-                localStorage.removeItem("pmajay_current_profile");
+                await ctxEraseSession();
                 navigate("/pmajay");
               }}
               className="px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-1.5 transition-colors"

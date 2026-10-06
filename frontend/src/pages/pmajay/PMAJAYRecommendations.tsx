@@ -26,11 +26,22 @@ import {
 } from "lucide-react";
 import { WhatIfSimulator, WhatIfParams } from "@/components/pmajay/WhatIfSimulator";
 import { LivelihoodPassportModal } from "@/components/pmajay/LivelihoodPassportModal";
+import { useBeneficiary } from "@/contexts/BeneficiaryContext";
 
 export const PMAJAYRecommendations: React.FC = () => {
-  const [profile, setProfile] = useState<BeneficiaryProfileData | null>(null);
-  const [result, setResult] = useState<RecommendationResult | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const {
+    profile,
+    result,
+    loading,
+    whatIfParams,
+    setWhatIfParams,
+    confirmConstraint,
+    eraseSession,
+    primaryMatch,
+    filteredRecommendations: filteredMatches,
+    runEvaluation,
+  } = useBeneficiary();
+
   const [passportOpen, setPassportOpen] = useState<boolean>(false);
   const [showAuditDrawer, setShowAuditDrawer] = useState<boolean>(false);
   const [showGatesDrawer, setShowGatesDrawer] = useState<boolean>(true);
@@ -38,55 +49,16 @@ export const PMAJAYRecommendations: React.FC = () => {
   const [isConfirmingRefusal, setIsConfirmingRefusal] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // Dynamic What-If parameters state (no monetary parameters)
-  const [whatIfParams, setWhatIfParams] = useState<WhatIfParams>({
-    travelRadiusKm: 5,
-    dailyHours: 6,
-    pathwayFilter: "all",
-  });
-
   useEffect(() => {
-    const runEvaluation = async () => {
-      setLoading(true);
-      const saved = localStorage.getItem("pmajay_current_profile");
-      const savedResult = localStorage.getItem("pmajay_recommendation_result");
-      let currentProfile: BeneficiaryProfileData;
-
-      if (saved) {
-        try {
-          currentProfile = JSON.parse(saved);
-        } catch {
-          currentProfile = pmajayService.createDefaultProfile("eval-1", "hi-IN");
+    if (!result) {
+      runEvaluation().then((evalData) => {
+        if (evalData?.voice_summary) {
+          speakVoiceSummary(evalData.voice_summary.text_hi || evalData.voice_summary.text_en);
         }
-      } else {
-        currentProfile = pmajayService.createDefaultProfile("eval-1", "hi-IN");
-      }
-
-      setProfile(currentProfile);
-
-      // If page was refreshed after second decision was activated, restore persisted result
-      if (currentProfile.second_decision_active && savedResult) {
-        try {
-          const parsedResult = JSON.parse(savedResult);
-          setResult(parsedResult);
-          setLoading(false);
-          return;
-        } catch {
-          // Re-evaluate with persisted profile below
-        }
-      }
-
-      const evalData = await pmajayService.evaluateRecommendations(currentProfile);
-      setResult(evalData);
-      localStorage.setItem("pmajay_recommendation_result", JSON.stringify(evalData));
-      setLoading(false);
-
-      if (evalData.voice_summary) {
-        speakVoiceSummary(evalData.voice_summary.text_hi || evalData.voice_summary.text_en);
-      }
-    };
-
-    runEvaluation();
+      });
+    } else if (result?.voice_summary) {
+      speakVoiceSummary(result.voice_summary.text_hi || result.voice_summary.text_en);
+    }
   }, []);
 
   const speakVoiceSummary = (text: string) => {
@@ -106,43 +78,16 @@ export const PMAJAYRecommendations: React.FC = () => {
     if (!profile) return;
     setIsConfirmingRefusal(true);
     const userWords = result?.read_back_info?.user_words || "Babatpur 35 km door hai, main 5 km se zyada door nahi ja sakti";
-    const secondDecisionResult = await pmajayService.confirmConstraint(profile.session_id, true, userWords);
-    setResult(secondDecisionResult);
+    const secondDecisionResult = await confirmConstraint(userWords);
     setIsConfirmingRefusal(false);
 
-    // Persist result and updated profile so a page reload keeps the saved reason and second decision
-    localStorage.setItem("pmajay_recommendation_result", JSON.stringify(secondDecisionResult));
-    const updatedProfile: BeneficiaryProfileData = {
-      ...profile,
-      second_decision_active: true,
-      masked_constraints: [
-        ...(profile.masked_constraints || []),
-        secondDecisionResult.masked_constraint || result?.read_back_info?.constraint || "travel_radius"
-      ],
-      refusal_record: {
-        qp_code: result?.read_back_info?.qp_code || "ELE/Q1401",
-        course_title: result?.read_back_info?.course_title || "Solar PV Installer (Suryamitra)",
-        reason: secondDecisionResult.saved_refusal_reason || result?.read_back_info?.reason || "",
-        constraint: result?.read_back_info?.constraint || "travel_radius",
-        user_words: userWords,
-        confirmed: true,
-        distance_km: result?.read_back_info?.distance_km
-      }
-    };
-    setProfile(updatedProfile);
-    localStorage.setItem("pmajay_current_profile", JSON.stringify(updatedProfile));
-
-    if (secondDecisionResult.voice_summary) {
+    if (secondDecisionResult?.voice_summary) {
       speakVoiceSummary(secondDecisionResult.voice_summary.text_hi || secondDecisionResult.voice_summary.text_en);
     }
   };
 
   const handleEraseSession = async () => {
-    if (profile?.session_id) {
-      await pmajayService.eraseSession(profile.session_id);
-    }
-    localStorage.removeItem("pmajay_current_profile");
-    localStorage.removeItem("pmajay_recommendation_result");
+    await eraseSession();
     navigate("/pmajay");
   };
 
@@ -204,16 +149,6 @@ export const PMAJAYRecommendations: React.FC = () => {
   const rawRefusals = result?.refused_options || [];
   const isSecondDecision = result?.decision_phase === "second";
   const readBackInfo = result?.read_back_info;
-
-  // Filter recommendations based on pathway filter
-  const filteredMatches = rawTopMatches.filter((item) => {
-    if (whatIfParams.pathwayFilter === "self") {
-      if (item.category === "nsqf_class" && item.self_employment_potential.toLowerCase().includes("moderate")) return false;
-    }
-    return true;
-  });
-
-  const primaryMatch = filteredMatches[0] || rawTopMatches[0];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
@@ -589,11 +524,14 @@ export const PMAJAYRecommendations: React.FC = () => {
       <LivelihoodPassportModal
         isOpen={passportOpen}
         onClose={() => setPassportOpen(false)}
+        beneficiaryName={profile?.basic_info?.name?.value || "रामेश्वर कुमार"}
+        district={profile?.basic_info?.location?.value || "सेवापुरी ब्लॉक, वाराणसी"}
+        education={profile?.education?.highest_level?.value ? profile.education.highest_level.value.replace("_", " ") : "8th Pass"}
         matchedTrade={primaryMatch?.title}
         qpCode={primaryMatch?.qp_code}
         nsqfLevel={primaryMatch?.nsqf_level}
         trainingCentre={primaryMatch?.nearest_centre?.name}
-        isRPL={whatIfParams.isRPLEligible}
+        isRPL={primaryMatch?.category === "rpl_certification"}
       />
     </div>
   );

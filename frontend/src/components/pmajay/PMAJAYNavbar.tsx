@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useLanguage, SupportedLang } from "@/contexts/LanguageContext";
+import { useBeneficiary } from "@/contexts/BeneficiaryContext";
 import {
   Mic,
   Volume2,
@@ -20,6 +21,7 @@ import { LivelihoodPassportModal } from "./LivelihoodPassportModal";
 export const PMAJAYNavbar: React.FC = () => {
   const location = useLocation();
   const { lang, setLang, t, playVoice, stopVoice, isSpeaking } = useLanguage();
+  const { profile, primaryMatch, hasActiveSession, eraseSession } = useBeneficiary();
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [ivrOpen, setIvrOpen] = useState<boolean>(false);
   const [passportOpen, setPassportOpen] = useState<boolean>(false);
@@ -67,7 +69,7 @@ export const PMAJAYNavbar: React.FC = () => {
       {/* ── ACCESSIBILITY SKIP LINK ── */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] bg-[#002147] text-white px-4 py-2 rounded-lg font-bold text-xs shadow-lg ring-2 ring-amber-400"
+        className="opacity-0 focus:opacity-100 pointer-events-none focus:pointer-events-auto absolute focus:fixed focus:top-2 focus:left-2 focus:z-[100] bg-[#002147] text-white px-4 py-2 rounded-lg font-bold text-xs shadow-lg ring-2 ring-amber-400"
       >
         Skip to main content / मुख्य सामग्री पर जाएं
       </a>
@@ -93,6 +95,25 @@ export const PMAJAYNavbar: React.FC = () => {
 
             {/* Right: Helpline & Accessibility Controls */}
             <div className="flex items-center gap-2.5 sm:gap-3">
+              {/* Active Beneficiary Badge */}
+              {hasActiveSession && profile?.basic_info?.name?.value && (
+                <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-500/50 text-emerald-200 text-[10px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="font-medium">नागरिक: {profile.basic_info.name.value}</span>
+                  <button
+                    type="button"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      await eraseSession();
+                    }}
+                    className="ml-1 text-slate-300 hover:text-white underline cursor-pointer text-[9px]"
+                    title="सत्र समाप्त करें"
+                  >
+                    नया सत्र
+                  </button>
+                </div>
+              )}
+
               {/* National Helpline */}
               <a
                 href="tel:1800112026"
@@ -328,7 +349,18 @@ export const PMAJAYNavbar: React.FC = () => {
 
       {/* Modals */}
       <IVRSimulatorModal isOpen={ivrOpen} onClose={() => setIvrOpen(false)} />
-      <LivelihoodPassportModal isOpen={passportOpen} onClose={() => setPassportOpen(false)} />
+      <LivelihoodPassportModal
+        isOpen={passportOpen}
+        onClose={() => setPassportOpen(false)}
+        beneficiaryName={profile?.basic_info?.name?.value || "Ramesh Kumar"}
+        district={`${profile?.basic_info?.location?.value || "Varanasi"}, Uttar Pradesh`}
+        education={profile?.education?.highest_level?.value?.replace("_", " ") || "10th Pass"}
+        matchedTrade={primaryMatch?.course_name || "Solar PV Installer (Suryamitra)"}
+        qpCode={primaryMatch?.qp_code || "ELE/Q1401"}
+        nsqfLevel={primaryMatch?.nsqf_level || 4}
+        trainingCentre={primaryMatch?.training_centre_name || "PM Kaushal Kendra (PMKK) & ITI Karaundi Campus, Varanasi"}
+        isRPL={primaryMatch?.is_rpl ?? ((profile?.current_livelihood?.skills?.length ?? 0) > 0)}
+      />
     </>
   );
 };

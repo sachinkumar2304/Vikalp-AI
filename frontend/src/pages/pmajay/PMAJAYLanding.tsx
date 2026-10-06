@@ -13,7 +13,6 @@ import {
   GraduationCap,
   MapPin,
   Clock,
-  IndianRupee,
   ChevronRight,
   Award,
   Phone,
@@ -25,13 +24,15 @@ import {
 import { EmblemOfIndia } from "@/components/pmajay/EmblemOfIndia";
 import { IVRSimulatorModal } from "@/components/pmajay/IVRSimulatorModal";
 import { LivelihoodPassportModal } from "@/components/pmajay/LivelihoodPassportModal";
+import { useBeneficiary } from "@/contexts/BeneficiaryContext";
 
 export const PMAJAYLanding: React.FC = () => {
   const { lang, t, playVoice } = useLanguage();
+  const { profile, primaryMatch } = useBeneficiary();
   const [ivrModalOpen, setIvrModalOpen] = useState<boolean>(false);
   const [passportModalOpen, setPassportModalOpen] = useState<boolean>(false);
 
-  // Auto welcome audio on first visit if not yet heard
+  // Auto welcome audio on initial visit if not yet heard
   useEffect(() => {
     const key = `pmajay_welcome_played_${lang}`;
     if (!sessionStorage.getItem(key)) {
@@ -547,7 +548,18 @@ export const PMAJAYLanding: React.FC = () => {
 
       {/* Modals */}
       <IVRSimulatorModal isOpen={ivrModalOpen} onClose={() => setIvrModalOpen(false)} />
-      <LivelihoodPassportModal isOpen={passportModalOpen} onClose={() => setPassportModalOpen(false)} />
+      <LivelihoodPassportModal
+        isOpen={passportModalOpen}
+        onClose={() => setPassportModalOpen(false)}
+        beneficiaryName={profile?.basic_info?.name?.value || "Ramesh Kumar"}
+        district={`${profile?.basic_info?.location?.value || "Varanasi"}, Uttar Pradesh`}
+        education={profile?.education?.highest_level?.value?.replace("_", " ") || "10th Pass"}
+        matchedTrade={primaryMatch?.course_name || "Solar PV Installer (Suryamitra)"}
+        qpCode={primaryMatch?.qp_code || "ELE/Q1401"}
+        nsqfLevel={primaryMatch?.nsqf_level || 4}
+        trainingCentre={primaryMatch?.training_centre_name || "PM Kaushal Kendra (PMKK) & ITI Karaundi Campus, Varanasi"}
+        isRPL={primaryMatch?.is_rpl ?? ((profile?.current_livelihood?.skills?.length ?? 0) > 0)}
+      />
     </div>
   );
 };

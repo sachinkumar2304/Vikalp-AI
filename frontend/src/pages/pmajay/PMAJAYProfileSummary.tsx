@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PMAJAYNavbar } from "@/components/pmajay/PMAJAYNavbar";
-import { pmajayService, BeneficiaryProfileData } from "@/services/pmajayService";
+import { useBeneficiary } from "@/contexts/BeneficiaryContext";
 import {
   Award,
   CheckCircle2,
@@ -17,27 +17,13 @@ import {
 import { LivelihoodPassportModal } from "@/components/pmajay/LivelihoodPassportModal";
 
 export const PMAJAYProfileSummary: React.FC = () => {
-  const [profile, setProfile] = useState<BeneficiaryProfileData | null>(null);
+  const { profile, primaryMatch, runEvaluation } = useBeneficiary();
   const [passportOpen, setPassportOpen] = useState<boolean>(false);
   const [showRawJson, setShowRawJson] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const saved = localStorage.getItem("pmajay_current_profile");
-    if (saved) {
-      try {
-        setProfile(JSON.parse(saved));
-      } catch {
-        const fallback = pmajayService.createDefaultProfile("prof-1", "hi-IN");
-        setProfile(fallback);
-      }
-    } else {
-      const fallback = pmajayService.createDefaultProfile("prof-1", "hi-IN");
-      setProfile(fallback);
-    }
-  }, []);
-
-  const handleRunRecommendationEngine = () => {
+  const handleRunRecommendationEngine = async () => {
+    await runEvaluation();
     navigate("/pmajay/recommendations");
   };
 
@@ -122,7 +108,7 @@ export const PMAJAYProfileSummary: React.FC = () => {
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
                 <h3 className="font-bold text-sm text-[#002147] flex items-center gap-2">
                   <User className="w-4 h-4 text-blue-700" />
-                  <span>१. आधार पहचान एवं सामाजिक पात्रता</span>
+                  <span>१. नागरिक पहचान एवं सामाजिक पात्रता</span>
                 </h3>
                 <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-300 px-2 py-0.5 rounded">
                   GIA Verified
@@ -152,7 +138,7 @@ export const PMAJAYProfileSummary: React.FC = () => {
             </div>
 
             <div className="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-              <span>पहचान स्थिति: आधार लिंक्ड</span>
+              <span>पहचान स्थिति: सत्यापित (GIA Verified)</span>
               <span className="text-emerald-700 font-bold">100% सब्सिडी पात्र</span>
             </div>
           </div>
@@ -265,7 +251,7 @@ export const PMAJAYProfileSummary: React.FC = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-slate-500">यात्रा सीमा:</span>
                   <span className="text-rose-900 font-bold bg-rose-50 border border-rose-200 px-2 py-0.5 rounded text-[11px]">
-                    {profile.constraints.mobility.value?.replace("_", " ") || "Within Block Only"}
+                    {profile.constraints.mobility.value?.replace("_", " ") || "Within Block Radius"}
                   </span>
                 </div>
               </div>
@@ -296,7 +282,18 @@ export const PMAJAYProfileSummary: React.FC = () => {
       </main>
 
       {/* Livelihood Passport Modal */}
-      <LivelihoodPassportModal isOpen={passportOpen} onClose={() => setPassportOpen(false)} />
+      <LivelihoodPassportModal
+        isOpen={passportOpen}
+        onClose={() => setPassportOpen(false)}
+        beneficiaryName={profile?.basic_info?.name?.value || "Ramesh Kumar"}
+        district={`${profile?.basic_info?.location?.value || "Varanasi"}, Uttar Pradesh`}
+        education={profile?.education?.highest_level?.value?.replace("_", " ") || "10th Pass"}
+        matchedTrade={primaryMatch?.course_name || "Solar PV Installer (Suryamitra)"}
+        qpCode={primaryMatch?.qp_code || "ELE/Q1401"}
+        nsqfLevel={primaryMatch?.nsqf_level || 4}
+        trainingCentre={primaryMatch?.training_centre_name || "PM Kaushal Kendra (PMKK) & ITI Karaundi Campus, Varanasi"}
+        isRPL={primaryMatch?.is_rpl ?? ((profile?.current_livelihood?.skills?.length ?? 0) > 0)}
+      />
     </div>
   );
 };
