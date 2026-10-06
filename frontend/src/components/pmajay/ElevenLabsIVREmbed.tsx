@@ -24,6 +24,10 @@ declare global {
  */
 export const launchIVRVoiceCall = () => {
   try {
+    document.body.setAttribute("data-ivr-active", "true");
+    window.dispatchEvent(
+      new CustomEvent("vikalp:ivr-state", { detail: { open: true } })
+    );
     const el = document.querySelector("elevenlabs-convai") as HTMLElement;
     if (el) {
       el.setAttribute("data-active", "true");
@@ -46,6 +50,10 @@ export const launchIVRVoiceCall = () => {
  */
 export const closeIVRVoiceCall = () => {
   try {
+    document.body.removeAttribute("data-ivr-active");
+    window.dispatchEvent(
+      new CustomEvent("vikalp:ivr-state", { detail: { open: false } })
+    );
     document.dispatchEvent(
       new CustomEvent("elevenlabs-agent:expand", {
         detail: { action: "collapse" },
@@ -188,13 +196,7 @@ export const ElevenLabsIVREmbed: React.FC = () => {
       );
       closeButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
-          setTimeout(() => {
-            const widget = document.querySelector("elevenlabs-convai") as HTMLElement;
-            if (widget && !widget.getAttribute("data-keep-open")) {
-              widget.style.setProperty("display", "none", "important");
-              widget.removeAttribute("data-active");
-            }
-          }, 150);
+          closeIVRVoiceCall();
         });
       });
     };

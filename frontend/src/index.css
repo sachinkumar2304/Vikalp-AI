@@ -250,4 +250,9 @@
       transition-duration: 0.01ms !important;
     }
   }
+
+  /* Conceal ambient voice guide when IVR telephony channel is active */
+  body[data-ivr-active="true"] aside[aria-label="Voice Assistant Guide Widget"] {
+    display: none !important;
+  }
 }

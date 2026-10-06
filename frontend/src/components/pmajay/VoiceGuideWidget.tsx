@@ -20,10 +20,8 @@ import {
   ShieldCheck,
   Radio,
   X,
-  Phone,
 } from "lucide-react";
 import { EmblemOfIndia } from "./EmblemOfIndia";
-import { launchIVRVoiceCall } from "./ElevenLabsIVREmbed";
 
 interface TourStep {
   targetId?: string;
@@ -39,9 +37,10 @@ export const VoiceGuideWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(-1);
   const [isTourRunning, setIsTourRunning] = useState<boolean>(false);
+  const [isIVRActive, setIsIVRActive] = useState<boolean>(false);
 
-  // AMA & IVR State
-  const [activeTab, setActiveTab] = useState<"tour" | "ask" | "ivr">("tour");
+  // AMA State
+  const [activeTab, setActiveTab] = useState<"tour" | "ask">("tour");
   const [userQuery, setUserQuery] = useState<string>("");
   const [isListeningUser, setIsListeningUser] = useState<boolean>(false);
   const [isAnswering, setIsAnswering] = useState<boolean>(false);
@@ -178,6 +177,15 @@ export const VoiceGuideWidget: React.FC = () => {
     }
   }, [location.pathname, lang]);
 
+  // Completely hide voice guide when IVR telephony is active
+  useEffect(() => {
+    const handleIVRState = (e: any) => {
+      setIsIVRActive(!!e?.detail?.open);
+    };
+    window.addEventListener("vikalp:ivr-state", handleIVRState);
+    return () => window.removeEventListener("vikalp:ivr-state", handleIVRState);
+  }, []);
+
   const handleStartTour = () => {
     setIsTourRunning(true);
     setCurrentStepIndex(0);
@@ -297,6 +305,9 @@ export const VoiceGuideWidget: React.FC = () => {
 
   const isHome = location.pathname === "/pmajay" || location.pathname === "/";
 
+  // When IVR call is active, remove this widget completely so no duplicate boxes appear
+  if (isIVRActive) return null;
+
   return (
     <aside
       aria-label="Voice Assistant Guide Widget"
@@ -368,43 +379,31 @@ export const VoiceGuideWidget: React.FC = () => {
             </div>
           )}
 
-          {/* Tab Selector: 3 Tabs (Tour, Ask, IVR) */}
-          <div className="grid grid-cols-3 gap-1 bg-slate-800/80 p-1 rounded-lg mb-2.5 border border-slate-700/60 text-xs font-medium">
+          {/* Tab Selector */}
+          <div className="grid grid-cols-2 gap-1 bg-slate-800/80 p-1 rounded-lg mb-2.5 border border-slate-700/60 text-xs font-medium">
             <button
               type="button"
               onClick={() => setActiveTab("tour")}
-              className={`py-1.5 rounded-md flex items-center justify-center gap-1 transition-all ${
+              className={`py-1.5 rounded-md flex items-center justify-center gap-1.5 transition-all ${
                 activeTab === "tour"
                   ? "bg-slate-700 text-white shadow-2xs font-semibold"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <Compass className="w-3.5 h-3.5" />
-              <span className="truncate">{tr.tab_tour}</span>
+              <span>{tr.tab_tour}</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab("ask")}
-              className={`py-1.5 rounded-md flex items-center justify-center gap-1 transition-all ${
+              className={`py-1.5 rounded-md flex items-center justify-center gap-1.5 transition-all ${
                 activeTab === "ask"
                   ? "bg-slate-700 text-white shadow-2xs font-semibold"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span className="truncate">{tr.tab_ask}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("ivr")}
-              className={`py-1.5 rounded-md flex items-center justify-center gap-1 transition-all ${
-                activeTab === "ivr"
-                  ? "bg-emerald-700 text-white shadow-2xs font-semibold"
-                  : "text-slate-400 hover:text-slate-200"
-              }`}
-            >
-              <Phone className="w-3.5 h-3.5" />
-              <span className="truncate">{tr.tab_ivr}</span>
+              <span>{tr.tab_ask}</span>
             </button>
           </div>
 
@@ -554,35 +553,6 @@ export const VoiceGuideWidget: React.FC = () => {
                   <Send className="w-3.5 h-3.5" />
                 </button>
               </div>
-            </div>
-          )}
-
-          {/* ════ TAB 3: LIVE TELEPHONY IVR (1800-11-2026) ════ */}
-          {activeTab === "ivr" && (
-            <div className="space-y-2.5 bg-slate-800/70 p-3 rounded-xl border border-slate-700/60">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-amber-300 font-bold text-xs">
-                  <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>1800-11-2026 वॉयस हेल्पलाइन</span>
-                </div>
-                <span className="text-[9px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono font-bold">
-                  LIVE IVR
-                </span>
-              </div>
-              <p className="text-[11px] text-slate-300 leading-relaxed">
-                सीधे AI वॉयस कॉल पर बात करें। विकल्प साथी आपकी भाषा में संवाद करके उपयुक्त कौशल व आजीविका विकल्प समझाएगा।
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsOpen(false);
-                  launchIVRVoiceCall();
-                }}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
-              >
-                <Phone className="w-3.5 h-3.5" />
-                <span>लाइव IVR वॉयस कॉल शुरू करें</span>
-              </button>
             </div>
           )}
 
