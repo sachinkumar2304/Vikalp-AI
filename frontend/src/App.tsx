@@ -17,6 +17,7 @@ import { PMAJAYRecommendations } from "./pages/pmajay/PMAJAYRecommendations";
 import { PMAJAYOpportunities } from "./pages/pmajay/PMAJAYOpportunities";
 import { PMAJAYAdminDashboard } from "./pages/pmajay/PMAJAYAdminDashboard";
 import { VoiceGuideWidget } from "./components/pmajay/VoiceGuideWidget";
+import { ElevenLabsIVREmbed } from "./components/pmajay/ElevenLabsIVREmbed";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,8 @@ const App = () => (
               </Routes>
               {/* Interactive Voice Guide Widget */}
               <VoiceGuideWidget />
+              {/* Official IVR Helpline Telephony Assistant Embed */}
+              <ElevenLabsIVREmbed />
             </BrowserRouter>
           </TooltipProvider>
         </BeneficiaryProvider>

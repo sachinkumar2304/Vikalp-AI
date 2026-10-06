@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Phone, PhoneOff, Volume2, VolumeX, X, Radio, CheckCircle, ShieldCheck, Hash, AlertTriangle } from "lucide-react";
 import { EmblemOfIndia } from "./EmblemOfIndia";
 import { pmajayService, BeneficiaryProfileData } from "../../services/pmajayService";
+import { launchIVRVoiceCall } from "./ElevenLabsIVREmbed";
 
 interface IVRProps {
   isOpen: boolean;
@@ -361,6 +362,30 @@ export const IVRSimulatorModal: React.FC<IVRProps> = ({ isOpen, onClose }) => {
             aria-label="Close IVR modal"
           >
             <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Telephony Option Switcher: Live Voice AI vs DTMF Keypad */}
+        <div className="bg-[#0b1329] px-4 py-2 border-b border-slate-700/80 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="text-slate-400">मोड:</span>
+            <span className="font-semibold text-white bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700 flex items-center gap-1.5 text-[11px]">
+              <Hash className="w-3.5 h-3.5 text-amber-400" />
+              कीपैड सिमुलेशन (Keypad DTMF)
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              launchIVRVoiceCall();
+            }}
+            className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs shadow-md transition-all active:scale-95"
+            title="लाइव वॉयस AI कॉल से बात करें"
+          >
+            <Phone className="w-3.5 h-3.5 text-white" />
+            <span>लाइव वॉयस AI कॉल से बात करें (Live Voice Assistant)</span>
           </button>
         </div>
 
