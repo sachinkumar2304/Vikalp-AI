@@ -14,6 +14,8 @@ from app.services.interview_manager import (
     INTERVIEW_SESSIONS,
     INTERVIEW_QUESTIONS,
     ProfileExtractor,
+    save_session,
+    get_session,
     erase_session
 )
 from app.services.scoring_engine import (
@@ -100,7 +102,7 @@ def start_interview_session(req: StartSessionRequest):
         profile.basic_info.name.value = req.candidate_name
         profile.basic_info.name.confidence = 1.0
 
-    INTERVIEW_SESSIONS[profile.session_id] = profile
+    save_session(profile)
 
     q1 = INTERVIEW_QUESTIONS[0]
     prompt_text = q1["prompt_hi"] if "hi" in req.language else q1["prompt_en"]
@@ -123,17 +125,16 @@ def process_interview_turn(req: ProcessTurnRequest):
     Update profile turn by turn with confidence tracking.
     Uses dynamic question selection to bypass turns that cannot alter recommendations.
     """
-    profile = INTERVIEW_SESSIONS.get(req.session_id)
+    profile = get_session(req.session_id)
     if not profile:
         profile = BeneficiaryProfile(session_id=req.session_id)
-        INTERVIEW_SESSIONS[req.session_id] = profile
 
     updated_profile = ProfileExtractor.extract_fields_from_turn(
         turn=req.turn,
         user_text=req.user_transcript,
         current_profile=profile
     )
-    INTERVIEW_SESSIONS[req.session_id] = updated_profile
+    save_session(updated_profile)
 
     # Determine subsequent question dynamically
     next_q = ProfileExtractor.get_next_question(current_turn=req.turn, profile=updated_profile)
@@ -166,7 +167,7 @@ def process_interview_turn(req: ProcessTurnRequest):
 @router.get("/profile/{session_id}")
 def get_beneficiary_profile(session_id: str):
     """Retrieve current structured JSON beneficiary profile"""
-    profile = INTERVIEW_SESSIONS.get(session_id)
+    profile = get_session(session_id)
     if not profile:
         raise HTTPException(status_code=404, detail="Profile session not found")
     return profile.dict()
@@ -175,7 +176,7 @@ def get_beneficiary_profile(session_id: str):
 @router.delete("/session/{session_id}")
 def delete_beneficiary_session(session_id: str):
     """
-    Erase session completely from memory (Privacy Parity).
+    Erase session completely from memory and storage (Privacy Parity).
     Removes all stored transcripts and constraints.
     """
     success = erase_session(session_id)
@@ -191,20 +192,22 @@ def evaluate_recommendations(profile: BeneficiaryProfile):
     """
     Execute deterministic recommendation engine against beneficiary profile.
     Returns:
-    - Phase 1 choices or Phase 2 choices (if second decision active)
+    - Initial choices or second choices (if second decision active)
     - Persisted hard refusals with exact kilometres/expiry date and read-back candidate words
     - Dropped gates listing exclusions
     - Two sentences: for beneficiary and administrative officer
     """
-    # Sync profile state in memory if exists
-    if profile.session_id in INTERVIEW_SESSIONS:
-        existing = INTERVIEW_SESSIONS[profile.session_id]
+    # Sync profile state from persistent store if exists
+    existing = get_session(profile.session_id)
+    if existing:
         if existing.refusal_record and not profile.refusal_record:
             profile.refusal_record = existing.refusal_record
         if existing.second_decision_active:
             profile.second_decision_active = True
         if existing.masked_constraints:
             profile.masked_constraints = existing.masked_constraints
+        if existing.prior_experience_months and not profile.prior_experience_months:
+            profile.prior_experience_months = existing.prior_experience_months
 
     result = engine.evaluate_profile(profile)
 
@@ -220,7 +223,9 @@ def evaluate_recommendations(profile: BeneficiaryProfile):
             distance_km=rb.get("distance_km"),
             confirmed=False
         )
-        INTERVIEW_SESSIONS[profile.session_id] = profile
+        save_session(profile)
+    elif profile.second_decision_active:
+        save_session(profile)
 
     return result
 
@@ -228,7 +233,6 @@ def evaluate_recommendations(profile: BeneficiaryProfile):
 @router.post("/recommendations/confirm-constraint")
 def confirm_constraint_and_choose_second(req: ConfirmConstraintRequest):
     """
-    Core Parity Implementation:
     Candidate confirms her stated words regarding the hard refusal ("yes").
     The engine masks that constraint, activates second decision mode, and selects
     strictly among three types:
@@ -236,33 +240,23 @@ def confirm_constraint_and_choose_second(req: ConfirmConstraintRequest):
     (2) RPL for a skill she already holds (real rule: experience >= 12 mo, overlap >= 0.5)
     (3) PM-AJAY GIA Project Sheet (with enterprise referral buyback line)
     """
-    profile = INTERVIEW_SESSIONS.get(req.session_id)
-    if not profile:
-        profile = BeneficiaryProfile(session_id=req.session_id)
-        INTERVIEW_SESSIONS[req.session_id] = profile
-
-    # Update refusal record confirmation
-    if not profile.refusal_record:
-        profile.refusal_record = RefusalRecord(
-            qp_code="ELE/Q1401",
-            course_title="Solar PV Installer (Suryamitra)",
-            reason="Centre 'Babatpur Industrial Campus' is 35.0 km away, exceeding candidate travel radius limit of 5.0 km.",
-            constraint="travel_radius",
-            user_words=req.user_words or "Babatpur 35 km door hai, main 5 km se zyada door nahi ja sakti",
-            distance_km=35.0,
-            confirmed=True
+    profile = get_session(req.session_id)
+    if not profile or not profile.refusal_record:
+        raise HTTPException(
+            status_code=404,
+            detail="No saved refusal found for this session. Cannot confirm an unrecorded constraint."
         )
-    else:
-        profile.refusal_record.confirmed = True
-        if req.user_words:
-            profile.refusal_record.user_words = req.user_words
+
+    profile.refusal_record.confirmed = True
+    if req.user_words:
+        profile.refusal_record.user_words = req.user_words
 
     # Mask broken constraint so alternative local pathway is selected
     if profile.refusal_record.constraint not in profile.masked_constraints:
         profile.masked_constraints.append(profile.refusal_record.constraint)
 
     profile.second_decision_active = True
-    INTERVIEW_SESSIONS[req.session_id] = profile
+    save_session(profile)
 
     # Run Second Choice Decision
     result = engine.evaluate_profile(profile)

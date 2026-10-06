@@ -43,13 +43,13 @@ export const PMAJAYRecommendations: React.FC = () => {
     travelRadiusKm: 5,
     dailyHours: 6,
     pathwayFilter: "all",
-    isRPLEligible: true,
   });
 
   useEffect(() => {
     const runEvaluation = async () => {
       setLoading(true);
       const saved = localStorage.getItem("pmajay_current_profile");
+      const savedResult = localStorage.getItem("pmajay_recommendation_result");
       let currentProfile: BeneficiaryProfileData;
 
       if (saved) {
@@ -63,8 +63,22 @@ export const PMAJAYRecommendations: React.FC = () => {
       }
 
       setProfile(currentProfile);
+
+      // If page was refreshed after second decision was activated, restore persisted result
+      if (currentProfile.second_decision_active && savedResult) {
+        try {
+          const parsedResult = JSON.parse(savedResult);
+          setResult(parsedResult);
+          setLoading(false);
+          return;
+        } catch {
+          // Re-evaluate with persisted profile below
+        }
+      }
+
       const evalData = await pmajayService.evaluateRecommendations(currentProfile);
       setResult(evalData);
+      localStorage.setItem("pmajay_recommendation_result", JSON.stringify(evalData));
       setLoading(false);
 
       if (evalData.voice_summary) {
@@ -96,6 +110,28 @@ export const PMAJAYRecommendations: React.FC = () => {
     setResult(secondDecisionResult);
     setIsConfirmingRefusal(false);
 
+    // Persist result and updated profile so a page reload keeps the saved reason and second decision
+    localStorage.setItem("pmajay_recommendation_result", JSON.stringify(secondDecisionResult));
+    const updatedProfile: BeneficiaryProfileData = {
+      ...profile,
+      second_decision_active: true,
+      masked_constraints: [
+        ...(profile.masked_constraints || []),
+        secondDecisionResult.masked_constraint || result?.read_back_info?.constraint || "travel_radius"
+      ],
+      refusal_record: {
+        qp_code: result?.read_back_info?.qp_code || "ELE/Q1401",
+        course_title: result?.read_back_info?.course_title || "Solar PV Installer (Suryamitra)",
+        reason: secondDecisionResult.saved_refusal_reason || result?.read_back_info?.reason || "",
+        constraint: result?.read_back_info?.constraint || "travel_radius",
+        user_words: userWords,
+        confirmed: true,
+        distance_km: result?.read_back_info?.distance_km
+      }
+    };
+    setProfile(updatedProfile);
+    localStorage.setItem("pmajay_current_profile", JSON.stringify(updatedProfile));
+
     if (secondDecisionResult.voice_summary) {
       speakVoiceSummary(secondDecisionResult.voice_summary.text_hi || secondDecisionResult.voice_summary.text_en);
     }
@@ -106,6 +142,7 @@ export const PMAJAYRecommendations: React.FC = () => {
       await pmajayService.eraseSession(profile.session_id);
     }
     localStorage.removeItem("pmajay_current_profile");
+    localStorage.removeItem("pmajay_recommendation_result");
     navigate("/pmajay");
   };
 
@@ -256,10 +293,10 @@ export const PMAJAYRecommendations: React.FC = () => {
                   </span>
                 </div>
                 <h3 className="text-lg font-bold text-slate-900 mt-1">
-                  दूरी सीमा के कारण '{readBackInfo.course_title}' उपलब्ध नहीं हो सका
+                  {readBackInfo.reason}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-700 mt-1 leading-relaxed">
-                  <strong>अस्वीकृति का कारण (Reason):</strong> {readBackInfo.reason}
+                  <strong>पाठ्यक्रम:</strong> {readBackInfo.course_title} ({readBackInfo.qp_code})
                 </p>
 
                 {/* Candidate Words Read Back */}

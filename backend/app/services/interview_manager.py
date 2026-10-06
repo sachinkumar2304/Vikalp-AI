@@ -7,6 +7,8 @@ and determines questions dynamically so turns that cannot alter recommendations 
 from typing import Dict, Any, List, Optional
 import os
 import re
+import json
+from pathlib import Path
 from app.schemas.pmajay import (
     BeneficiaryProfile,
     ProfileField,
@@ -20,8 +22,57 @@ from app.schemas.pmajay import (
     RefusalRecord
 )
 
-# In-memory interview session store
+# Persistent storage directory for sessions (survives page reloads and restarts)
+STORAGE_DIR = Path(__file__).resolve().parent.parent.parent / "storage" / "sessions"
+STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+
+# In-memory interview session cache
 INTERVIEW_SESSIONS: Dict[str, BeneficiaryProfile] = {}
+
+
+def save_session(profile: BeneficiaryProfile) -> None:
+    """Save profile to memory cache and persist to disk store."""
+    INTERVIEW_SESSIONS[profile.session_id] = profile
+    try:
+        session_file = STORAGE_DIR / f"{profile.session_id}.json"
+        data = profile.dict()
+        with open(session_file, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+    except Exception:
+        pass
+
+
+def get_session(session_id: str) -> Optional[BeneficiaryProfile]:
+    """Retrieve profile from memory cache or load from persisted disk store."""
+    if session_id in INTERVIEW_SESSIONS:
+        return INTERVIEW_SESSIONS[session_id]
+    session_file = STORAGE_DIR / f"{session_id}.json"
+    if session_file.exists():
+        try:
+            with open(session_file, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            prof = BeneficiaryProfile.parse_obj(data)
+            INTERVIEW_SESSIONS[session_id] = prof
+            return prof
+        except Exception:
+            pass
+    return None
+
+
+def erase_session(session_id: str) -> bool:
+    """Erase beneficiary session data from memory and storage entirely for privacy."""
+    existed = False
+    if session_id in INTERVIEW_SESSIONS:
+        del INTERVIEW_SESSIONS[session_id]
+        existed = True
+    session_file = STORAGE_DIR / f"{session_id}.json"
+    if session_file.exists():
+        try:
+            session_file.unlink()
+            existed = True
+        except Exception:
+            pass
+    return existed
 
 # Structured candidate questions
 INTERVIEW_QUESTIONS = [
@@ -64,12 +115,6 @@ INTERVIEW_QUESTIONS = [
 ]
 
 
-def erase_session(session_id: str) -> bool:
-    """Erase beneficiary session data from memory entirely for privacy."""
-    if session_id in INTERVIEW_SESSIONS:
-        del INTERVIEW_SESSIONS[session_id]
-        return True
-    return False
 
 
 class ProfileExtractor:

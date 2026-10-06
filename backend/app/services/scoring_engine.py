@@ -339,9 +339,10 @@ class RecommendationEngine:
         cand_interest = str(profile.aspirations.interest.value or "").lower().strip()
         cand_skills = [s.lower().strip() for s in profile.current_livelihood.skills]
         cand_occupation = str(profile.current_livelihood.occupation.value or "").lower().strip()
-        cand_exp_months = profile.prior_experience_months or 14
+        cand_exp_months = profile.prior_experience_months or 0
 
         cand_radius = self._determine_candidate_radius(profile, cand_mobility)
+        today_str = datetime.utcnow().strftime("%Y-%m-%d")
 
         candidates_pool: List[ScoringResult] = []
         dropped_gates: List[str] = []
@@ -364,8 +365,8 @@ class RecommendationEngine:
 
             nearest_centre = self._find_nearest_centre(course["qp_code"])
 
-            # Expiry check
-            if course.get("is_expired") or (course.get("valid_until") and course["valid_until"] < "2026-10-06"):
+            # Expiry check using dynamic date
+            if course.get("is_expired") or (course.get("valid_until") and course["valid_until"] < today_str):
                 dropped_gates.append(f"Gate [pack_expired]: {course['title']} expired on {course.get('valid_until')}.")
                 continue
 
@@ -392,11 +393,11 @@ class RecommendationEngine:
                 dropped_gates.append(f"Gate [education_level]: {course['title']} requires {course.get('min_education')}.")
                 continue
 
-            # Score this local class
+            # Score this local class using named weights
             score_interest = self._score_interest(course, cand_interest)
             score_skills = self._score_existing_skills(course, cand_skills, cand_occupation)
             score_edu = self._score_education(course, cand_edu)
-            score_mobility = 1.0  # Already guaranteed local
+            score_mobility = 1.0  # Local class within verified radius
             score_market = course.get("market_demand_score", 0.80)
             score_location = 0.95
 
@@ -409,6 +410,10 @@ class RecommendationEngine:
                 "mobility_alignment": score_mobility
             }
             total_score = sum(breakdown[k] * WEIGHTS[k] for k in WEIGHTS)
+
+            if total_score < 0.60:
+                dropped_gates.append(f"Gate [weak_score]: {course['title']} omitted due to low overall score ({round(total_score * 100, 1)}%).")
+                continue
 
             two_sentences = self._generate_two_sentences(
                 course=course,
@@ -437,7 +442,7 @@ class RecommendationEngine:
         # -------------------------------------------------------------
         # TYPE 2: RPL (Recognition of Prior Learning)
         # Strict Rule: Candidate holds existing skill (overlap >= 0.5) AND experience >= 12 months.
-        # Pack must be rpl_eligible.
+        # Pack must be rpl_eligible. Months are NOT invented.
         # -------------------------------------------------------------
         rpl_matches: List[ScoringResult] = []
         for course in self.courses:
@@ -449,9 +454,10 @@ class RecommendationEngine:
 
             # Compute skill overlap
             overlap_score = self._compute_skill_overlap(course, cand_skills, cand_occupation)
-            if cand_exp_months < course.get("min_prior_experience_months", 12) or overlap_score < 0.5:
+            min_exp = course.get("min_prior_experience_months", 12)
+            if cand_exp_months < min_exp or overlap_score < 0.5:
                 dropped_gates.append(
-                    f"Gate [rpl_rule]: {course['title']} RPL not permitted (experience {cand_exp_months} mo < 12 mo or overlap {round(overlap_score, 2)} < 0.5)."
+                    f"Gate [rpl_rule]: {course['title']} RPL not permitted (experience {cand_exp_months} mo < {min_exp} mo or overlap {round(overlap_score, 2)} < 0.5)."
                 )
                 continue
 
@@ -463,6 +469,30 @@ class RecommendationEngine:
             rpl_course["duration_hours"] = course.get("rpl_duration_hours", 40)
             rpl_course["description"] = f"Direct 40-hour prior learning assessment & NCVET certificate for experienced artisans."
 
+            # Score RPL using the same named weights
+            score_interest = self._score_interest(rpl_course, cand_interest)
+            score_skills = min(1.0, 0.40 + overlap_score * 0.60)
+            score_edu = self._score_education(rpl_course, cand_edu)
+            score_mobility = 1.0  # RPL assessment is short-duration and accessible
+            score_market = rpl_course.get("market_demand_score", 0.80)
+            score_location = 0.95
+
+            breakdown = {
+                "interest_aspiration": score_interest,
+                "location_accessibility": score_location,
+                "existing_skills": score_skills,
+                "education_eligibility": score_edu,
+                "market_demand": score_market,
+                "mobility_alignment": score_mobility
+            }
+            total_score = sum(breakdown[k] * WEIGHTS[k] for k in WEIGHTS)
+
+            if total_score < 0.60:
+                dropped_gates.append(
+                    f"Gate [weak_score]: {rpl_course['title']} RPL omitted due to low overall score ({round(total_score * 100, 1)}%)."
+                )
+                continue
+
             two_sentences = self._generate_two_sentences(
                 course=rpl_course,
                 nearest_centre=nearest_centre,
@@ -472,8 +502,8 @@ class RecommendationEngine:
 
             res = ScoringResult(
                 course=rpl_course,
-                total_score=0.92,
-                breakdown={"prior_skill_fit": 0.95, "location_access": 0.90, "rpl_eligibility": 1.0},
+                total_score=total_score,
+                breakdown=breakdown,
                 reason=f"Recognizes your existing {cand_exp_months} months practical experience through a rapid 40-hour assessment without long classroom attendance.",
                 skill_gap="Formal testing on safety codes and standard measurement tools.",
                 nearest_centre=nearest_centre,
@@ -513,6 +543,30 @@ class RecommendationEngine:
                 "self_employment_potential": "High (PM-AJAY GIA Cluster Linkage)"
             }
 
+            # Score Project Sheet using the same named weights
+            score_interest = self._score_interest(ps_course, cand_interest)
+            score_skills = self._score_existing_skills(ps_course, cand_skills, cand_occupation)
+            score_edu = 1.0  # Open entry for cluster livelihood under PM-AJAY GIA
+            score_mobility = 1.0 if ps_mob == "within_village" or cand_mobility != "cannot_travel" else 0.5
+            score_market = 0.85
+            score_location = 0.95
+
+            breakdown = {
+                "interest_aspiration": score_interest,
+                "location_accessibility": score_location,
+                "existing_skills": score_skills,
+                "education_eligibility": score_edu,
+                "market_demand": score_market,
+                "mobility_alignment": score_mobility
+            }
+            total_score = sum(breakdown[k] * WEIGHTS[k] for k in WEIGHTS)
+
+            if total_score < 0.60:
+                dropped_gates.append(
+                    f"Gate [weak_score]: Project Sheet '{ps['title']}' omitted due to low overall score ({round(total_score * 100, 1)}%)."
+                )
+                continue
+
             two_sentences = self._generate_two_sentences(
                 course=ps_course,
                 nearest_centre=None,
@@ -523,8 +577,8 @@ class RecommendationEngine:
 
             res = ScoringResult(
                 course=ps_course,
-                total_score=0.88,
-                breakdown={"scheme_convergence": 0.92, "local_feasibility": 0.90},
+                total_score=total_score,
+                breakdown=breakdown,
                 reason=f"Village-level livelihood project sheet under PM-AJAY GIA Component with collective infrastructure and enterprise referral.",
                 skill_gap="SHG formation, collective bookkeeping, and inventory management.",
                 nearest_centre={"name": ps.get("location", "Panchayat Common Facility Centre"), "distance_km": 1.5},
@@ -537,7 +591,8 @@ class RecommendationEngine:
             break  # Add appropriate project sheet matching candidate
 
         # Quality rule: Do not pad a weak third card
-        # Filter strictly strong options
+        # Filter strictly verified options meeting threshold
+        candidates_pool = [c for c in candidates_pool if c.total_score >= 0.60]
         candidates_pool.sort(key=lambda x: x.total_score, reverse=True)
         final_second_choices = [c.to_dict() for c in candidates_pool[:2]]
 
@@ -591,7 +646,8 @@ class RecommendationEngine:
         Hard constraint check: Returns (is_refused, refusal_reason, constraint_tag)
         """
         # 1. NCVET Expiry Check (Parity with LIP constraints.py)
-        if course.get("is_expired") or (course.get("valid_until") and course["valid_until"] < "2026-10-06"):
+        today_str = datetime.utcnow().strftime("%Y-%m-%d")
+        if course.get("is_expired") or (course.get("valid_until") and course["valid_until"] < today_str):
             exp_date = course.get("valid_until", "2023-12-31")
             return (
                 True,

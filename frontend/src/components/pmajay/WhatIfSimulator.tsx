@@ -5,7 +5,6 @@ export interface WhatIfParams {
   travelRadiusKm: number; // 3, 10, 25, 50
   dailyHours: number; // 2 to 8
   pathwayFilter: "all" | "self" | "wage" | "shg";
-  isRPLEligible: boolean;
 }
 
 interface WhatIfSimulatorProps {
@@ -23,7 +22,6 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
     travelRadiusKm: initialParams?.travelRadiusKm ?? 5,
     dailyHours: initialParams?.dailyHours ?? 6,
     pathwayFilter: initialParams?.pathwayFilter ?? "all",
-    isRPLEligible: initialParams?.isRPLEligible ?? true,
   });
 
   const handleUpdate = (updates: Partial<WhatIfParams>) => {
@@ -37,7 +35,6 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
       travelRadiusKm: 5,
       dailyHours: 6,
       pathwayFilter: "all",
-      isRPLEligible: true,
     };
     setParams(resetVals);
     onChange(resetVals);
@@ -80,7 +77,7 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Slider 1: Mobility Radius */}
         <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
           <div className="flex justify-between items-center text-xs font-bold text-slate-800 mb-1">
@@ -130,41 +127,6 @@ export const WhatIfSimulator: React.FC<WhatIfSimulatorProps> = ({
             {params.dailyHours <= 3
               ? "अंशकालिक / घरेलू जिम्मेदारी अनुकूल (Part-Time)"
               : "पूर्णकालिक गहन प्रशिक्षण (Full-Time Training)"}
-          </div>
-        </div>
-
-        {/* Rule 3: RPL Prior Experience Validation */}
-        <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 flex flex-col justify-between">
-          <div className="text-xs font-bold text-slate-800 mb-1 flex items-center justify-between">
-            <span className="flex items-center gap-1">
-              <Award className="w-3.5 h-3.5 text-amber-700" />
-              <span>RPL पूर्व अनुभव नियम:</span>
-            </span>
-            <span
-              className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                params.isRPLEligible
-                  ? "bg-amber-100 text-amber-900 border border-amber-300"
-                  : "bg-slate-200 text-slate-700"
-              }`}
-            >
-              {params.isRPLEligible ? "४० घंटे मूल्यांकन" : "३००+ घंटे क्लास"}
-            </span>
-          </div>
-
-          <label className="flex items-center gap-2 cursor-pointer mt-1 mb-2">
-            <input
-              type="checkbox"
-              checked={params.isRPLEligible}
-              onChange={(e) => handleUpdate({ isRPLEligible: e.target.checked })}
-              className="w-4 h-4 text-[#002147] rounded border-slate-300 focus:ring-blue-500 cursor-pointer"
-            />
-            <span className="text-[11px] font-semibold text-slate-700">
-              12+ महीने का व्यावहारिक पूर्व अनुभव दर्ज है
-            </span>
-          </label>
-
-          <div className="text-[10px] text-slate-500 leading-tight">
-            RPL एक पात्रता नियम है (12+ माह अनुभव व कौशल सामंजस्य होने पर ही 40 घंटे मूल्यांकन अनुमत)।
           </div>
         </div>
       </div>
