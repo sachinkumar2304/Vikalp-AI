@@ -4,6 +4,7 @@ interface EmblemProps {
   className?: string;
   size?: number;
   variant?: "gold" | "navy" | "white" | "monochrome";
+  showMotto?: boolean;
 }
 
 /**
@@ -14,6 +15,7 @@ export const EmblemOfIndia: React.FC<EmblemProps> = ({
   className = "",
   size = 40,
   variant = "navy",
+  showMotto = size >= 32,
 }) => {
   const colors = {
     gold: {
@@ -125,12 +127,14 @@ export const EmblemOfIndia: React.FC<EmblemProps> = ({
         />
       </svg>
       {/* Satyameva Jayate Motto Text */}
-      <span
-        className="font-serif text-[7.5px] font-black tracking-widest leading-none mt-0.5 whitespace-nowrap"
-        style={{ color: colors.text }}
-      >
-        सत्यमेव जयते
-      </span>
+      {showMotto && (
+        <span
+          className="font-serif text-[7.5px] font-black tracking-widest leading-none mt-0.5 whitespace-nowrap"
+          style={{ color: colors.text }}
+        >
+          सत्यमेव जयते
+        </span>
+      )}
     </div>
   );
 };

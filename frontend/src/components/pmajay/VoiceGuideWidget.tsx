@@ -70,13 +70,13 @@ export const VoiceGuideWidget: React.FC = () => {
       opportunities_cue: "यहाँ आपके नजदीकी प्रशिक्षण केंद्र और रोजगार के अवसर दिखाए गए हैं।",
       admin_cue: "यह प्रशासनिक डैशबोर्ड है जहाँ अधिकारियों द्वारा डेटा मॉनिटर होता है।",
       tour_step1_title: "१. मुख्य द्वार (Introduction)",
-      tour_step1_speech: "नमस्ते भाई-बहनों! मैं आपका वाणी साथी हूँ। यह भारत सरकार के सामाजिक न्याय मंत्रालय का पीएम-अजय पोर्टल है। यहाँ आपको कोई कागज़ी फॉर्म नहीं भरना है। बस अपनी बोली में बोलकर आप मुफ्त सरकारी ट्रेनिंग और 50,000 रुपये तक की टूलकिट पा सकते हैं।",
+      tour_step1_speech: "नमस्ते भाई-बहनों! मैं आपका वाणी साथी हूँ। यह भारत सरकार के सामाजिक न्याय मंत्रालय का पीएम-अजय पोर्टल है। यहाँ आपको कोई कागज़ी फॉर्म नहीं भरना है। बस अपनी बोली में बोलकर आप मुफ्त सरकारी ट्रेनिंग और मान्यता प्राप्त कौशल केंद्र से जुड़ सकते हैं।",
       tour_step2_title: "२. आसान ४ चरण",
       tour_step2_speech: "नीचे देखिए — पहला चरण है बोलकर अपनी जानकारी देना। दूसरा चरण है प्रोफाइल मैपिंग। तीसरा चरण है सही कोर्स चुनना और चौथा चरण है नजदीकी कौशल केंद्र से जुड़ना।",
       tour_step3_title: "३. १८ सरकारी कोर्स (NSQF)",
       tour_step3_speech: "यहाँ १८ प्रमाणित सरकारी कोर्स हैं जैसे सोलर रूफटॉप, सिलाई, प्लंबिंग और इलेक्ट्रिशियन। हर कोर्स में आपको छात्रवृत्ति और सरकारी प्रमाणपत्र मिलता है।",
       tour_step4_title: "४. सहायता और संपर्क",
-      tour_step4_speech: "यदि आपको कोई भी समस्या हो तो ऊपर दिए गए टोल-फ्री नंबर 1800-11-2026 पर कॉल कर सकते हैं। क्या आप अभी वॉयस इंटरव्यू शुरू करना चाहते हैं? नीचे हरे बटन पर क्लिक करें।",
+      tour_step4_speech: "यदि आपको कोई भी समस्या हो तो ऊपर दिए गए टोल-फ्री नंबर 1800-11-2026 पर कॉल कर सकते हैं। क्या आप अभी वॉयस इंटरव्यू शुरू करना चाहते हैं? नीचे दिए गए बटन पर क्लिक करें।",
       tour_complete: "मार्गदर्शन पूरा हुआ! अब आप माइक दबाकर बोलना शुरू कर सकते हैं।",
     },
     en: {
@@ -90,21 +90,21 @@ export const VoiceGuideWidget: React.FC = () => {
       close_guide: "Close",
       tab_tour: "Website Tour",
       tab_ask: "Ask Questions (AMA)",
-      ask_placeholder: "Ask about PM-AJAY, courses, or toolkits...",
+      ask_placeholder: "Ask about PM-AJAY, courses, or training centers...",
       ask_btn: "Ask",
       ask_mic_listening: "Listening... speak now",
       ask_guideline: "Safety boundary: Only PM-AJAY and skill related queries permitted.",
       lockout_alert: "Strict Alert: 10 violations may result in 4-day temporary restriction.",
-      interview_cue: "Welcome! Are you ready to begin your voice interview? Just tap the green mic button!",
+      interview_cue: "Welcome! Are you ready to begin your voice interview? Just tap the voice interview button!",
       recommendations_cue: "Here are government skill courses matched to your profile and location.",
       opportunities_cue: "Explore training centers and livelihood opportunities near you.",
       admin_cue: "This is the administrative dashboard for real-time monitoring.",
       tour_step1_title: "1. Welcome & Introduction",
-      tour_step1_speech: "Hello and welcome! I am your Vaani Saathi. This is the PM-AJAY portal by the Government of India. You do not need to fill complex forms. Simply speak in your mother tongue to access 100% free NSQF skilling and up to 50,000 rupees toolkit grant.",
+      tour_step1_speech: "Hello and welcome! I am your Vaani Saathi. This is the PM-AJAY portal by the Government of India. You do not need to fill complex forms. Simply speak in your mother tongue to access 100% free NSQF skilling and connect with accredited centers.",
       tour_step2_title: "2. Simple 4-Step Process",
       tour_step2_speech: "Look below — Step 1 is speaking your details. Step 2 maps your prior experience. Step 3 matches government courses, and Step 4 connects you to your nearest skill center.",
       tour_step3_title: "3. 18 Government NSQF Trades",
-      tour_step3_speech: "Here you can explore 18 certified trades including Solar Technician, Tailoring, Plumbing, and Electrician, all with stipend and official certificates.",
+      tour_step3_speech: "Here you can explore 18 certified trades including Solar Technician, Tailoring, Plumbing, and Electrician, all with official certificates.",
       tour_step4_title: "4. Help & Support",
       tour_step4_speech: "For immediate help, call toll-free 1800-11-2026 anytime. Ready to begin? Tap the voice interview button to start.",
       tour_complete: "Tour complete! You can now start by clicking the microphone button.",
@@ -120,17 +120,17 @@ export const VoiceGuideWidget: React.FC = () => {
       close_guide: "बंद करा",
       tab_tour: "वेबसाइट टूर",
       tab_ask: "प्रश्न विचारा (AMA)",
-      ask_placeholder: "पीएम-अजय, कोर्सेस किंवा टूलकिटबद्दल विचारा...",
+      ask_placeholder: "पीएम-अजय, कोर्सेस किंवा केंद्रांबद्दल विचारा...",
       ask_btn: "विचारा",
       ask_mic_listening: "ऐकत आहे... बोला",
       ask_guideline: "सुरक्षा नियम: केवळ पीएम-अजय आणि कौशल्यासंबंधी प्रश्न विचारा.",
-      lockout_alert: "कडक इशारा: १० उल्लंघनांनंतर ४ दिवसांची तात्पुरती बंदी येऊ शकते.",
-      interview_cue: "नमस्कार! तुम्ही व्हॉइस मुलाखत सुरू करण्यास तयार आहात का? खालील हिरवे माइक बटण दाबा!",
+      lockout_alert: "कडक इशारा: १० उल्लगंनांनंतर ४ दिवसांची तात्पुरती बंदी येऊ शकते.",
+      interview_cue: "नमस्कार! तुम्ही व्हॉइस मुलाखत सुरू करण्यास तयार आहात का? खालील मुलाखत बटण दाबा!",
       recommendations_cue: "येथे आपल्या कौशल्यानुसार निवडलेले सरकारी NSQF अभ्यासक्रम आहेत.",
       opportunities_cue: "येथे आपल्या जवळची प्रशिक्षण केंद्रे आणि रोजगाराच्या संधी दाखवल्या आहेत.",
       admin_cue: "हा प्रशासकीय डॅशबोर्ड आहे जिथे अधिकारी माहितीचे निरीक्षण करतात.",
       tour_step1_title: "१. मुख्य पृष्ठ परिचय",
-      tour_step1_speech: "नमस्कार बंधू आणि भगिनींनो! मी तुमचा वाणी साथी आहे. हे भारत सरकारच्या सामाजिक न्याय मंत्रालयाचे पीएम-अजय पोर्टल आहे. येथे कोणताही फॉर्म भरण्याची गरज नाही. फक्त आपल्या भाषेत बोलून मोफत प्रशिक्षण व ५०,००० रुपयांपर्यंत टूलकिट मिळवा.",
+      tour_step1_speech: "नमस्कार बंधू आणि भगिनींनो! मी तुमचा वाणी साथी आहे. हे भारत सरकारच्या सामाजिक न्याय मंत्रालयाचे पीएम-अजय पोर्टल आहे. येथे कोणताही फॉर्म भरण्याची गरज नाही. फक्त आपल्या भाषेत बोलून मोफत प्रशिक्षण व नजीकच्या कौशल्य केंद्राची माहिती मिळवा.",
       tour_step2_title: "२. सोप्या ४ पायऱ्या",
       tour_step2_speech: "खाली पहा — पहिली पायरी आवाजाने माहिती देणे, दुसरी प्रोफाइल मॅपिंग, तिसरी योग्य कोर्स निवड आणि चौथी नजीकच्या केंद्राशी जोडणी.",
       tour_step3_title: "३. १८ सरकारी कोर्सेस",
@@ -299,93 +299,79 @@ export const VoiceGuideWidget: React.FC = () => {
     >
       {/* ── EXPANDED WIDGET BOX ── */}
       {isOpen ? (
-        <div className="bg-[#002147]/95 backdrop-blur-md text-white rounded-2xl border-2 border-amber-500 shadow-2xl p-4 transition-all duration-300">
+        <div className="bg-slate-900/95 backdrop-blur-xl text-slate-100 rounded-2xl border border-slate-700/80 shadow-2xl p-4 transition-all duration-200">
           {/* Header Bar */}
-          <div className="flex items-center justify-between pb-2 mb-2 border-b border-white/15">
+          <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
             <div className="flex items-center gap-2.5">
-              {/* Audio Status Icon (No Emojis!) */}
-              <div className="relative">
-                <div
-                  className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
-                    isSpeaking
-                      ? "bg-amber-500 text-[#002147] shadow-[0_0_15px_#f59e0b] animate-pulse"
-                      : "bg-[#001733] border border-blue-400/40 text-amber-300"
+              {/* Quiet Audio Status Icon (No Bouncing, No Pinging, No Neon Glow) */}
+              <div className="w-8 h-8 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-200 shrink-0">
+                <Volume2
+                  className={`w-4 h-4 transition-colors ${
+                    isSpeaking ? "text-emerald-400" : "text-slate-400"
                   }`}
-                >
-                  {isSpeaking ? (
-                    <Volume2 className="w-4 h-4 animate-bounce" />
-                  ) : (
-                    <Radio className="w-4 h-4" />
-                  )}
-                </div>
-                {isSpeaking && (
-                  <span className="absolute -inset-1 rounded-full border-2 border-amber-400 animate-ping opacity-60 pointer-events-none" />
-                )}
+                />
               </div>
 
               <div>
                 <div className="flex items-center gap-1.5">
-                  <h4 className="font-bold text-xs sm:text-sm text-amber-300 leading-tight">
+                  <h4 className="font-semibold text-xs sm:text-sm text-slate-100 leading-tight">
                     {tr.saathi_name}
                   </h4>
-                  <span className="bg-emerald-700 text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase tracking-wider text-white">
-                    LIVE
+                  <span className="text-[9px] font-semibold tracking-wider uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+                    VOICE
                   </span>
                 </div>
-                <div className="flex items-center gap-1 text-[11px] text-blue-200">
+                <div className="flex items-center gap-1.5 text-[11px] mt-0.5">
                   {isSpeaking ? (
-                    <span className="text-emerald-300 font-medium flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
+                    <span className="text-emerald-400 font-medium flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block" />
                       {tr.speaking_status}
                     </span>
                   ) : (
-                    <span>{tr.idle_status}</span>
+                    <span className="text-slate-400">{tr.idle_status}</span>
                   )}
                 </div>
               </div>
             </div>
 
             {/* Minimize Toggle */}
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                title="Minimize Guide"
-                className="p-1 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition-colors"
-              >
-                <ChevronDown className="w-5 h-5" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              title="Minimize Guide"
+              className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </button>
           </div>
 
           {/* Sound Wave Visualizer when speaking */}
           {isSpeaking && (
-            <div className="bg-[#001733] rounded-lg p-2 mb-2 border border-blue-500/30 flex items-center justify-between gap-3">
-              <div className="flex items-center gap-1 flex-1">
-                <span className="text-[11px] text-blue-300">आवाज़ का स्रोत:</span>
-                <span className="text-xs font-semibold text-emerald-300 truncate">
-                  वाणी साथी आपको मार्गदर्शन दे रहा है
+            <div className="bg-slate-800/80 rounded-lg p-2.5 mb-2.5 border border-slate-700/60 flex items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-1.5 truncate">
+                <span className="text-slate-400 text-[11px]">ऑडियो:</span>
+                <span className="text-xs font-medium text-slate-200 truncate">
+                  वाणी साथी मार्गदर्शन दे रहा है
                 </span>
               </div>
-              <div className="flex items-center gap-0.5 h-4">
-                <span className="w-1 bg-amber-400 rounded-full animate-pulse h-3" />
-                <span className="w-1 bg-white rounded-full animate-pulse h-4" />
-                <span className="w-1 bg-emerald-400 rounded-full animate-pulse h-2" />
-                <span className="w-1 bg-amber-400 rounded-full animate-pulse h-4" />
-                <span className="w-1 bg-white rounded-full animate-pulse h-2.5" />
+              <div className="flex items-center gap-1 h-3.5 shrink-0" aria-label="Audio wave indicator">
+                <span className="w-0.5 bg-emerald-400 rounded-full h-2 animate-[pulse_1s_ease-in-out_infinite]" />
+                <span className="w-0.5 bg-emerald-400 rounded-full h-3.5 animate-[pulse_1.3s_ease-in-out_infinite]" />
+                <span className="w-0.5 bg-emerald-400 rounded-full h-2.5 animate-[pulse_0.9s_ease-in-out_infinite]" />
+                <span className="w-0.5 bg-emerald-400 rounded-full h-3 animate-[pulse_1.1s_ease-in-out_infinite]" />
               </div>
             </div>
           )}
 
           {/* Tab Selector */}
-          <div className="grid grid-cols-2 gap-1 bg-[#001733] p-1 rounded-xl mb-2.5 border border-blue-400/20 text-xs font-semibold">
+          <div className="grid grid-cols-2 gap-1 bg-slate-800/80 p-1 rounded-lg mb-2.5 border border-slate-700/60 text-xs font-medium">
             <button
               type="button"
               onClick={() => setActiveTab("tour")}
-              className={`py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+              className={`py-1.5 rounded-md flex items-center justify-center gap-1.5 transition-all ${
                 activeTab === "tour"
-                  ? "bg-[#002147] text-amber-300 shadow-xs border border-amber-500/40"
-                  : "text-blue-200 hover:text-white"
+                  ? "bg-slate-700 text-white shadow-2xs font-semibold"
+                  : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <Compass className="w-3.5 h-3.5" />
@@ -394,10 +380,10 @@ export const VoiceGuideWidget: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab("ask")}
-              className={`py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition-all ${
+              className={`py-1.5 rounded-md flex items-center justify-center gap-1.5 transition-all ${
                 activeTab === "ask"
-                  ? "bg-[#002147] text-amber-300 shadow-xs border border-amber-500/40"
-                  : "text-blue-200 hover:text-white"
+                  ? "bg-slate-700 text-white shadow-2xs font-semibold"
+                  : "text-slate-400 hover:text-slate-200"
               }`}
             >
               <MessageSquare className="w-3.5 h-3.5" />
@@ -411,18 +397,18 @@ export const VoiceGuideWidget: React.FC = () => {
               {isHome ? (
                 <div className="space-y-2">
                   {isTourRunning && currentStepIndex >= 0 ? (
-                    <div className="bg-[#001733] p-2.5 rounded-xl border border-blue-400/30">
-                      <div className="flex items-center justify-between text-xs text-amber-300 font-semibold mb-1">
+                    <div className="bg-slate-800/60 p-3 rounded-xl border border-slate-700/60">
+                      <div className="flex items-center justify-between text-xs text-slate-200 font-semibold mb-1">
                         <span>{tr[tourSteps[currentStepIndex].titleKey]}</span>
-                        <span className="text-white/60">
+                        <span className="text-slate-400 text-[11px]">
                           {currentStepIndex + 1}/{tourSteps.length}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 mt-2">
+                      <div className="flex items-center gap-2 mt-2.5">
                         <button
                           type="button"
                           onClick={handleNextStep}
-                          className="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold py-1.5 px-3 rounded-lg flex items-center justify-center gap-1.5 shadow transition-all"
+                          className="flex-1 bg-slate-100 hover:bg-white text-slate-900 text-xs font-semibold py-1.5 px-3 rounded-lg flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
                         >
                           <span>{tr.next_btn}</span>
                           <ArrowRight className="w-3.5 h-3.5" />
@@ -430,7 +416,7 @@ export const VoiceGuideWidget: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => playStep(currentStepIndex)}
-                          className="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold py-1.5 px-2.5 rounded-lg flex items-center gap-1 transition-all"
+                          className="bg-slate-700/60 hover:bg-slate-700 text-slate-200 text-xs font-medium py-1.5 px-2.5 rounded-lg flex items-center gap-1 transition-all"
                           title={tr.resume_btn}
                         >
                           <RotateCcw className="w-3 h-3" />
@@ -441,7 +427,7 @@ export const VoiceGuideWidget: React.FC = () => {
                     <button
                       type="button"
                       onClick={handleStartTour}
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-[0.98]"
+                      className="w-full bg-slate-100 hover:bg-white text-slate-900 font-semibold text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                     >
                       <Compass className="w-4 h-4 text-slate-900" />
                       <span>{tr.start_tour_btn}</span>
@@ -450,7 +436,7 @@ export const VoiceGuideWidget: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <div className="text-xs text-blue-200 bg-[#001733] p-2.5 rounded-xl border border-blue-400/20 leading-relaxed">
+                  <div className="text-xs text-slate-300 bg-slate-800/60 p-2.5 rounded-xl border border-slate-700/40 leading-relaxed">
                     {location.pathname === "/pmajay/interview" && tr.interview_cue}
                     {location.pathname === "/pmajay/recommendations" && tr.recommendations_cue}
                     {location.pathname === "/pmajay/opportunities" && tr.opportunities_cue}
@@ -459,9 +445,9 @@ export const VoiceGuideWidget: React.FC = () => {
 
                   <Link
                     to="/pmajay/interview"
-                    className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-2 shadow-md transition-all"
+                    className="w-full bg-slate-100 hover:bg-white text-slate-900 font-semibold text-xs py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                   >
-                    <Mic className="w-4 h-4 text-white" />
+                    <Mic className="w-4 h-4 text-slate-900" />
                     <span>वॉयस संवाद शुरू करें</span>
                   </Link>
                 </div>
@@ -472,17 +458,17 @@ export const VoiceGuideWidget: React.FC = () => {
           {/* ════ TAB 2: ASK ME ANYTHING (AMA WITH BOUNDARIES) ════ */}
           {activeTab === "ask" && (
             <div className="space-y-2">
-              <div className="flex items-center gap-1 text-[10px] text-blue-300 bg-[#001733] px-2 py-1 rounded-lg">
-                <HelpCircle className="w-3 h-3 text-amber-400 shrink-0" />
+              <div className="flex items-center gap-1.5 text-[10px] text-slate-400 bg-slate-800/60 px-2 py-1.5 rounded-md border border-slate-700/40">
+                <HelpCircle className="w-3 h-3 text-slate-400 shrink-0" />
                 <span className="truncate">{tr.ask_guideline}</span>
               </div>
 
               {violationCount > 0 && (
                 <div
-                  className={`p-2 rounded-xl text-xs flex items-start gap-2 border ${
+                  className={`p-2.5 rounded-lg text-xs flex items-start gap-2 border ${
                     lockoutWarning
-                      ? "bg-rose-950/80 border-rose-500 text-rose-200"
-                      : "bg-amber-950/70 border-amber-500 text-amber-200"
+                      ? "bg-rose-950/60 border-rose-850 text-rose-200"
+                      : "bg-amber-950/60 border-amber-850 text-amber-200"
                   }`}
                 >
                   {lockoutWarning ? (
@@ -491,7 +477,7 @@ export const VoiceGuideWidget: React.FC = () => {
                     <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                   )}
                   <div className="leading-snug">
-                    <span className="font-bold">
+                    <span className="font-semibold">
                       {lockoutWarning ? "सुरक्षा प्रतिबंध अलर्ट" : `सीमा उल्लंघन (${violationCount}/10)`}
                     </span>
                     <p className="text-[11px] opacity-90 mt-0.5">
@@ -502,39 +488,39 @@ export const VoiceGuideWidget: React.FC = () => {
               )}
 
               {lastAnswer && (
-                <div className="bg-[#001733] border border-blue-400/30 p-2.5 rounded-xl text-xs max-h-28 overflow-y-auto">
-                  <div className="flex items-center justify-between text-amber-300 font-semibold text-[11px] mb-1">
+                <div className="bg-slate-800/70 border border-slate-700/60 p-2.5 rounded-xl text-xs max-h-28 overflow-y-auto">
+                  <div className="flex items-center justify-between text-slate-300 font-semibold text-[11px] mb-1">
                     <span>वाणी साथी का उत्तर:</span>
                     <button
                       type="button"
                       onClick={() => playVoice(lastAnswer)}
-                      className="text-blue-300 hover:text-white flex items-center gap-0.5"
+                      className="text-slate-400 hover:text-white flex items-center gap-1 text-[10px]"
                     >
-                      <Volume2 className="w-3 h-3 text-amber-300" />
+                      <Volume2 className="w-3 h-3 text-emerald-400" />
                       <span>सुनें</span>
                     </button>
                   </div>
-                  <p className="text-white/95 leading-relaxed">{lastAnswer}</p>
+                  <p className="text-slate-100 leading-relaxed">{lastAnswer}</p>
                 </div>
               )}
 
-              <div className="flex items-center gap-1.5 bg-[#001733] border border-blue-500/40 rounded-xl p-1">
+              <div className="flex items-center gap-1.5 bg-slate-800/90 border border-slate-700 rounded-xl p-1 focus-within:border-slate-500 transition-colors">
                 <input
                   type="text"
                   value={userQuery}
                   onChange={(e) => setUserQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleAskQuestion()}
                   placeholder={isListeningUser ? tr.ask_mic_listening : tr.ask_placeholder}
-                  className="flex-1 bg-transparent px-2.5 py-1 text-xs text-white placeholder-blue-300/50 outline-none"
+                  className="flex-1 bg-transparent px-2.5 py-1 text-xs text-slate-100 placeholder-slate-500 outline-none"
                 />
 
                 <button
                   type="button"
                   onClick={toggleSpeechRecognition}
-                  className={`p-1.5 rounded-lg transition-all ${
+                  className={`p-1.5 rounded-lg transition-colors ${
                     isListeningUser
-                      ? "bg-rose-600 text-white animate-pulse"
-                      : "bg-[#002147] text-amber-300 hover:bg-blue-900"
+                      ? "bg-rose-600 text-white"
+                      : "text-slate-400 hover:text-white hover:bg-slate-700"
                   }`}
                   title="बोलकर सवाल पूछें"
                 >
@@ -545,7 +531,7 @@ export const VoiceGuideWidget: React.FC = () => {
                   type="button"
                   disabled={!userQuery.trim() || isAnswering}
                   onClick={() => handleAskQuestion()}
-                  className="bg-amber-500 hover:bg-amber-600 disabled:opacity-40 text-slate-900 font-bold p-1.5 rounded-lg transition-all"
+                  className="bg-slate-100 hover:bg-white text-slate-900 font-semibold p-1.5 rounded-lg transition-all disabled:opacity-30 active:scale-[0.98]"
                   title={tr.ask_btn}
                 >
                   <Send className="w-3.5 h-3.5" />
@@ -555,12 +541,12 @@ export const VoiceGuideWidget: React.FC = () => {
           )}
 
           {/* Bottom Action Row */}
-          <div className="flex items-center gap-2 mt-2 pt-2 border-t border-white/10 text-xs">
+          <div className="flex items-center gap-2 mt-3 pt-2.5 border-t border-slate-800 text-xs">
             {isSpeaking ? (
               <button
                 type="button"
                 onClick={handleStop}
-                className="flex-1 bg-rose-700 hover:bg-rose-800 text-white font-semibold py-1.5 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-xs"
+                className="flex-1 bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 font-medium py-1.5 px-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors"
               >
                 <VolumeX className="w-3.5 h-3.5" />
                 <span>{tr.stop_btn}</span>
@@ -569,9 +555,9 @@ export const VoiceGuideWidget: React.FC = () => {
               <button
                 type="button"
                 onClick={() => playVoice(t("welcome_speech"))}
-                className="flex-1 bg-blue-950 hover:bg-blue-900 text-blue-200 hover:text-white font-medium py-1.5 px-2 rounded-lg flex items-center justify-center gap-1.5 border border-blue-400/30 transition-all"
+                className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium py-1.5 px-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors"
               >
-                <Volume2 className="w-3.5 h-3.5 text-amber-300" />
+                <Volume2 className="w-3.5 h-3.5 text-slate-300" />
                 <span>{tr.resume_btn}</span>
               </button>
             )}
@@ -580,44 +566,44 @@ export const VoiceGuideWidget: React.FC = () => {
               <button
                 type="button"
                 onClick={() => navigate("/pmajay/interview")}
-                className="bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-1.5 px-3 rounded-lg flex items-center gap-1.5 shadow transition-all shrink-0"
+                className="bg-[#002147] hover:bg-[#002f66] text-white font-semibold py-1.5 px-3 rounded-lg flex items-center gap-1.5 border border-slate-700 transition-all shrink-0 active:scale-[0.98]"
               >
-                <Mic className="w-3.5 h-3.5 text-emerald-200" />
+                <Mic className="w-3.5 h-3.5 text-amber-300" />
                 <span>साक्षात्कार</span>
               </button>
             )}
           </div>
         </div>
       ) : (
-        /* ── COLLAPSED FLOATING PILL ── */
+        /* ── COLLAPSED FLOATING DOCK PILL ── */
         <button
           type="button"
           onClick={() => setIsOpen(true)}
-          className={`flex items-center gap-2 px-3.5 py-2.5 rounded-full border-2 border-amber-500 shadow-2xl transition-all duration-300 ml-auto ${
-            isSpeaking
-              ? "bg-[#002147] text-white animate-pulse shadow-[0_0_20px_#f59e0b]"
-              : "bg-[#002147]/95 text-white hover:bg-[#002b5c]"
-          }`}
+          className="flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-slate-900/95 backdrop-blur-md text-white border border-slate-700/80 hover:border-slate-500 shadow-xl transition-all ml-auto active:scale-[0.98]"
+          title="वाणी साथी वॉयस गाइड खोलें"
         >
-          <div className="relative">
-            <div
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-sm ${
-                isSpeaking ? "bg-amber-400 text-[#002147]" : "bg-[#001733] text-amber-300"
-              }`}
-            >
-              {isSpeaking ? <Volume2 className="w-4 h-4 animate-bounce" /> : <Mic className="w-4 h-4" />}
-            </div>
-            {isSpeaking && (
-              <span className="absolute -inset-1 rounded-full border-2 border-amber-400 animate-ping" />
+          <div className="w-7 h-7 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 shrink-0">
+            {isSpeaking ? (
+              <div className="flex items-center gap-0.5 h-3" aria-label="Audio active">
+                <span className="w-0.5 bg-emerald-400 rounded-full h-1.5 animate-[pulse_1s_ease-in-out_infinite]" />
+                <span className="w-0.5 bg-emerald-400 rounded-full h-3 animate-[pulse_1.3s_ease-in-out_infinite]" />
+                <span className="w-0.5 bg-emerald-400 rounded-full h-2 animate-[pulse_0.9s_ease-in-out_infinite]" />
+              </div>
+            ) : (
+              <Volume2 className="w-3.5 h-3.5 text-slate-300" />
             )}
           </div>
           <div className="text-left hidden sm:block">
-            <div className="text-xs font-bold text-amber-300">{tr.saathi_name}</div>
-            <div className="text-[10px] text-blue-200">
-              {isSpeaking ? tr.speaking_status : "मार्गदर्शन / सवाल पूछें"}
+            <div className="text-xs font-semibold text-slate-100">{tr.saathi_name}</div>
+            <div className="text-[10px] text-slate-400">
+              {isSpeaking ? (
+                <span className="text-emerald-400 font-medium">{tr.speaking_status}</span>
+              ) : (
+                "मार्गदर्शन एवं सवाल"
+              )}
             </div>
           </div>
-          <ChevronUp className="w-4 h-4 text-white/70" />
+          <ChevronUp className="w-4 h-4 text-slate-400" />
         </button>
       )}
     </aside>
