@@ -81,7 +81,7 @@ export const PMAJAYNavbar: React.FC = () => {
           <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
             {/* Left: Ministry identity */}
             <div className="flex items-center gap-2">
-              <EmblemOfIndia size={20} variant="gold" showMotto={false} className="shrink-0" />
+              <EmblemOfIndia size={16} variant="gold" className="shrink-0" />
               <span className="font-semibold text-white tracking-wide text-[11px] sm:text-xs">
                 भारत सरकार • Government of India
               </span>
@@ -194,7 +194,7 @@ export const PMAJAYNavbar: React.FC = () => {
               to="/pmajay"
               className="flex items-center gap-3 group focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 rounded-lg py-1"
             >
-              <EmblemOfIndia size={34} variant="navy" showMotto={true} className="shrink-0" />
+              <EmblemOfIndia size={26} variant="navy" className="shrink-0" />
 
               <div className="border-l border-slate-200 pl-3 leading-tight">
                 <div className="flex items-center gap-2">
